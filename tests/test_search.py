@@ -14,11 +14,13 @@ class EvalTests(unittest.TestCase):
         self.assertEqual(evaluate(Board()), 0)
 
     def test_white_up_a_queen_is_positive(self) -> None:
-        board = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1")
+        # Black is missing its queen (rank 8: rnb1kbnr).
+        board = Board("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         self.assertEqual(evaluate(board), PIECE_VALUE[QUEEN])
 
     def test_side_to_move_perspective(self) -> None:
-        board = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR b KQkq - 0 1")
+        # Same imbalance, black to move: black is down a queen -> negative.
+        board = Board("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
         self.assertEqual(evaluate(board), -PIECE_VALUE[QUEEN])
 
 
@@ -33,11 +35,12 @@ class SearchTests(unittest.TestCase):
         self.assertGreater(result.nodes, 0)
 
     def test_rook_takes_hanging_queen(self) -> None:
-        board = Board("4k3/8/8/8/3q4/8/8/R3K3 w Q - 0 1")
+        # Queen on the a-file so the rook on a1 can capture along the file.
+        board = Board("4k3/8/8/8/q7/8/8/R3K3 w Q - 0 1")
         result = search(board, depth=1)
         self.assertIsNotNone(result.best_move)
         assert result.best_move is not None
-        self.assertEqual(result.best_move.uci(), "a1d4")
+        self.assertEqual(result.best_move.uci(), "a1a4")
         self.assertGreaterEqual(result.score, PIECE_VALUE[QUEEN] - 50)
 
     def test_finds_mate_in_one(self) -> None:
@@ -52,13 +55,14 @@ class SearchTests(unittest.TestCase):
         self.assertGreater(result.score, MATE_SCORE - 100)
 
     def test_checkmate_position_has_no_move(self) -> None:
-        board = Board("7k/5Q2/6K1/8/8/8/8/8 b - - 0 1")
+        # Black king g8, white queen g7, white king g6: vertical mate.
+        board = Board("6k1/6Q1/6K1/8/8/8/8/8 b - - 0 1")
         result = search(board, depth=1)
         self.assertIsNone(result.best_move)
         self.assertLess(result.score, 0)
 
     def test_stalemate_is_draw(self) -> None:
-        # Black king on h8, white king on g6, white pawn on f7: stalemate.
+        # Black king h8, white king g6, white pawn f7: stalemate (not check).
         board = Board("7k/5P2/6K1/8/8/8/8/8 b - - 0 1")
         result = search(board, depth=1)
         self.assertIsNone(result.best_move)
