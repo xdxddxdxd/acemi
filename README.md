@@ -4,6 +4,8 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 ## Aşama durumu
 
+Aşama 2 kodu (UCI, paralel maç yöneticisi, SPRT, Elo, kayıt) eklendi. Motorda hâlâ arama ve eval yok: `go` seed'li rastgele yasal hamle döndürür, bu yüzden maç sonuçları motor gücü değil kayıt hattının denemesidir. Aşağıdaki Aşama 1 notu tarihsel olarak durur.
+
 Şu an Aşama 1 (tahta ve hamle üretimi) Kaggle perft doğrulaması için hazırlandı. Motor henüz arama yapıp gerçek maç oynamaz. `tools/demo_run.py`, yalnızca kayıt hattını denemek için açıkça sentetik bir örnek koşu üretir; bu kayıt güç ölçümü değildir.
 
 ## Dizinler
@@ -24,6 +26,15 @@ python tools/demo_run.py
 ```
 
 Komut `data/runs/` altında şema v1'e uygun örnek kayıt, `data/index.csv` satırı ve `data/positions/` girdisi oluşturur. Bu veriler sentetiktir.
+
+## Maç çalıştırma
+
+```powershell
+python -m pip install -r requirements-tools.txt
+python -m tools.match --games 4 --movetime-ms 300 --uci-elo 1320
+```
+
+`--sprt` ile SPRT erken durdurma, `--openings dosya.epd` ile kendi açılış seti, `--no-record` ile yazmadan deneme yapılır. Stockfish bulunamazsa `--stockfish-path` verin.
 
 ## Kaggle hazırlığı
 

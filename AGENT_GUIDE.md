@@ -33,6 +33,17 @@ Contains game count and W/D/L, `score_pct`, Elo estimate and confidence interval
 
 Human-readable factual summary of the same run. It must not contain causal analysis or recommendations. Demo summaries explicitly state that values are synthetic.
 
+### Additions in the Stage 2 writer (still schema version 1)
+
+Real runs add fields; absent fields in older demo runs mean not recorded.
+
+- `meta.json`: `engine_name`, `git_dirty`, `match_settings` (`games_requested`, `concurrency`, `max_plies`, `timeout_grace_ms`, `pairing`).
+- `results.json`: `aborted_games`, `board_disagreements`; `sprt` gains `enabled`, `max_games`, `lower_bound`, `upper_bound`. Decisions: `accept_h1`, `accept_h0`, `inconclusive`, `not_run`, `demo_only`.
+- `games` counts completed games only. A game where the opponent crashed, timed out or played illegally is `aborted` and excluded from W/D/L. If Acemi does that, the game is a recorded loss.
+- `moves.jsonl.gz` records add `player` (`engine` or `opponent`), `eval_mate`; `zobrist_hash` is a 16-digit hex string, or null after an Acemi/python-chess board disagreement.
+- Position database: `data/positions/<xx>.jsonl.gz` shards (xx = first two hex digits of the hash), merged across runs; counts are from the side to move's view. Extra fields `eval_samples`. Entries from demo runs live in per-run files and carry `is_demo: true`.
+- Acemi's `eval_cp`, `depth` and `nodes` are null until search exists (not measured, not zero).
+
 ### Compressed artifacts
 
 - `games.pgn.gz`: PGN games with run metadata and outcomes.
