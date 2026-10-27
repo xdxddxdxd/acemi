@@ -4,7 +4,7 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 ## Aşama durumu
 
-Şu an Aşama 0 (altyapı) hazırlanıyor. Motor henüz hamle üretmez veya gerçek maç oynamaz. `tools/demo_run.py`, yalnızca kayıt hattını denemek için açıkça sentetik bir örnek koşu üretir; bu kayıt güç ölçümü değildir.
+Şu an Aşama 1 (tahta ve hamle üretimi) Kaggle perft doğrulaması için hazırlandı. Motor henüz arama yapıp gerçek maç oynamaz. `tools/demo_run.py`, yalnızca kayıt hattını denemek için açıkça sentetik bir örnek koşu üretir; bu kayıt güç ölçümü değildir.
 
 ## Dizinler
 
@@ -27,11 +27,11 @@ Komut `data/runs/` altında şema v1'e uygun örnek kayıt, `data/index.csv` sat
 
 ## Kaggle hazırlığı
 
-1. GitHub'da `acemi` adında public bir depo oluşturup varsayılan dalı `main` yapın ve bu proje dosyalarını yükleyin.
-2. `notebooks/kaggle_runner.ipynb` dosyasını Kaggle'a notebook olarak ekleyin. Notebook ayarlarında Internet'i açın.
+1. Public depo: [xdxddxdxd/acemi](https://github.com/xdxddxdxd/acemi). Varsayılan dal `main`.
+2. Kaggle'da `notebooks/kaggle_runner.ipynb` dosyasının güncel sürümünü açın. Notebook ayarlarında Internet'i açın.
 3. Kaggle **Add-ons → Secrets** bölümünde `GITHUB_TOKEN` adlı Secret oluşturun. Fine-grained token yalnızca bu depoya Contents: Read and write izni taşımalıdır.
-4. Notebook'taki `GITHUB_REPO_URL` adresinin `https://github.com/xdxddxdxd/acemi.git` olduğunu doğrulayın.
-5. Hücreleri sırayla çalıştırın. Aşama 0'da sentetik koşu kaydedilir ve `data/` değişiklikleri push edilir. Motor ve Stockfish maçları sonraki aşamalarda eklenecektir.
+4. Notebook'taki `GITHUB_REPO_URL` adresi hazırdır: `https://github.com/xdxddxdxd/acemi.git`.
+5. Aşama 1 paketi tüm tahta kurallarını ve referans perft sayılarını Kaggle'da çalıştırır. Başarılı olursa sentetik kayıt hattı `data/` değişikliklerini push eder. Gerçek motor maçları sonraki aşamalardadır.
 
 Token hiçbir dosyaya yazılmaz veya hücre çıktısına basılmaz. Notebook push hatasında token'ı yeniden istemek yerine hatanın token içermeyen Git mesajını gösterir.
 
