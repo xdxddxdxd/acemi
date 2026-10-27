@@ -8,13 +8,19 @@
 
 ## 0.2.0 — Aşama 2 (UCI ve maç altyapısı)
 
-- `engine/uci.py` ve `python -m engine`: UCI protokolü (uci, isready, ucinewgame, position, go, stop, quit, setoption: Hash/Threads/Seed). Arama ve eval henüz yok: `go`, tohumlu rastgele yasal hamle döndüren yer tutucudur. Güç ölçümü değildir.
-- `tools/uci_client.py`: UCI istemcisi; zaman aşımı, çökme ve kurulum hatasını ayrı ayırır.
-- `tools/match.py`: paralel maç yöneticisi (renk eşlenmiş açılış çiftleri, python-chess hakem, SPRT ile erken durdurma, Stockfish `UCI_LimitStrength`/`UCI_Elo`).
-- `tools/elo.py`, `tools/sprt.py`: Elo farkı + güven aralığı ve SPRT (GSPRT yaklaşımı).
-- `tools/record.py`, `tools/summarize.py`: şema v1 kaydı, `index.csv`, pozisyon veritabanı birleştirme ve olgusal SUMMARY.md.
-- Notebook: sahte demo hücresi yerine küçük Stage 2 duman maçı.
-- Bu sürümün testleri yazıldı ama yazan tarafta ÇALIŞTIRILMADI; Kaggle'da ilk koşuda doğrulanacak.
+- `engine/uci.py` ve `python -m engine`: UCI protokolü (uci, isready, ucinewgame, position, go, stop, quit, setoption: Hash/Threads/Seed). Arama ve eval henüz yoktu: `go` tohumlu rastgele yasal hamle döndürüyordu.
+- `tools/uci_client.py`, `tools/match.py`, `tools/elo.py`, `tools/sprt.py`, `tools/record.py`, `tools/summarize.py`.
+- Notebook: Stage 2 duman maçı.
+
+## 0.3.0 — Aşama 3 (İlk arama)
+
+- `engine/eval/classic.py`: sadece materyal değerlendirme (P=100, N=320, B=330, R=500, Q=900, K=20000), taraf sırası olan açısından.
+- `engine/eval/base.py`: `evaluate(board) -> int` arayüzü.
+- `engine/search.py`: negamax + alpha-beta. Mat skoru `±(100000 − ply)`. Beraberlik = 0. Varsayılan derinlik 3. `movetime` ile yumuşak erken durma.
+- `engine/uci.py`: `go depth` / `go movetime` / `infinite`+`stop` aramayı çalıştırır; `info depth … score … nodes … time …` basar.
+- `tools/random_uci.py`: Stage 3 geçiş testi için rastgele UCI rakip.
+- Unit testler: eval, arama (asılı vezir, mat-1, pat), UCI cevapları.
+- PST, quiescence, iterative deepening, TT yok (sonraki aşamalar).
 
 ## Aşama 1 — Tahta ve hamle üretimi
 
