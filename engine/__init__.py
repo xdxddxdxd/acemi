@@ -1,3 +1,3 @@
-"""Acemi chess engine package (search and evaluation arrive in later stages)."""
+"""Acemi chess engine package."""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
