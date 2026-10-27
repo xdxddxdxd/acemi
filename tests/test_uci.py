@@ -7,6 +7,13 @@ from engine.movegen import generate_legal_moves
 from engine.uci import UciSession
 
 
+def _bestmove_line(lines: list[str]) -> str:
+    for line in reversed(lines):
+        if line.startswith("bestmove "):
+            return line
+    raise AssertionError(f"no bestmove in {lines!r}")
+
+
 class UciSessionTests(unittest.TestCase):
     def test_uci_handshake(self) -> None:
         lines = UciSession().handle_line("uci")
@@ -20,11 +27,11 @@ class UciSessionTests(unittest.TestCase):
     def test_go_returns_a_legal_move(self) -> None:
         session = UciSession()
         session.handle_line("position startpos")
-        output = session.handle_line("go movetime 100")
-        self.assertEqual(len(output), 1)
-        self.assertTrue(output[0].startswith("bestmove "))
+        output = session.handle_line("go depth 2")
+        best = _bestmove_line(output)
         legal = {move.uci() for move in generate_legal_moves(Board(STARTING_FEN))}
-        self.assertIn(output[0].split()[1], legal)
+        self.assertIn(best.split()[1], legal)
+        self.assertTrue(any(line.startswith("info depth") for line in output))
 
     def test_position_with_moves_is_applied(self) -> None:
         session = UciSession()
@@ -50,14 +57,17 @@ class UciSessionTests(unittest.TestCase):
     def test_no_legal_moves_gives_null_move(self) -> None:
         session = UciSession()
         session.handle_line("position fen 7k/5Q2/6K1/8/8/8/8/8 b - - 0 1")
-        self.assertEqual(session.handle_line("go"), ["bestmove 0000"])
+        output = session.handle_line("go depth 1")
+        self.assertEqual(_bestmove_line(output), "bestmove 0000")
 
-    def test_same_seed_and_position_give_same_move(self) -> None:
+    def test_search_is_deterministic(self) -> None:
         first, second = UciSession(), UciSession()
         for session in (first, second):
-            session.handle_line("setoption name Seed value 7")
             session.handle_line("position startpos moves e2e4")
-        self.assertEqual(first.handle_line("go"), second.handle_line("go"))
+        self.assertEqual(
+            _bestmove_line(first.handle_line("go depth 2")),
+            _bestmove_line(second.handle_line("go depth 2")),
+        )
 
     def test_setoption_updates_seed(self) -> None:
         session = UciSession()
@@ -69,8 +79,8 @@ class UciSessionTests(unittest.TestCase):
         session.handle_line("position startpos")
         self.assertEqual(session.handle_line("go infinite"), [])
         output = session.handle_line("stop")
-        self.assertEqual(len(output), 1)
-        self.assertTrue(output[0].startswith("bestmove "))
+        best = _bestmove_line(output)
+        self.assertTrue(best.startswith("bestmove "))
 
     def test_quit_sets_flag(self) -> None:
         session = UciSession()
