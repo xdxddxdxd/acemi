@@ -2,7 +2,7 @@
 
 import unittest
 
-from engine.board import QUEEN, Board
+from engine.board import QUEEN, ROOK, Board
 from engine.eval.base import evaluate
 from engine.eval.classic import PIECE_VALUE
 from engine.movegen import generate_legal_moves
@@ -36,12 +36,13 @@ class SearchTests(unittest.TestCase):
 
     def test_rook_takes_hanging_queen(self) -> None:
         # Queen on the a-file so the rook on a1 can capture along the file.
+        # After RxQ the side to move is up a rook (~500 cp).
         board = Board("4k3/8/8/8/q7/8/8/R3K3 w Q - 0 1")
         result = search(board, depth=1)
         self.assertIsNotNone(result.best_move)
         assert result.best_move is not None
         self.assertEqual(result.best_move.uci(), "a1a4")
-        self.assertGreaterEqual(result.score, PIECE_VALUE[QUEEN] - 50)
+        self.assertGreaterEqual(result.score, PIECE_VALUE[ROOK] - 50)
 
     def test_finds_mate_in_one(self) -> None:
         board = Board("6k1/5ppp/8/8/8/8/5PPP/4Q1K1 w - - 0 1")
