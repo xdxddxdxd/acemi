@@ -1,0 +1,2 @@
+# Tools-only dependency. The engine/ package must remain standard-library only.
+python-chess>=1.999,<2

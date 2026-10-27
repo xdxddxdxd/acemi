@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+*.token
+*.pem
+*.key
+
+# Local engine binaries and generated scratch data
+stockfish
+stockfish.exe
+.coverage
+htmlcov/
+

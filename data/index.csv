@@ -1,0 +1,2 @@
+run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
+20261027T000000Z_0.1.0_demo_fake-8fdb9ee,20261027T000000Z,0.1.0,Synthetic demo opponent,1,100.0,,demo_only
