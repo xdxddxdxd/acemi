@@ -15,7 +15,14 @@ from __future__ import annotations
 
 import random
 import sys
+from pathlib import Path
 from typing import TextIO
+
+# When launched as ``python tools/random_uci.py``, sys.path[0] is tools/,
+# not the repo root — so ``engine`` would not import without this.
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from engine.board import STARTING_FEN, Board
 from engine.movegen import find_legal_move, generate_legal_moves
