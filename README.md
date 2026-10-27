@@ -30,7 +30,7 @@ Komut `data/runs/` altında şema v1'e uygun örnek kayıt, `data/index.csv` sat
 1. GitHub'da `acemi` adında public bir depo oluşturup varsayılan dalı `main` yapın ve bu proje dosyalarını yükleyin.
 2. `notebooks/kaggle_runner.ipynb` dosyasını Kaggle'a notebook olarak ekleyin. Notebook ayarlarında Internet'i açın.
 3. Kaggle **Add-ons → Secrets** bölümünde `GITHUB_TOKEN` adlı Secret oluşturun. Fine-grained token yalnızca bu depoya Contents: Read and write izni taşımalıdır.
-4. Notebook'taki `GITHUB_REPO_URL` değerini kendi deponuzun HTTPS clone adresiyle değiştirin.
+4. Notebook'taki `GITHUB_REPO_URL` adresinin `https://github.com/xdxddxdxd/acemi.git` olduğunu doğrulayın.
 5. Hücreleri sırayla çalıştırın. Aşama 0'da sentetik koşu kaydedilir ve `data/` değişiklikleri push edilir. Motor ve Stockfish maçları sonraki aşamalarda eklenecektir.
 
 Token hiçbir dosyaya yazılmaz veya hücre çıktısına basılmaz. Notebook push hatasında token'ı yeniden istemek yerine hatanın token içermeyen Git mesajını gösterir.
@@ -42,4 +42,3 @@ Token hiçbir dosyaya yazılmaz veya hücre çıktısına basılmaz. Notebook pu
 ## Veri ve analiz
 
 Veri alanları ve analiz ajanının kuralları için [AGENT_GUIDE.md](AGENT_GUIDE.md) dosyasına bakın. Her veri dosyası `schema_version` taşır. Gerçek test sonuçları ile sentetik demo kayıtlarını karıştırmayın.
-
