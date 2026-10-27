@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_name": "20261027T092138Z_0.1.0_demo_fake-fb653c5",
+  "is_demo": true,
+  "date": "20261027T092138Z",
+  "engine_version": "0.1.0",
+  "git_commit": "synthetic-demo",
+  "engine_settings": {
+    "move_time_ms": 1000,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false
+  },
+  "opponent": {
+    "name": "Synthetic demo opponent",
+    "version": "n/a",
+    "uci_elo": null
+  },
+  "opening_set": "synthetic-demo",
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": null,
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-27T09:21:38.267316Z",
+  "finished_at": "2026-10-27T09:21:38.267316Z"
+}
