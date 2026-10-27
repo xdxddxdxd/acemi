@@ -1,23 +1,19 @@
 """UCI protocol front end for Acemi.
 
-Stage 2 scope: protocol handling only. There is no search or evaluation yet, so
-``go`` answers with a seeded random legal move. This placeholder exists so the
-match tooling can be exercised end to end; its playing strength says nothing
-about the real engine. Stage 3 replaces ``UciSession._bestmove_line``.
-
-No ``info`` lines are printed because no depth, node count, or score is
-actually measured. The match runner records such fields as null (not measured).
+Stage 3: ``go`` runs negamax search (material eval + alpha-beta). Supported
+limits are ``depth``, ``movetime``, and ``infinite``/``stop``. Clock controls
+(wtime/btime) arrive in Stage 4 with iterative deepening.
 """
 
 from __future__ import annotations
 
-import random
 import sys
 from typing import TextIO
 
 from engine import __version__
 from engine.board import STARTING_FEN, Board
-from engine.movegen import find_legal_move, generate_legal_moves
+from engine.movegen import find_legal_move
+from engine.search import DEFAULT_DEPTH, search
 
 ENGINE_NAME = "Acemi"
 ENGINE_AUTHOR = "xdxddxdxd"
@@ -38,7 +34,7 @@ class UciSession:
     def __init__(self) -> None:
         self.board = Board(STARTING_FEN)
         self.seed = DEFAULT_SEED
-        self.hash_mb = DEFAULT_HASH_MB  # Accepted for GUI compatibility; no table exists yet.
+        self.hash_mb = DEFAULT_HASH_MB  # Accepted for GUI compatibility; no TT yet.
         self.threads = 1
         self.quit_requested = False
         self._pending_infinite = False
@@ -71,7 +67,7 @@ class UciSession:
         if command == "stop":
             if self._pending_infinite:
                 self._pending_infinite = False
-                return [self._bestmove_line()]
+                return self._run_search(depth=DEFAULT_DEPTH, movetime_ms=None)
             return []
         if command == "quit":
             self.quit_requested = True
@@ -129,21 +125,52 @@ class UciSession:
         return []
 
     def _go(self, args: list[str]) -> list[str]:
-        # Search limits (movetime, depth, nodes, clocks) are ignored: the
-        # placeholder answers instantly. Real time management arrives in Stage 4.
         if "infinite" in args:
             self._pending_infinite = True
             return []
-        return [self._bestmove_line()]
 
-    def _bestmove_line(self) -> str:
-        moves = list(generate_legal_moves(self.board))
-        if not moves:
-            return f"bestmove {NO_MOVE}"
-        # Seeded by option value and position, so a given seed always makes the
-        # same choice in the same position regardless of call history.
-        rng = random.Random(f"{self.seed}:{self.board.zobrist_hash}")
-        return f"bestmove {rng.choice(moves).uci()}"
+        depth = DEFAULT_DEPTH
+        movetime_ms: int | None = None
+        index = 0
+        while index < len(args):
+            token = args[index]
+            if token == "depth" and index + 1 < len(args):
+                try:
+                    depth = max(0, int(args[index + 1]))
+                except ValueError:
+                    pass
+                index += 2
+            elif token == "movetime" and index + 1 < len(args):
+                try:
+                    movetime_ms = max(1, int(args[index + 1]))
+                except ValueError:
+                    pass
+                index += 2
+            elif token == "nodes" and index + 1 < len(args):
+                # Accepted but not enforced in Stage 3; reserved for later.
+                index += 2
+            else:
+                index += 1
+
+        # When only movetime is given (match runner style), still search to the
+        # default depth but stop early if time runs out.
+        return self._run_search(depth=depth, movetime_ms=movetime_ms)
+
+    def _run_search(self, *, depth: int, movetime_ms: int | None) -> list[str]:
+        result = search(self.board, depth=depth, movetime_ms=movetime_ms)
+        lines: list[str] = []
+        if result.mate is not None:
+            score_part = f"score mate {result.mate}"
+        else:
+            score_part = f"score cp {result.score}"
+        lines.append(
+            f"info depth {result.depth} {score_part} nodes {result.nodes} time {result.time_ms}"
+        )
+        if result.best_move is None:
+            lines.append(f"bestmove {NO_MOVE}")
+        else:
+            lines.append(f"bestmove {result.best_move.uci()}")
+        return lines
 
 
 def main(stdin: TextIO | None = None, stdout: TextIO | None = None) -> None:
