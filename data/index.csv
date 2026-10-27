@@ -3,3 +3,4 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261027T092138Z_0.1.0_demo_fake-fb653c5,20261027T092138Z,0.1.0,Synthetic demo opponent,1,100.0,,demo_only
 20261027T092536Z_0.1.0_demo_fake-1e4f1cb,20261027T092536Z,0.1.0,Synthetic demo opponent,1,100.0,,demo_only
 20261027T101740Z_0.1.0_demo_fake-e076fa3,20261027T101740Z,0.1.0,Synthetic demo opponent,1,100.0,,demo_only
+20261027T161419Z_0.2.0_stockfish-16-uci-elo-1320_5920575,20261027T161419Z,0.2.0,Stockfish 16 UCI_Elo 1320,4,0.0,,not_run
