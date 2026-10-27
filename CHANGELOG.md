@@ -9,4 +9,5 @@
 ## Aşama 1 — Tahta ve hamle üretimi
 
 - 0x88 tahta, FEN, hamle üretimi, make/unmake, Zobrist ve temel beraberlik kuralları eklendi.
-- Referans perft paketi ve Kaggle notebook'unda çalıştırma hücresi eklendi. Aşama onayı için Kaggle çıktısında tüm sayılar doğrulanmalıdır.
+- Referans perft paketi ve Kaggle notebook'unda çalıştırma hücresi eklendi.
+- Perft derinliği şimdilik 4 ile sınırlandı (Kaggle pratikliği için). Depth 5–6 sayıları yorumda saklanıyor; ileride tam doğrulama için açılacak.
