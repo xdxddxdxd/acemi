@@ -22,6 +22,15 @@
 - Unit testler: eval, arama (asılı vezir, mat-1, pat), UCI cevapları.
 - PST, quiescence, iterative deepening, TT yok (sonraki aşamalar).
 
+## 0.3.1 — Aşama 3 düzeltmeleri
+
+Aşama 3'ün 100 maçlık rastgele-rakip koşusu (16/79/5, %55,5) geçiş kriterini (100/100) sağlamadı. Verideki iki hata düzeltildi:
+
+- Süre dolunca arama yarım kalıyor, derinlik yine de 3 raporlanıyordu (hamlelerin %64'ü <300 düğümle oynanmıştı). Artık kökte iterative deepening var: süre dolarsa son TAMAMLANAN derinliğin hamlesi döner ve `info depth` gerçek tamamlanan derinliktir.
+- Eşit skorlu hamlelerde hep ilk üretilen hamle seçildiği için motor ileri geri oynuyordu (79 beraberlik). Artık eşit en iyi kök hamleler arasında `Seed` opsiyonuyla tohumlanan RNG seçer; `ucinewgame` RNG'yi yeniden tohumlar (aynı seed = aynı oyun).
+- Yeni testler: tamamlanan derinlik, süre limiti, seed'li eşitlik bozma.
+- Not: Aşama 4'ün iterative deepening'inin yalnızca kök sürümü öne çekildi; PST, quiescence ve zaman yönetimi hâlâ Aşama 4'te. Hız (~1000 düğüm/sn) bu sürümde değişmedi.
+
 ## Aşama 1 — Tahta ve hamle üretimi
 
 - 0x88 tahta, FEN, hamle üretimi, make/unmake, Zobrist ve temel beraberlik kuralları eklendi.

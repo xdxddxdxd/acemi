@@ -1,5 +1,6 @@
 """Stage 3 evaluation and search tests (no external engines)."""
 
+import random
 import unittest
 
 from engine.board import QUEEN, ROOK, Board
@@ -75,6 +76,41 @@ class SearchTests(unittest.TestCase):
         assert first.best_move is not None and second.best_move is not None
         self.assertEqual(first.best_move.uci(), second.best_move.uci())
         self.assertEqual(first.score, second.score)
+
+
+    def test_reported_depth_is_last_completed_iteration(self) -> None:
+        result = search(Board(), depth=2)
+        self.assertEqual(result.depth, 2)
+
+    def test_time_limit_returns_legal_move_with_honest_depth(self) -> None:
+        # 1 ms cannot finish depth 6 from the start position.
+        result = search(Board(), depth=6, movetime_ms=1)
+        self.assertIsNotNone(result.best_move)
+        assert result.best_move is not None
+        legal = {m.uci() for m in generate_legal_moves(Board())}
+        self.assertIn(result.best_move.uci(), legal)
+        self.assertLess(result.depth, 6)
+
+    def test_ties_are_broken_by_seeded_rng(self) -> None:
+        # Quiet start position: every depth-1 move scores 0, so many tie.
+        chosen = {
+            search(Board(), depth=1, rng=random.Random(seed)).best_move.uci()
+            for seed in range(30)
+        }
+        self.assertGreater(len(chosen), 1)
+
+    def test_same_rng_seed_gives_same_tie_break(self) -> None:
+        first = search(Board(), depth=1, rng=random.Random(5)).best_move
+        second = search(Board(), depth=1, rng=random.Random(5)).best_move
+        assert first is not None and second is not None
+        self.assertEqual(first.uci(), second.uci())
+
+    def test_tie_break_never_picks_a_worse_move(self) -> None:
+        # Only a1a4 wins the queen; no seed may choose another move.
+        for seed in range(10):
+            result = search(Board("4k3/8/8/8/q7/8/8/R3K3 w Q - 0 1"), depth=1, rng=random.Random(seed))
+            assert result.best_move is not None
+            self.assertEqual(result.best_move.uci(), "a1a4")
 
 
 if __name__ == "__main__":

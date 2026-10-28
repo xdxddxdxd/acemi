@@ -1,12 +1,13 @@
 """UCI protocol front end for Acemi.
 
-Stage 3: ``go`` runs negamax search (material eval + alpha-beta). Supported
+Stage 3: ``go`` runs iterative negamax (material eval + alpha-beta); ``info depth`` is the last completed depth. Supported
 limits are ``depth``, ``movetime``, and ``infinite``/``stop``. Clock controls
 (wtime/btime) arrive in Stage 4 with iterative deepening.
 """
 
 from __future__ import annotations
 
+import random
 import sys
 from typing import TextIO
 
@@ -34,6 +35,7 @@ class UciSession:
     def __init__(self) -> None:
         self.board = Board(STARTING_FEN)
         self.seed = DEFAULT_SEED
+        self.rng = random.Random(self.seed)  # Breaks ties between equal root moves.
         self.hash_mb = DEFAULT_HASH_MB  # Accepted for GUI compatibility; no TT yet.
         self.threads = 1
         self.quit_requested = False
@@ -56,6 +58,7 @@ class UciSession:
             return ["readyok"]
         if command == "ucinewgame":
             self.board = Board(STARTING_FEN)
+            self.rng = random.Random(self.seed)  # Same seed -> same game, every game.
             self._pending_infinite = False
             return []
         if command == "setoption":
@@ -96,6 +99,7 @@ class UciSession:
                 self.threads = number
             else:
                 self.seed = number
+                self.rng = random.Random(number)
             return []
         return [f"info string Unknown option: {' '.join(name_tokens)}"]
 
@@ -152,12 +156,12 @@ class UciSession:
             else:
                 index += 1
 
-        # When only movetime is given (match runner style), still search to the
-        # default depth but stop early if time runs out.
+        # With only movetime (match runner style), iterate up to the default depth
+        # and return the last completed iteration when time runs out.
         return self._run_search(depth=depth, movetime_ms=movetime_ms)
 
     def _run_search(self, *, depth: int, movetime_ms: int | None) -> list[str]:
-        result = search(self.board, depth=depth, movetime_ms=movetime_ms)
+        result = search(self.board, depth=depth, movetime_ms=movetime_ms, rng=self.rng)
         lines: list[str] = []
         if result.mate is not None:
             score_part = f"score mate {result.mate}"
