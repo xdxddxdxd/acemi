@@ -22,6 +22,15 @@
 - Unit testler: eval, arama (asılı vezir, mat-1, pat), UCI cevapları.
 - PST, quiescence, iterative deepening, TT yok (sonraki aşamalar).
 
+## 0.4.1 — Aşama 4 iyileştirmesi
+
+0.4.0 kayıtlarında rastgele rakibe karşı hamlelerin %50'si derinlik 0 çıktı (200 ms'de 1. iterasyon bitmiyor, kod listedeki ilk hamleyi oynuyordu).
+
+- 1. iterasyon süre bütçesinin 2 katına kadar uzayabilir (`FIRST_ITERATION_LIMIT`), sonraki iterasyonlar normal bütçede durur.
+- 1. iterasyon o limitte de kesilirse, o ana kadar bulunan en iyi kök hamle kullanılır (hâlâ derinlik 0 olarak raporlanır, çünkü tamamlanan iterasyon yok).
+- Yeni test: süre 0 iken yasal hamle ve en fazla derinlik 1.
+- Notebook: 0.4.0'a (commit c62fc27) karşı SPRT (200 ms/hamle) ve Stockfish UCI_Elo 1320'ye karşı ilk Elo ölçümü.
+
 ## 0.4.0 — Aşama 4 (temel güç)
 
 - `engine/eval/classic.py`: materyal + piece-square tabloları (Simplified Evaluation Function), açılış/oyun sonu harmanlı (taper). Piyon ve şahın ayrı oyun sonu tablosu var; oyun sonunda şah merkeze çekilir, rakip şah kenara itilir (kazanılmış oyun sonlarını bitirmek için).

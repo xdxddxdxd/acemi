@@ -2,8 +2,10 @@
 
 Features:
 - Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
-  returns the last *fully completed* iteration, never a half-searched one, and
-  does not start an iteration it is unlikely to finish.
+  returns the last *fully completed* iteration, and does not start an iteration
+  it is unlikely to finish. The first iteration may overrun the budget (up to
+  ``FIRST_ITERATION_LIMIT`` times) so a searched move always exists; if even
+  that is cut off, the best root move found so far is returned (depth 0).
 - Quiescence search at the horizon (captures, en passant, queen promotions; all
   evasions when in check) so leaves are not scored in the middle of an exchange.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
@@ -38,6 +40,10 @@ TIME_CHECK_NODES = 256
 # A new iteration usually costs several times the previous one. If less than
 # this multiple of the last iteration's time remains, do not start another.
 NEXT_ITERATION_FACTOR = 3.0
+# The first iteration may run this many times over the time budget, so a really
+# searched move exists instead of an arbitrary first move. Later iterations stop
+# at the normal budget.
+FIRST_ITERATION_LIMIT = 2.0
 
 
 @dataclass(slots=True)
@@ -60,6 +66,8 @@ class Searcher:
     def __init__(self) -> None:
         self.nodes = 0
         self._stop_deadline: float | None = None
+        self._soft_deadline: float | None = None
+        self._partial: tuple[Move, int] | None = None
 
     def search(
         self,
@@ -81,7 +89,11 @@ class Searcher:
 
         self.nodes = 0
         started = time.monotonic()
-        self._stop_deadline = started + movetime_ms / 1000.0 if movetime_ms is not None else None
+        self._soft_deadline = started + movetime_ms / 1000.0 if movetime_ms is not None else None
+        self._stop_deadline = (
+            started + movetime_ms * FIRST_ITERATION_LIMIT / 1000.0 if movetime_ms is not None else None
+        )
+        self._partial = None
 
         moves = list(generate_legal_moves(board))
         if not moves:
@@ -102,8 +114,13 @@ class Searcher:
             try:
                 move, score = self._search_root(board, moves, iteration, rng)
             except _SearchStopped:
+                if iteration == 1 and self._partial is not None:
+                    # Depth 1 did not finish: use the best root move found so far
+                    # (still reported as depth 0, because no iteration completed).
+                    best_move, best_score = self._partial
                 break
             best_move, best_score, completed_depth = move, score, iteration
+            self._stop_deadline = self._soft_deadline  # Normal budget from now on.
             # Search the previous best move first next time: better pruning.
             moves.remove(move)
             moves.insert(0, move)
@@ -128,6 +145,7 @@ class Searcher:
         """
         best_score = -MATE_SCORE - 1
         candidates: list[Move] = []
+        self._partial = None
         for move in moves:
             board.make_move(move)
             try:
@@ -137,6 +155,7 @@ class Searcher:
             if score > best_score:
                 best_score = score
                 candidates = [move]
+                self._partial = (move, score)
             elif score == best_score:
                 candidates.append(move)
         chosen = candidates[0] if rng is None or len(candidates) == 1 else rng.choice(candidates)

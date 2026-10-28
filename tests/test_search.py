@@ -93,6 +93,16 @@ class SearchTests(unittest.TestCase):
         self.assertIn(result.best_move.uci(), legal)
         self.assertLess(result.depth, 6)
 
+    def test_zero_time_still_returns_a_legal_move_without_deep_search(self) -> None:
+        # Time checks run every 256 nodes, so a trivial first iteration may still
+        # finish; what matters is a legal move and no further iterations.
+        result = search(Board(), depth=6, movetime_ms=0)
+        self.assertIsNotNone(result.best_move)
+        assert result.best_move is not None
+        legal = {m.uci() for m in generate_legal_moves(Board())}
+        self.assertIn(result.best_move.uci(), legal)
+        self.assertLessEqual(result.depth, 1)
+
     def test_ties_are_broken_by_seeded_rng(self) -> None:
         # A constant evaluation makes every quiet root move tie exactly.
         with patch("engine.search.evaluate", return_value=0):
