@@ -22,6 +22,17 @@
 - Unit testler: eval, arama (asılı vezir, mat-1, pat), UCI cevapları.
 - PST, quiescence, iterative deepening, TT yok (sonraki aşamalar).
 
+## 0.4.0 — Aşama 4 (temel güç)
+
+- `engine/eval/classic.py`: materyal + piece-square tabloları (Simplified Evaluation Function), açılış/oyun sonu harmanlı (taper). Piyon ve şahın ayrı oyun sonu tablosu var; oyun sonunda şah merkeze çekilir, rakip şah kenara itilir (kazanılmış oyun sonlarını bitirmek için).
+- `engine/search.py`: quiescence (yakalamalar, en passant, vezir terfisi; şahtayken tüm kaçışlar), yaprakta tam hamle listesi üretilmiyor, iterasyon süresi tahmini (bitmeyecek iterasyon başlatılmıyor). Zaman limitli aramada derinlik üst sınırı 64, süre belirler.
+- `engine/uci.py`: `wtime`/`btime`/`winc`/`binc`/`movestogo` ile hamle süresi (`time_budget_ms`: kalan/30 + artışın %75'i, en fazla kalanın yarısı, 30 ms pay).
+- Hız: `engine/movegen.py` artık 128 kareyi taramak yerine taş listesinden üretiyor (sıralı, make/unmake geçmişinden bağımsız) ve `captures_only` seçeneği var. `Board.is_insufficient_material` piyon/kale/vezir varsa hemen çıkıyor. Perft sayıları değişmemeli (testler Kaggle'da doğrulayacak).
+- Hakem/kayıt değişmedi (şema v1).
+- Notebook: rastgele rakibe 20 maçlık duman testi + önceki sürüme (0.3.1, commit f2d8798) karşı SPRT (elo0=0, elo1=10, en fazla 200 maç, 500 ms/hamle).
+- Yeni testler `tests/test_stage4.py`; `test_search.py` PST eval'e uyarlandı. Yazan tarafta ÇALIŞTIRILMADI.
+- Hâlâ yok: hamle sıralama (MVV-LVA) ve transposition table (Aşama 5).
+
 ## 0.3.1 — Aşama 3 düzeltmeleri
 
 Aşama 3'ün 100 maçlık rastgele-rakip koşusu (16/79/5, %55,5) geçiş kriterini (100/100) sağlamadı. Verideki iki hata düzeltildi:

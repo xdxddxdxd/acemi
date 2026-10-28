@@ -1,20 +1,19 @@
-"""Negamax search with alpha-beta pruning (Stage 3).
+"""Negamax search with alpha-beta pruning, quiescence and time control (Stage 4).
 
-Scope for this stage:
-- Material evaluation only (via ``engine.eval``)
-- Root iterative deepening up to ``depth``; with ``movetime_ms`` the search
-  returns the last *fully completed* iteration, never a half-searched one
-- Equal-scoring root moves are chosen between with a seeded RNG (otherwise the
-  first generated move would always win ties and the engine would shuffle)
-- Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``
-- No quiescence, transposition table, or move ordering (later stages)
+Features:
+- Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
+  returns the last *fully completed* iteration, never a half-searched one, and
+  does not start an iteration it is unlikely to finish.
+- Quiescence search at the horizon (captures, en passant, queen promotions; all
+  evasions when in check) so leaves are not scored in the middle of an exchange.
+- Equal-scoring root moves are chosen between with a seeded RNG, so the engine
+  does not shuffle and the same seed reproduces the same game.
+- Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
+- No transposition table or move ordering yet (later stages).
 
-``SearchResult.depth`` is the depth of the last completed iteration, so it is
-an honest measurement: 0 means not even depth 1 finished (a legal move is still
+``SearchResult.depth`` is the depth of the last completed iteration, so it is an
+honest measurement: 0 means not even depth 1 finished (a legal move is still
 returned).
-
-The public ``search`` entry point and the ``SearchResult`` shape are kept stable
-for the UCI layer.
 """
 
 from __future__ import annotations
@@ -30,9 +29,15 @@ from engine.movegen import generate_legal_moves
 MATE_SCORE = 100_000
 DRAW_SCORE = 0
 DEFAULT_DEPTH = 3
+MAX_DEPTH = 64
+# Safety net for quiescence recursion (plies from the root).
+MAX_PLY = 128
 # Soft time checks every this many nodes so movetime stays responsive without
 # paying a clock call on every node.
 TIME_CHECK_NODES = 256
+# A new iteration usually costs several times the previous one. If less than
+# this multiple of the last iteration's time remains, do not start another.
+NEXT_ITERATION_FACTOR = 3.0
 
 
 @dataclass(slots=True)
@@ -93,8 +98,7 @@ class Searcher:
         completed_depth = 0
 
         for iteration in range(1, depth + 1):
-            if iteration > 1 and self._deadline_passed():
-                break
+            iteration_started = time.monotonic()
             try:
                 move, score = self._search_root(board, moves, iteration, rng)
             except _SearchStopped:
@@ -105,6 +109,11 @@ class Searcher:
             moves.insert(0, move)
             if abs(score) >= MATE_SCORE - 1000:
                 break  # A forced mate is found; deeper search cannot improve on it.
+            if self._stop_deadline is not None:
+                remaining = self._stop_deadline - time.monotonic()
+                last_iteration = time.monotonic() - iteration_started
+                if remaining <= 0 or remaining < last_iteration * NEXT_ITERATION_FACTOR:
+                    break
 
         return self._result(best_move, best_score, completed_depth, started)
 
@@ -133,9 +142,6 @@ class Searcher:
         chosen = candidates[0] if rng is None or len(candidates) == 1 else rng.choice(candidates)
         return chosen, best_score
 
-    def _deadline_passed(self) -> bool:
-        return self._stop_deadline is not None and time.monotonic() >= self._stop_deadline
-
     def _result(self, move: Move | None, score: int, depth: int, started: float) -> SearchResult:
         return SearchResult(
             best_move=move,
@@ -146,12 +152,21 @@ class Searcher:
             mate=_mate_distance(score),
         )
 
-    def _negamax(self, board: Board, depth: int, alpha: int, beta: int, ply: int) -> int:
+    def _count_node(self) -> None:
+        """Count a node and enforce the soft time limit."""
         self.nodes += 1
-        if self._stop_deadline is not None and self.nodes % TIME_CHECK_NODES == 0:
-            if time.monotonic() >= self._stop_deadline:
-                raise _SearchStopped
+        if (
+            self._stop_deadline is not None
+            and self.nodes % TIME_CHECK_NODES == 0
+            and time.monotonic() >= self._stop_deadline
+        ):
+            raise _SearchStopped
 
+    def _negamax(self, board: Board, depth: int, alpha: int, beta: int, ply: int) -> int:
+        if depth <= 0:
+            return self._quiesce(board, alpha, beta, ply)
+
+        self._count_node()
         if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
             return DRAW_SCORE
 
@@ -159,14 +174,52 @@ class Searcher:
         if not moves:
             return self._terminal_score(board, ply)
 
-        if depth == 0:
-            return evaluate(board)
-
         best = -MATE_SCORE
         for move in moves:
             board.make_move(move)
             try:
                 score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+            finally:
+                board.unmake_move()
+            if score > best:
+                best = score
+            if score > alpha:
+                alpha = score
+            if alpha >= beta:
+                break
+        return best
+
+    def _quiesce(self, board: Board, alpha: int, beta: int, ply: int) -> int:
+        """Resolve captures until the position is quiet, then evaluate.
+
+        Not in check: the side to move may "stand pat" (keep the static score),
+        so only captures that improve on it are searched. In check: standing pat
+        is illegal, so every legal evasion is searched and no evasions means mate.
+        Stalemate is not detected here (stand-pat is used), a standard shortcut.
+        """
+        self._count_node()
+        if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
+            return DRAW_SCORE
+        if ply >= MAX_PLY:
+            return evaluate(board)
+
+        if board.in_check():
+            moves = list(generate_legal_moves(board))
+            if not moves:
+                return -MATE_SCORE + ply
+            best = -MATE_SCORE + ply
+        else:
+            best = evaluate(board)
+            if best >= beta:
+                return best
+            if best > alpha:
+                alpha = best
+            moves = list(generate_legal_moves(board, captures_only=True))
+
+        for move in moves:
+            board.make_move(move)
+            try:
+                score = -self._quiesce(board, -beta, -alpha, ply + 1)
             finally:
                 board.unmake_move()
             if score > best:

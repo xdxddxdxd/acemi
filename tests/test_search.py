@@ -2,6 +2,7 @@
 
 import random
 import unittest
+from unittest.mock import patch
 
 from engine.board import QUEEN, ROOK, Board
 from engine.eval.base import evaluate
@@ -17,12 +18,13 @@ class EvalTests(unittest.TestCase):
     def test_white_up_a_queen_is_positive(self) -> None:
         # Black is missing its queen (rank 8: rnb1kbnr).
         board = Board("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-        self.assertEqual(evaluate(board), PIECE_VALUE[QUEEN])
+        # Material plus a small piece-square term (the missing queen sat on d8).
+        self.assertAlmostEqual(evaluate(board), PIECE_VALUE[QUEEN], delta=30)
 
     def test_side_to_move_perspective(self) -> None:
         # Same imbalance, black to move: black is down a queen -> negative.
         board = Board("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
-        self.assertEqual(evaluate(board), -PIECE_VALUE[QUEEN])
+        self.assertAlmostEqual(evaluate(board), -PIECE_VALUE[QUEEN], delta=30)
 
 
 class SearchTests(unittest.TestCase):
@@ -92,11 +94,12 @@ class SearchTests(unittest.TestCase):
         self.assertLess(result.depth, 6)
 
     def test_ties_are_broken_by_seeded_rng(self) -> None:
-        # Quiet start position: every depth-1 move scores 0, so many tie.
-        chosen = {
-            search(Board(), depth=1, rng=random.Random(seed)).best_move.uci()
-            for seed in range(30)
-        }
+        # A constant evaluation makes every quiet root move tie exactly.
+        with patch("engine.search.evaluate", return_value=0):
+            chosen = {
+                search(Board(), depth=1, rng=random.Random(seed)).best_move.uci()
+                for seed in range(30)
+            }
         self.assertGreater(len(chosen), 1)
 
     def test_same_rng_seed_gives_same_tie_break(self) -> None:

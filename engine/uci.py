@@ -1,8 +1,8 @@
 """UCI protocol front end for Acemi.
 
-Stage 3: ``go`` runs iterative negamax (material eval + alpha-beta); ``info depth`` is the last completed depth. Supported
-limits are ``depth``, ``movetime``, and ``infinite``/``stop``. Clock controls
-(wtime/btime) arrive in Stage 4 with iterative deepening.
+Stage 4: ``go`` runs iterative negamax with quiescence; ``info depth`` is the
+last completed depth. Supported limits: ``depth``, ``movetime``, the clock
+(``wtime``/``btime``/``winc``/``binc``/``movestogo``) and ``infinite``/``stop``.
 """
 
 from __future__ import annotations
@@ -12,15 +12,30 @@ import sys
 from typing import TextIO
 
 from engine import __version__
-from engine.board import STARTING_FEN, Board
+from engine.board import STARTING_FEN, WHITE, Board
 from engine.movegen import find_legal_move
-from engine.search import DEFAULT_DEPTH, search
+from engine.search import DEFAULT_DEPTH, MAX_DEPTH, search
 
 ENGINE_NAME = "Acemi"
 ENGINE_AUTHOR = "xdxddxdxd"
 NO_MOVE = "0000"
 DEFAULT_SEED = 1
 DEFAULT_HASH_MB = 16
+OVERHEAD_MS = 30  # Reserved for process and pipe latency on every move.
+DEFAULT_MOVES_TO_GO = 30
+GO_NUMBER_KEYS = ("depth", "movetime", "nodes", "wtime", "btime", "winc", "binc", "movestogo")
+
+
+def time_budget_ms(remaining_ms: int, increment_ms: int = 0, moves_to_go: int | None = None) -> int:
+    """Milliseconds to spend on one move from the clock.
+
+    An even share of the remaining time plus most of the increment, never more
+    than half of what is left, minus a fixed overhead reserve; at least 1 ms.
+    """
+    moves = moves_to_go if moves_to_go and moves_to_go > 0 else DEFAULT_MOVES_TO_GO
+    budget = remaining_ms // moves + (increment_ms * 3) // 4
+    budget = min(budget, remaining_ms // 2)
+    return max(budget - OVERHEAD_MS, 1)
 
 OPTION_LINES = (
     "option name Hash type spin default 16 min 1 max 4096",
@@ -133,31 +148,39 @@ class UciSession:
             self._pending_infinite = True
             return []
 
-        depth = DEFAULT_DEPTH
-        movetime_ms: int | None = None
+        values: dict[str, int] = {}
         index = 0
         while index < len(args):
             token = args[index]
-            if token == "depth" and index + 1 < len(args):
+            if token in GO_NUMBER_KEYS and index + 1 < len(args):
                 try:
-                    depth = max(0, int(args[index + 1]))
+                    values[token] = int(args[index + 1])
                 except ValueError:
                     pass
-                index += 2
-            elif token == "movetime" and index + 1 < len(args):
-                try:
-                    movetime_ms = max(1, int(args[index + 1]))
-                except ValueError:
-                    pass
-                index += 2
-            elif token == "nodes" and index + 1 < len(args):
-                # Accepted but not enforced in Stage 3; reserved for later.
                 index += 2
             else:
                 index += 1
+        # ``nodes`` is accepted but not enforced yet.
 
-        # With only movetime (match runner style), iterate up to the default depth
-        # and return the last completed iteration when time runs out.
+        movetime_ms: int | None = None
+        if "movetime" in values:
+            movetime_ms = max(1, values["movetime"])
+        else:
+            white = self.board.side_to_move == WHITE
+            clock_key, increment_key = ("wtime", "winc") if white else ("btime", "binc")
+            if clock_key in values:
+                movetime_ms = time_budget_ms(
+                    max(0, values[clock_key]),
+                    max(0, values.get(increment_key, 0)),
+                    values.get("movestogo"),
+                )
+
+        if "depth" in values:
+            depth = max(0, values["depth"])
+        elif movetime_ms is not None:
+            depth = MAX_DEPTH  # Time decides: iterate deeper until the budget is used.
+        else:
+            depth = DEFAULT_DEPTH
         return self._run_search(depth=depth, movetime_ms=movetime_ms)
 
     def _run_search(self, *, depth: int, movetime_ms: int | None) -> list[str]:

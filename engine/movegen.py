@@ -28,19 +28,27 @@ KNIGHT_OFFSETS = (-33, -31, -18, -14, 14, 18, 31, 33)
 KING_OFFSETS = (-17, -16, -15, -1, 1, 15, 16, 17)
 BISHOP_DIRECTIONS = (-17, -15, 15, 17)
 ROOK_DIRECTIONS = (-16, -1, 1, 16)
+ALL_DIRECTIONS = BISHOP_DIRECTIONS + ROOK_DIRECTIONS
+PIECE_ORDER = (PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING)
+
+# Note on ``target & 0x88``: every target is square + a small offset, so it lies
+# in -33..160. In that range a square is off the board exactly when the 0x88 test
+# is non-zero (negative numbers and numbers above 127 always have bit 7 set).
 
 
-def _pawn_moves(board: Board, square: int, color: int) -> Iterator[Move]:
+def _pawn_moves(board: Board, square: int, color: int, captures_only: bool) -> Iterator[Move]:
     direction = -16 if color == WHITE else 16
     start_row = 6 if color == WHITE else 1
     promotion_row = 0 if color == WHITE else 7
     one_step = square + direction
+    # Quiescence-style generation only needs queen promotions.
+    promotions = (QUEEN,) if captures_only else PROMOTION_TYPES
 
     if is_valid_square(one_step) and board.squares[one_step] == EMPTY:
         if one_step >> 4 == promotion_row:
-            for promotion in PROMOTION_TYPES:
+            for promotion in promotions:
                 yield Move(square, one_step, promotion)
-        else:
+        elif not captures_only:
             yield Move(square, one_step)
             two_steps = one_step + direction
             if square >> 4 == start_row and board.squares[two_steps] == EMPTY:
@@ -55,7 +63,7 @@ def _pawn_moves(board: Board, square: int, color: int) -> Iterator[Move]:
             if abs(target_piece) == KING:
                 continue
             if target >> 4 == promotion_row:
-                for promotion in PROMOTION_TYPES:
+                for promotion in promotions:
                     yield Move(square, target, promotion)
             else:
                 yield Move(square, target)
@@ -107,62 +115,66 @@ def _castling_moves(board: Board, color: int, king_square: int) -> Iterator[Move
             yield Move(king_square, destination)
 
 
-def generate_pseudo_legal_moves(board: Board) -> Iterator[Move]:
-    """Yield moves that follow piece movement rules but may leave the king checked."""
-    color = board.side_to_move
-    for square in range(128):
-        if square & 0x88:
-            continue
-        piece = board.squares[square]
-        if piece == EMPTY or (WHITE if piece > 0 else BLACK) != color:
-            continue
-        piece_type = abs(piece)
+def generate_pseudo_legal_moves(board: Board, captures_only: bool = False) -> Iterator[Move]:
+    """Yield moves that follow piece movement rules but may leave the king checked.
 
+    With ``captures_only`` only captures, en passant and queen promotions are
+    produced (no quiet moves, no castling); this is what quiescence search uses.
+    """
+    color = board.side_to_move
+    squares = board.squares
+    piece_squares = board.piece_squares
+    # Snapshot the piece list first: callers make/unmake moves between yields,
+    # which mutates the sets. Sorting keeps the move order independent of the
+    # make/unmake history.
+    own_pieces = [
+        (piece_type, square)
+        for piece_type in PIECE_ORDER
+        for square in sorted(piece_squares[color * piece_type])
+    ]
+
+    for piece_type, square in own_pieces:
         if piece_type == PAWN:
-            yield from _pawn_moves(board, square, color)
-        elif piece_type == KNIGHT:
-            for delta in KNIGHT_OFFSETS:
+            yield from _pawn_moves(board, square, color, captures_only)
+        elif piece_type == KNIGHT or piece_type == KING:
+            offsets = KNIGHT_OFFSETS if piece_type == KNIGHT else KING_OFFSETS
+            for delta in offsets:
                 target = square + delta
-                if not is_valid_square(target):
+                if target & 0x88:
                     continue
-                target_piece = board.squares[target]
-                if target_piece == EMPTY or (WHITE if target_piece > 0 else BLACK) == -color:
-                    if abs(target_piece) != KING:
+                target_piece = squares[target]
+                if target_piece == EMPTY:
+                    if not captures_only:
                         yield Move(square, target)
-        elif piece_type in (BISHOP, ROOK, QUEEN):
-            directions = (
-                BISHOP_DIRECTIONS if piece_type == BISHOP
-                else ROOK_DIRECTIONS if piece_type == ROOK
-                else BISHOP_DIRECTIONS + ROOK_DIRECTIONS
-            )
+                elif target_piece * color < 0 and abs(target_piece) != KING:
+                    yield Move(square, target)
+            if piece_type == KING and not captures_only:
+                yield from _castling_moves(board, color, square)
+        else:
+            if piece_type == BISHOP:
+                directions = BISHOP_DIRECTIONS
+            elif piece_type == ROOK:
+                directions = ROOK_DIRECTIONS
+            else:
+                directions = ALL_DIRECTIONS
             for delta in directions:
                 target = square + delta
-                while is_valid_square(target):
-                    target_piece = board.squares[target]
+                while not target & 0x88:
+                    target_piece = squares[target]
                     if target_piece == EMPTY:
-                        yield Move(square, target)
+                        if not captures_only:
+                            yield Move(square, target)
                     else:
-                        if (WHITE if target_piece > 0 else BLACK) == -color and abs(target_piece) != KING:
+                        if target_piece * color < 0 and abs(target_piece) != KING:
                             yield Move(square, target)
                         break
                     target += delta
-        elif piece_type == KING:
-            for delta in KING_OFFSETS:
-                target = square + delta
-                if not is_valid_square(target):
-                    continue
-                target_piece = board.squares[target]
-                if target_piece == EMPTY or (
-                    (WHITE if target_piece > 0 else BLACK) == -color and abs(target_piece) != KING
-                ):
-                    yield Move(square, target)
-            yield from _castling_moves(board, color, square)
 
 
-def generate_legal_moves(board: Board) -> Iterator[Move]:
+def generate_legal_moves(board: Board, captures_only: bool = False) -> Iterator[Move]:
     """Yield moves that do not leave the moving side's king in check."""
     moving_color = board.side_to_move
-    for move in generate_pseudo_legal_moves(board):
+    for move in generate_pseudo_legal_moves(board, captures_only):
         board.make_move(move)
         legal = not board.is_square_attacked(board.king_squares[moving_color], -moving_color)
         board.unmake_move()

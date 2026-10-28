@@ -483,6 +483,18 @@ class Board:
         return self.halfmove_clock >= 100
 
     def is_insufficient_material(self) -> bool:
+        piece_squares = self.piece_squares
+        # Fast exit (this runs at every search node): any pawn, rook or queen
+        # means mating material exists.
+        if (
+            piece_squares[PAWN]
+            or piece_squares[-PAWN]
+            or piece_squares[ROOK]
+            or piece_squares[-ROOK]
+            or piece_squares[QUEEN]
+            or piece_squares[-QUEEN]
+        ):
+            return False
         non_king_pieces = [
             (piece, square)
             for piece, squares in self.piece_squares.items()
