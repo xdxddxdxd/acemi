@@ -63,9 +63,10 @@ class TtScoreTests(unittest.TestCase):
             self.assertEqual(from_tt_score(to_tt_score(score, 3), 3), score)
 
     def test_mate_is_stored_relative_to_node(self) -> None:
-        # Mate in 2 plies from a node at ply 4 is mate in 6 from the root.
-        node_score = MATE_SCORE - 2
-        stored = to_tt_score(node_score, 4)
+        # A node at ply 4 sees mate 2 plies later (mate at ply 6: score MATE - 6).
+        stored = to_tt_score(MATE_SCORE - 6, 4)
+        self.assertEqual(stored, MATE_SCORE - 2)  # distance from the node itself
+        # Probed from a node at ply 6, the same mate is 2 plies later: ply 8.
         self.assertEqual(from_tt_score(stored, 6), MATE_SCORE - 8)
 
 
