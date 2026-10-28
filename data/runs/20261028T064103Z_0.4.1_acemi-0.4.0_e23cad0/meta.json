@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_name": "20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0",
+  "is_demo": false,
+  "date": "20261028T064103Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.4.1",
+  "git_commit": "e23cad03e2f9256449fc4d2c00dc1c6b24c0b5fa",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 200,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.4.0",
+    "uci_elo": null
+  },
+  "opening_set": "builtin-mini-8",
+  "match_settings": {
+    "games_requested": 300,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-28T06:41:03.827000Z",
+  "finished_at": "2026-10-28T06:46:54.444259Z"
+}
