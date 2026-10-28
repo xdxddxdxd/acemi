@@ -17,7 +17,7 @@ from typing import TextIO
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
 from engine.movegen import find_legal_move
-from engine.search import DEFAULT_DEPTH, MAX_DEPTH, SearchResult, search
+from engine.search import DEFAULT_DEPTH, MAX_DEPTH, Searcher, SearchResult
 
 ENGINE_NAME = "Acemi"
 ENGINE_AUTHOR = "xdxddxdxd"
@@ -54,7 +54,8 @@ class UciSession:
         self.board = Board(STARTING_FEN)
         self.seed = DEFAULT_SEED
         self.rng = random.Random(self.seed)  # Breaks ties between equal root moves.
-        self.hash_mb = DEFAULT_HASH_MB  # Accepted for GUI compatibility; no TT yet.
+        self.hash_mb = DEFAULT_HASH_MB
+        self.searcher = Searcher(self.hash_mb)  # Keeps its transposition table between moves.
         self.threads = 1
         self.quit_requested = False
         self._infinite_thread: Thread | None = None
@@ -80,6 +81,7 @@ class UciSession:
             self._cancel_infinite()
             self.board = Board(STARTING_FEN)
             self.rng = random.Random(self.seed)  # Same seed -> same game, every game.
+            self.searcher.clear_tt()
             return []
         if command == "setoption":
             self._cancel_infinite()
@@ -116,6 +118,7 @@ class UciSession:
                 return [f"info string Option {name} needs an integer value"]
             if name == "hash":
                 self.hash_mb = number
+                self.searcher.resize_tt(number)
             elif name == "threads":
                 self.threads = number
             else:
@@ -204,7 +207,7 @@ class UciSession:
         self._infinite_thread.start()
 
     def _search_infinite(self, stop_event: Event) -> None:
-        self._infinite_result = search(
+        self._infinite_result = self.searcher.search(
             self.board,
             depth=MAX_DEPTH,
             stop_event=stop_event,
@@ -234,7 +237,7 @@ class UciSession:
         movetime_ms: int | None,
         nodes_limit: int | None = None,
     ) -> list[str]:
-        result = search(
+        result = self.searcher.search(
             self.board,
             depth=depth,
             movetime_ms=movetime_ms,

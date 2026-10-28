@@ -1,16 +1,25 @@
-"""Negamax search with alpha-beta pruning, quiescence and time control (Stage 4).
+"""Negamax search with alpha-beta pruning, quiescence, move ordering and a
+transposition table (Stage 5).
 
 Features:
 - Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
   returns the last *fully completed* iteration, and does not start an iteration
   it is unlikely to finish. If the first iteration is interrupted, the best
   root move found so far is returned with depth 0 and no fabricated eval.
+- Move ordering: transposition-table move first, then captures by MVV-LVA (most
+  valuable victim, least valuable attacker), then promotions, then quiet moves
+  by piece-square gain. Good ordering is what makes alpha-beta cut early, and it
+  also makes an interrupted first iteration return a sensible move.
+- Transposition table (Python dict keyed by the Zobrist hash) with exact, lower
+  and upper bounds, depth-preferred replacement and mate-distance correction.
+  The table survives between searches of one game (a persistent ``Searcher``);
+  its size follows the UCI ``Hash`` option.
 - Quiescence search at the horizon (captures, en passant, queen promotions; all
   evasions when in check) so leaves are not scored in the middle of an exchange.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
   does not shuffle and the same seed reproduces the same game.
 - Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
-- No transposition table or move ordering yet (later stages).
+- No null move, LMR, killer or history heuristics yet (Stage 6).
 
 ``SearchResult.depth`` is the depth of the last completed iteration, so it is an
 honest measurement: 0 means not even depth 1 finished (a legal move is still
@@ -24,8 +33,9 @@ import time
 from dataclasses import dataclass
 from threading import Event
 
-from engine.board import Board, Move
+from engine.board import PAWN, Board, Move
 from engine.eval.base import evaluate
+from engine.eval.classic import pst_delta
 from engine.movegen import generate_legal_moves
 
 MATE_SCORE = 100_000
@@ -40,6 +50,16 @@ TIME_CHECK_NODES = 64
 # A new iteration usually costs several times the previous one. If less than
 # this multiple of the last iteration's time remains, do not start another.
 NEXT_ITERATION_FACTOR = 3.0
+
+# Transposition table.
+DEFAULT_HASH_MB = 16
+# Rough capacity per megabyte of the UCI Hash option (Python tuples and a dict
+# are far bigger than a C table entry, so this is an approximation).
+TT_ENTRIES_PER_MB = 5000
+TT_EXACT = 0
+TT_LOWER = 1  # The true score is at least the stored score (a beta cutoff).
+TT_UPPER = 2  # The true score is at most the stored score (all moves failed low).
+MATE_BOUND = MATE_SCORE - 1000
 
 
 @dataclass(slots=True)
@@ -56,15 +76,115 @@ class _SearchStopped(Exception):
     """Raised internally when a soft time limit is hit."""
 
 
-class Searcher:
-    """Stateful searcher so node counts and stop flags stay on one object."""
+# -- move ordering ----------------------------------------------------------
 
-    def __init__(self) -> None:
+
+def _move_score(board: Board, move: Move) -> int:
+    """Ordering score: captures (MVV-LVA) > promotions > quiet moves by PST gain."""
+    squares = board.squares
+    moving_piece = squares[move.from_square]
+    attacker = abs(moving_piece)
+    victim_piece = squares[move.to_square]
+    if victim_piece:
+        victim = abs(victim_piece)
+    elif (
+        attacker == PAWN
+        and move.to_square == board.en_passant_square
+        and (move.from_square & 7) != (move.to_square & 7)
+    ):
+        victim = PAWN
+    else:
+        victim = 0
+
+    if victim:
+        score = 1000 + 10 * victim - attacker
+    else:
+        # Quiet move: small piece-square gain, always below every capture.
+        score = pst_delta(moving_piece, move.from_square, move.to_square) // 10
+    if move.promotion is not None:
+        score += 600 + move.promotion
+    return score
+
+
+def order_moves(board: Board, moves: list[Move], first: Move | None = None) -> None:
+    """Sort ``moves`` in place, best first; ``first`` (e.g. the TT move) goes to the front.
+
+    The sort is stable, so equal scores keep the generator's order and the
+    result is deterministic.
+    """
+    moves.sort(key=lambda move: _move_score(board, move), reverse=True)
+    if first is not None and moves and moves[0] != first:
+        try:
+            index = moves.index(first)
+        except ValueError:
+            return  # Stale or colliding table entry: ignore it.
+        moves.insert(0, moves.pop(index))
+
+
+# -- transposition table helpers ---------------------------------------------
+
+
+def to_tt_score(score: int, ply: int) -> int:
+    """Make a mate score independent of the root distance before storing it."""
+    if score >= MATE_BOUND:
+        return score + ply
+    if score <= -MATE_BOUND:
+        return score - ply
+    return score
+
+
+def from_tt_score(score: int, ply: int) -> int:
+    """Inverse of ``to_tt_score`` for the node being probed."""
+    if score >= MATE_BOUND:
+        return score - ply
+    if score <= -MATE_BOUND:
+        return score + ply
+    return score
+
+
+class Searcher:
+    """Stateful searcher: node counts, stop flags and the transposition table."""
+
+    def __init__(self, hash_mb: int = DEFAULT_HASH_MB) -> None:
         self.nodes = 0
         self._deadline: float | None = None
         self._nodes_limit: int | None = None
         self._stop_event: Event | None = None
         self._partial: tuple[Move, int] | None = None
+        self._tt: dict[int, tuple[int, int, int, Move | None]] = {}
+        self._tt_max = 0
+        self.resize_tt(hash_mb)
+
+    # -- table management ---------------------------------------------------
+
+    def resize_tt(self, hash_mb: int) -> None:
+        """Set the table capacity from a size in megabytes (0 disables it) and clear it."""
+        self._tt_max = max(0, hash_mb) * TT_ENTRIES_PER_MB
+        self._tt.clear()
+
+    def clear_tt(self) -> None:
+        self._tt.clear()
+
+    @property
+    def tt_size(self) -> int:
+        return len(self._tt)
+
+    @property
+    def tt_capacity(self) -> int:
+        return self._tt_max
+
+    def _store(self, key: int, depth: int, flag: int, score: int, move: Move | None) -> None:
+        if self._tt_max <= 0:
+            return
+        old = self._tt.get(key)
+        if old is not None:
+            if old[0] > depth:
+                return  # Keep the deeper result for this position.
+        elif len(self._tt) >= self._tt_max:
+            self._tt.clear()  # Full: start over (simple and cheap).
+        self._tt[key] = (depth, flag, score, move)
+
+    # -- search -------------------------------------------------------------
 
     def search(
         self,
@@ -100,11 +220,15 @@ class Searcher:
             score = self._terminal_score(board, ply=0)
             return self._result(None, score, 0, started)
 
+        root_entry = self._tt.get(board.zobrist_hash)
+        order_moves(board, moves, None if root_entry is None else root_entry[3])
+
         if depth == 0:
             self.nodes = 1
             return self._result(moves[0], evaluate(board), 0, started)
 
-        # Fallback if not even depth 1 completes: a legal move, no score claim.
+        # Fallback if not even depth 1 completes: the best-ordered legal move,
+        # no score claim.
         best_move: Move = moves[0]
         best_score: int | None = None
         completed_depth = 0
@@ -120,6 +244,7 @@ class Searcher:
                     best_move, best_score = self._partial
                 break
             best_move, best_score, completed_depth = move, score, iteration
+            self._store(board.zobrist_hash, iteration, TT_EXACT, to_tt_score(score, 0), move)
             # Search the previous best move first next time: better pruning.
             moves.remove(move)
             moves.insert(0, move)
@@ -193,12 +318,29 @@ class Searcher:
         if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
             return DRAW_SCORE
 
+        key = board.zobrist_hash
+        tt_move: Move | None = None
+        entry = self._tt.get(key)
+        if entry is not None:
+            entry_depth, flag, entry_score, tt_move = entry
+            if entry_depth >= depth:
+                score = from_tt_score(entry_score, ply)
+                if (
+                    flag == TT_EXACT
+                    or (flag == TT_LOWER and score >= beta)
+                    or (flag == TT_UPPER and score <= alpha)
+                ):
+                    return score
+
         moves = list(generate_legal_moves(board))
         self._check_stopped()
         if not moves:
             return self._terminal_score(board, ply)
+        order_moves(board, moves, tt_move)
 
+        original_alpha = alpha
         best = -MATE_SCORE
+        best_move: Move | None = None
         for move in moves:
             board.make_move(move)
             try:
@@ -207,19 +349,29 @@ class Searcher:
                 board.unmake_move()
             if score > best:
                 best = score
+                best_move = move
             if score > alpha:
                 alpha = score
             if alpha >= beta:
                 break
+
+        if best <= original_alpha:
+            flag = TT_UPPER
+        elif best >= beta:
+            flag = TT_LOWER
+        else:
+            flag = TT_EXACT
+        self._store(key, depth, flag, to_tt_score(best, ply), best_move)
         return best
 
     def _quiesce(self, board: Board, alpha: int, beta: int, ply: int) -> int:
         """Resolve captures until the position is quiet, then evaluate.
 
         Not in check: the side to move may "stand pat" (keep the static score),
-        so only captures that improve on it are searched. In check: standing pat
-        is illegal, so every legal evasion is searched and no evasions means mate.
-        Stalemate is not detected here (stand-pat is used), a standard shortcut.
+        so only captures that improve on it are searched, best captures first.
+        In check: standing pat is illegal, so every legal evasion is searched and
+        no evasions means mate. Stalemate is not detected here (stand-pat is
+        used), a standard shortcut.
         """
         self._count_node()
         if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
@@ -241,6 +393,7 @@ class Searcher:
             moves = list(generate_legal_moves(board, captures_only=True))
 
         self._check_stopped()
+        order_moves(board, moves)
         for move in moves:
             board.make_move(move)
             try:
@@ -281,7 +434,7 @@ def search(
     stop_event: Event | None = None,
     rng: random.Random | None = None,
 ) -> SearchResult:
-    """Convenience wrapper around ``Searcher.search``."""
+    """Convenience wrapper: one-off search with a fresh (empty) transposition table."""
     return Searcher().search(
         board,
         depth=depth,

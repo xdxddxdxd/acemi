@@ -166,6 +166,15 @@ _MG_VALUES = _build_square_values(_MG_TABLE)
 _EG_VALUES = _build_square_values(_EG_TABLE)
 
 
+def pst_delta(piece: int, from_square: int, to_square: int) -> int:
+    """Middlegame piece-square gain of moving ``piece`` (signed) between two squares.
+
+    Used only to order quiet moves; it is cheap and needs no board.
+    """
+    values = _MG_VALUES[piece]
+    return values[to_square] - values[from_square]
+
+
 def evaluate_classic(board: Board) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     mg = 0

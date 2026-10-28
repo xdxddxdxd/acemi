@@ -1,5 +1,15 @@
 # Değişiklik günlüğü
 
+## 0.5.0 — Aşama 5 (hamle sıralama + transposition table)
+
+- `engine/search.py`: hamle sıralama (TT hamlesi, MVV-LVA ile alma hamleleri, terfiler, sakin hamleler için PST kazancı) negamax, quiescence ve kökte kullanılır.
+- Transposition table: Zobrist anahtarlı sözlük; EXACT/LOWER/UPPER sınırları, derinlik öncelikli değiştirme, mat skoru ply düzeltmesi (`to_tt_score`/`from_tt_score`). Kapasite UCI `Hash` değerinden gelir (MB başına ~5000 kayıt); dolunca temizlenir.
+- Arama kesilirse yedek hamle artık sıralamanın en iyisidir (önce alma hamleleri), listenin ilk rastgele hamlesi değil.
+- `engine/uci.py`: kalıcı `Searcher`; TT hamleler arasında korunur, `ucinewgame` ile temizlenir, `setoption Hash` ile yeniden boyutlanır.
+- `engine/eval/classic.py`: `pst_delta` eklendi.
+- `tests/test_stage5.py` eklendi. Kod yazan tarafta test ÇALIŞTIRILMADI; Kaggle doğrulaması bekleniyor.
+- Notebook: 0.5.0, 0.4.2'ye (commit `03adad2`) karşı 500 ms'de SPRT ve Stockfish UCI_Elo 1320 ölçümü.
+
 ## 0.4.2 — UCI ve ölçüm düzeltmeleri
 
 - `engine/uci.py`: `go infinite` artık aramayı ayrı iş parçacığında hemen başlatır; `stop` yeni depth-3 arama açmak yerine çalışan aramayı durdurup sonucunu döndürür. `go nodes` sınırı uygulanır.
