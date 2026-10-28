@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "is_demo": false,
+  "games": 20,
+  "wins": 4,
+  "draws": 2,
+  "losses": 14,
+  "score_pct": 25.0,
+  "elo_diff": -190.8,
+  "elo_confidence_interval": [
+    -440.7,
+    -51.3
+  ],
+  "sprt": {
+    "enabled": false,
+    "elo0": 0.0,
+    "elo1": 10.0,
+    "alpha": 0.05,
+    "beta": 0.05,
+    "max_games": 20,
+    "llr": null,
+    "lower_bound": null,
+    "upper_bound": null,
+    "decision": "not_run"
+  },
+  "by_color": {
+    "white": {
+      "wins": 2,
+      "draws": 1,
+      "losses": 7
+    },
+    "black": {
+      "wins": 2,
+      "draws": 1,
+      "losses": 7
+    }
+  },
+  "tactics": null,
+  "timeouts": 0,
+  "illegal_moves": 0,
+  "engine_crashes": 0,
+  "aborted_games": 0,
+  "board_disagreements": 0,
+  "average_plies": 85.5,
+  "average_depth": 1.7,
+  "nodes_per_second": 5953
+}
