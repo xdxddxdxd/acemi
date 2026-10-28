@@ -112,8 +112,8 @@ class SearchTests(unittest.TestCase):
         self.assertIsNone(result.score)
 
     def test_nodes_limit_is_enforced(self) -> None:
-        result = search(Board(), depth=6, nodes_limit=32)
-        self.assertEqual(result.nodes, 32)
+        result = search(Board(), depth=6, nodes_limit=10)
+        self.assertEqual(result.nodes, 10)
         self.assertEqual(result.depth, 0)
         self.assertIsNotNone(result.best_move)
 
