@@ -3,9 +3,8 @@
 Features:
 - Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
   returns the last *fully completed* iteration, and does not start an iteration
-  it is unlikely to finish. The first iteration may overrun the budget (up to
-  ``FIRST_ITERATION_LIMIT`` times) so a searched move always exists; if even
-  that is cut off, the best root move found so far is returned (depth 0).
+  it is unlikely to finish. If the first iteration is interrupted, the best
+  root move found so far is returned with depth 0 and no fabricated eval.
 - Quiescence search at the horizon (captures, en passant, queen promotions; all
   evasions when in check) so leaves are not scored in the middle of an exchange.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
@@ -23,6 +22,7 @@ from __future__ import annotations
 import random
 import time
 from dataclasses import dataclass
+from threading import Event
 
 from engine.board import Board, Move
 from engine.eval.base import evaluate
@@ -34,22 +34,18 @@ DEFAULT_DEPTH = 3
 MAX_DEPTH = 64
 # Safety net for quiescence recursion (plies from the root).
 MAX_PLY = 128
-# Soft time checks every this many nodes so movetime stays responsive without
-# paying a clock call on every node.
-TIME_CHECK_NODES = 256
+# Time checks are frequent enough to keep movetime and external stop responsive
+# without paying a clock call on every node.
+TIME_CHECK_NODES = 64
 # A new iteration usually costs several times the previous one. If less than
 # this multiple of the last iteration's time remains, do not start another.
 NEXT_ITERATION_FACTOR = 3.0
-# The first iteration may run this many times over the time budget, so a really
-# searched move exists instead of an arbitrary first move. Later iterations stop
-# at the normal budget.
-FIRST_ITERATION_LIMIT = 2.0
 
 
 @dataclass(slots=True)
 class SearchResult:
     best_move: Move | None
-    score: int
+    score: int | None
     depth: int  # last fully completed iteration (0 = none, or no search was needed)
     nodes: int
     time_ms: int
@@ -65,8 +61,9 @@ class Searcher:
 
     def __init__(self) -> None:
         self.nodes = 0
-        self._stop_deadline: float | None = None
-        self._soft_deadline: float | None = None
+        self._deadline: float | None = None
+        self._nodes_limit: int | None = None
+        self._stop_event: Event | None = None
         self._partial: tuple[Move, int] | None = None
 
     def search(
@@ -75,24 +72,27 @@ class Searcher:
         *,
         depth: int = DEFAULT_DEPTH,
         movetime_ms: int | None = None,
+        nodes_limit: int | None = None,
+        stop_event: Event | None = None,
         rng: random.Random | None = None,
     ) -> SearchResult:
         """Search ``board`` and return the best move plus statistics.
 
-        ``depth`` is the maximum iteration depth. If ``movetime_ms`` is set, the
-        search stops at the deadline and returns the last completed iteration.
+        ``depth`` is the maximum iteration depth. Time, node and external stop
+        limits interrupt the current iteration and return the last completed one.
         ``rng`` picks between equally good root moves; without it the first
         such move is used (deterministic, handy for tests).
         """
         if depth < 0:
             raise ValueError("search depth cannot be negative")
+        if nodes_limit is not None and nodes_limit < 0:
+            raise ValueError("nodes limit cannot be negative")
 
         self.nodes = 0
         started = time.monotonic()
-        self._soft_deadline = started + movetime_ms / 1000.0 if movetime_ms is not None else None
-        self._stop_deadline = (
-            started + movetime_ms * FIRST_ITERATION_LIMIT / 1000.0 if movetime_ms is not None else None
-        )
+        self._deadline = started + movetime_ms / 1000.0 if movetime_ms is not None else None
+        self._nodes_limit = nodes_limit
+        self._stop_event = stop_event
         self._partial = None
 
         moves = list(generate_legal_moves(board))
@@ -106,7 +106,7 @@ class Searcher:
 
         # Fallback if not even depth 1 completes: a legal move, no score claim.
         best_move: Move = moves[0]
-        best_score = 0
+        best_score: int | None = None
         completed_depth = 0
 
         for iteration in range(1, depth + 1):
@@ -120,14 +120,13 @@ class Searcher:
                     best_move, best_score = self._partial
                 break
             best_move, best_score, completed_depth = move, score, iteration
-            self._stop_deadline = self._soft_deadline  # Normal budget from now on.
             # Search the previous best move first next time: better pruning.
             moves.remove(move)
             moves.insert(0, move)
             if abs(score) >= MATE_SCORE - 1000:
                 break  # A forced mate is found; deeper search cannot improve on it.
-            if self._stop_deadline is not None:
-                remaining = self._stop_deadline - time.monotonic()
+            if self._deadline is not None:
+                remaining = self._deadline - time.monotonic()
                 last_iteration = time.monotonic() - iteration_started
                 if remaining <= 0 or remaining < last_iteration * NEXT_ITERATION_FACTOR:
                     break
@@ -147,6 +146,7 @@ class Searcher:
         candidates: list[Move] = []
         self._partial = None
         for move in moves:
+            self._check_stopped()
             board.make_move(move)
             try:
                 score = -self._negamax(board, depth - 1, -MATE_SCORE, -(best_score - 1), ply=1)
@@ -161,25 +161,29 @@ class Searcher:
         chosen = candidates[0] if rng is None or len(candidates) == 1 else rng.choice(candidates)
         return chosen, best_score
 
-    def _result(self, move: Move | None, score: int, depth: int, started: float) -> SearchResult:
+    def _result(self, move: Move | None, score: int | None, depth: int, started: float) -> SearchResult:
         return SearchResult(
             best_move=move,
             score=score,
             depth=depth,
             nodes=self.nodes,
             time_ms=int((time.monotonic() - started) * 1000),
-            mate=_mate_distance(score),
+            mate=None if score is None else _mate_distance(score),
         )
 
-    def _count_node(self) -> None:
-        """Count a node and enforce the soft time limit."""
-        self.nodes += 1
-        if (
-            self._stop_deadline is not None
-            and self.nodes % TIME_CHECK_NODES == 0
-            and time.monotonic() >= self._stop_deadline
-        ):
+    def _check_stopped(self) -> None:
+        if self._stop_event is not None and self._stop_event.is_set():
             raise _SearchStopped
+        if self._deadline is not None and time.monotonic() >= self._deadline:
+            raise _SearchStopped
+
+    def _count_node(self) -> None:
+        """Count a node and enforce node, time and external stop limits."""
+        self.nodes += 1
+        if self._nodes_limit is not None and self.nodes >= self._nodes_limit:
+            raise _SearchStopped
+        if self.nodes % TIME_CHECK_NODES == 0:
+            self._check_stopped()
 
     def _negamax(self, board: Board, depth: int, alpha: int, beta: int, ply: int) -> int:
         if depth <= 0:
@@ -190,6 +194,7 @@ class Searcher:
             return DRAW_SCORE
 
         moves = list(generate_legal_moves(board))
+        self._check_stopped()
         if not moves:
             return self._terminal_score(board, ply)
 
@@ -235,6 +240,7 @@ class Searcher:
                 alpha = best
             moves = list(generate_legal_moves(board, captures_only=True))
 
+        self._check_stopped()
         for move in moves:
             board.make_move(move)
             try:
@@ -271,7 +277,16 @@ def search(
     *,
     depth: int = DEFAULT_DEPTH,
     movetime_ms: int | None = None,
+    nodes_limit: int | None = None,
+    stop_event: Event | None = None,
     rng: random.Random | None = None,
 ) -> SearchResult:
     """Convenience wrapper around ``Searcher.search``."""
-    return Searcher().search(board, depth=depth, movetime_ms=movetime_ms, rng=rng)
+    return Searcher().search(
+        board,
+        depth=depth,
+        movetime_ms=movetime_ms,
+        nodes_limit=nodes_limit,
+        stop_event=stop_event,
+        rng=rng,
+    )

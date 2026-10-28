@@ -1,5 +1,14 @@
 # Değişiklik günlüğü
 
+## 0.4.2 — UCI ve ölçüm düzeltmeleri
+
+- `engine/uci.py`: `go infinite` artık aramayı ayrı iş parçacığında hemen başlatır; `stop` yeni depth-3 arama açmak yerine çalışan aramayı durdurup sonucunu döndürür. `go nodes` sınırı uygulanır.
+- `engine/search.py`: ilk iterasyonun 2× süre aşımı kaldırıldı. Süre kontrolü 64 düğümde bir, kök hamlelerde ve hamle listesi sonrasında yapılır; dış `stop_event` ve düğüm sınırı desteklenir.
+- Arama hiçbir skor üretmeden kesilirse `cp 0` yerine skor `None` olur ve UCI skor alanı yayınlamaz; pozisyon veritabanına sahte eval girmez.
+- `tools/match.py`: SPRT ve W/D/L yalnızca iki rengi de tamamlanmış açılış çiftlerini kullanır. Eksik çiftler ham PGN/hamle kaydında kalır, sonuçtan çıkarılır ve sayısı raporlanır.
+- Bağımsız tahta aynası artık yalnızca taş dizilimi/sıra yerine tam FEN'i (rok, en passant ve sayaçlar dahil) karşılaştırır ve incremental Zobrist'i yeniden hesaplayarak doğrular.
+- Notebook: 0.4.2, önceki 0.4.1 sürümüne (commit `4c1ef84`) karşı SPRT ve Stockfish UCI_Elo 1320 ölçümü yapar. Kod yazan tarafta test ÇALIŞTIRILMADI; Kaggle doğrulaması bekleniyor.
+
 ## 0.1.0 — Aşama 0
 
 - Proje dizin yapısı ve veri şeması v1 eklendi.

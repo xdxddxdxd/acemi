@@ -78,9 +78,19 @@ class UciSessionTests(unittest.TestCase):
         session = UciSession()
         session.handle_line("position startpos")
         self.assertEqual(session.handle_line("go infinite"), [])
+        self.assertIsNotNone(session._infinite_thread)
         output = session.handle_line("stop")
         best = _bestmove_line(output)
         self.assertTrue(best.startswith("bestmove "))
+        self.assertIsNone(session._infinite_thread)
+
+    def test_go_nodes_limit(self) -> None:
+        session = UciSession()
+        session.handle_line("position startpos")
+        output = session.handle_line("go nodes 32")
+        info = next(line for line in output if line.startswith("info depth"))
+        self.assertIn(" nodes 32 ", info)
+        self.assertTrue(any(line.startswith("bestmove ") for line in output))
 
     def test_quit_sets_flag(self) -> None:
         session = UciSession()

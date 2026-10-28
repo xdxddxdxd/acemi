@@ -159,9 +159,11 @@ def _mirror_move(
     except ValueError as error:
         log.append(f"Acemi board rejected {move.uci()}: {error}")
         return None, True
-    fields = acemi_board.to_fen().split()
-    turn = "w" if board.turn == chess.WHITE else "b"
-    if fields[0] != board.board_fen() or fields[1] != turn:
+    expected_fen = board.fen(en_passant="fen")
+    if (
+        acemi_board.to_fen() != expected_fen
+        or acemi_board.zobrist_hash != acemi_board.compute_zobrist_hash()
+    ):
         log.append(f"Acemi board disagrees with python-chess after {move.uci()}")
         return None, True
     return acemi_board, False
@@ -309,6 +311,7 @@ def _play_moves(job: dict, engine: UciEngine, opponent: UciEngine, log: list[str
     engine_result = _engine_result(result, engine_is_white)
     return {
         "game_no": job["game_no"] + 1,
+        "pair_no": job["pair_no"],
         "opening_id": job["opening_id"],
         "opening": opening["name"],
         "engine_color": "white" if engine_is_white else "black",
@@ -339,6 +342,7 @@ def play_game(job: dict) -> dict:
         log.append("Internal error:\n" + traceback.format_exc())
         game = {
             "game_no": job["game_no"] + 1,
+            "pair_no": job["pair_no"],
             "opening_id": job["opening_id"],
             "opening": job["opening"]["name"],
             "engine_color": "white" if job["engine_is_white"] else "black",
@@ -360,6 +364,15 @@ def play_game(job: dict) -> dict:
 
 
 # -- run setup and aggregation ----------------------------------------------
+
+
+def _completed_pairs(games: list[dict]) -> list[dict]:
+    """Return only games whose colour-swapped partner also completed normally."""
+    pairs: dict[int, list[dict]] = {}
+    for game in games:
+        if game["engine_result"] != "aborted":
+            pairs.setdefault(game["pair_no"], []).append(game)
+    return [game for pair in pairs.values() if len(pair) == 2 for game in pair]
 
 
 def _split_name_version(raw: str) -> tuple[str, str]:
@@ -501,6 +514,7 @@ def main(argv: list[str] | None = None) -> int:
         opening = openings[opening_id]
         return {
             "game_no": game_no,
+            "pair_no": game_no // 2,
             "opening_id": opening_id,
             "opening": {"name": opening.name, "start_fen": opening.start_fen, "moves": list(opening.moves)},
             "engine_is_white": game_no % 2 == 0,
@@ -554,8 +568,12 @@ def main(argv: list[str] | None = None) -> int:
                     flush=True,
                 )
             if args.sprt and not stop:
+                paired_games = _completed_pairs(games)
+                paired_wins = sum(g["engine_result"] == "win" for g in paired_games)
+                paired_draws = sum(g["engine_result"] == "draw" for g in paired_games)
+                paired_losses = sum(g["engine_result"] == "loss" for g in paired_games)
                 state = sprt_tools.status(
-                    totals["win"], totals["draw"], totals["loss"], args.elo0, args.elo1, args.alpha, args.beta
+                    paired_wins, paired_draws, paired_losses, args.elo0, args.elo1, args.alpha, args.beta
                 )
                 if state.decision != "continue":
                     stop = True
@@ -565,8 +583,12 @@ def main(argv: list[str] | None = None) -> int:
 
     finished = datetime.now(timezone.utc)
     games.sort(key=lambda item: item["game_no"])
-    completed = [g for g in games if g["engine_result"] != "aborted"]
-    wins, draws, losses = totals["win"], totals["draw"], totals["loss"]
+    completed_all = [g for g in games if g["engine_result"] != "aborted"]
+    completed = _completed_pairs(games) if args.sprt else completed_all
+    wins = sum(g["engine_result"] == "win" for g in completed)
+    draws = sum(g["engine_result"] == "draw" for g in completed)
+    losses = sum(g["engine_result"] == "loss" for g in completed)
+    unpaired_games_excluded = len(completed_all) - len(completed)
 
     def color_counts(color: str) -> dict:
         subset = [g for g in completed if g["engine_color"] == color]
@@ -581,7 +603,7 @@ def main(argv: list[str] | None = None) -> int:
             1 for g in games if g["forfeit"] and g["forfeit"]["who"] == "engine" and g["forfeit"]["reason"] == reason
         )
 
-    engine_moves = [m for g in games for m in g["moves"] if m["player"] == "engine"]
+    engine_moves = [m for g in completed for m in g["moves"] if m["player"] == "engine"]
     depths = [m["depth"] for m in engine_moves if m["depth"] is not None]
     timed = [m for m in engine_moves if m["nodes"] is not None and m["time_ms"] > 0]
     nodes_per_second = (
@@ -682,14 +704,15 @@ def main(argv: list[str] | None = None) -> int:
         "timeouts": forfeits("timeout"),
         "illegal_moves": forfeits("illegal_move"),
         "engine_crashes": forfeits("crash"),
-        "aborted_games": len(games) - len(completed),
+        "aborted_games": len(games) - len(completed_all),
+        "unpaired_games_excluded": unpaired_games_excluded,
         "board_disagreements": sum(g["board_disagreements"] for g in games),
         "average_plies": round(sum(g["plies"] for g in completed) / len(completed), 1) if completed else None,
         "average_depth": round(sum(depths) / len(depths), 1) if depths else None,
         "nodes_per_second": nodes_per_second,
     }
 
-    summary_md = summarize.build_summary(meta, results, games)
+    summary_md = summarize.build_summary(meta, results, completed)
     pgn_text = "\n\n".join(g["pgn"].strip() for g in games if g["pgn"]) + "\n"
     all_moves = [m for g in games for m in g["moves"]]
     log_header = [

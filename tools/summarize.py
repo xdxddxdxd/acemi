@@ -102,6 +102,12 @@ def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
         *_opening_lines(games),
         _phase_line(games),
     ]
+    excluded = results.get("unpaired_games_excluded", 0)
+    if excluded:
+        lines.append(
+            f"- Unpaired games excluded from result and SPRT: {excluded} "
+            "(retained in raw PGN/move artifacts)"
+        )
     if opponent.get("uci_elo") is not None:
         lines.append(
             "- Note: the opponent's UCI_Elo is a rough scale and is not directly "

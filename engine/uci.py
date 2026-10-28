@@ -1,20 +1,23 @@
 """UCI protocol front end for Acemi.
 
 Stage 4: ``go`` runs iterative negamax with quiescence; ``info depth`` is the
-last completed depth. Supported limits: ``depth``, ``movetime``, the clock
-(``wtime``/``btime``/``winc``/``binc``/``movestogo``) and ``infinite``/``stop``.
+last completed depth. Supported limits: ``depth``, ``movetime``, ``nodes``,
+the clock (``wtime``/``btime``/``winc``/``binc``/``movestogo``) and
+``infinite``/``stop``. Infinite search runs in a worker thread and ``stop``
+returns its latest result instead of starting a new search.
 """
 
 from __future__ import annotations
 
 import random
 import sys
+from threading import Event, Thread
 from typing import TextIO
 
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
 from engine.movegen import find_legal_move
-from engine.search import DEFAULT_DEPTH, MAX_DEPTH, search
+from engine.search import DEFAULT_DEPTH, MAX_DEPTH, SearchResult, search
 
 ENGINE_NAME = "Acemi"
 ENGINE_AUTHOR = "xdxddxdxd"
@@ -54,7 +57,9 @@ class UciSession:
         self.hash_mb = DEFAULT_HASH_MB  # Accepted for GUI compatibility; no TT yet.
         self.threads = 1
         self.quit_requested = False
-        self._pending_infinite = False
+        self._infinite_thread: Thread | None = None
+        self._infinite_stop: Event | None = None
+        self._infinite_result: SearchResult | None = None
 
     def handle_line(self, line: str) -> list[str]:
         tokens = line.split()
@@ -72,22 +77,23 @@ class UciSession:
         if command == "isready":
             return ["readyok"]
         if command == "ucinewgame":
+            self._cancel_infinite()
             self.board = Board(STARTING_FEN)
             self.rng = random.Random(self.seed)  # Same seed -> same game, every game.
-            self._pending_infinite = False
             return []
         if command == "setoption":
+            self._cancel_infinite()
             return self._set_option(args)
         if command == "position":
+            self._cancel_infinite()
             return self._set_position(args)
         if command == "go":
             return self._go(args)
         if command == "stop":
-            if self._pending_infinite:
-                self._pending_infinite = False
-                return self._run_search(depth=DEFAULT_DEPTH, movetime_ms=None)
-            return []
+            result = self._finish_infinite()
+            return [] if result is None else self._format_result(result)
         if command == "quit":
+            self._cancel_infinite()
             self.quit_requested = True
             return []
         return [f"info string Unknown command: {command}"]
@@ -145,9 +151,10 @@ class UciSession:
 
     def _go(self, args: list[str]) -> list[str]:
         if "infinite" in args:
-            self._pending_infinite = True
+            self._start_infinite()
             return []
 
+        self._cancel_infinite()
         values: dict[str, int] = {}
         index = 0
         while index < len(args):
@@ -160,7 +167,6 @@ class UciSession:
                 index += 2
             else:
                 index += 1
-        # ``nodes`` is accepted but not enforced yet.
 
         movetime_ms: int | None = None
         if "movetime" in values:
@@ -181,23 +187,72 @@ class UciSession:
             depth = MAX_DEPTH  # Time decides: iterate deeper until the budget is used.
         else:
             depth = DEFAULT_DEPTH
-        return self._run_search(depth=depth, movetime_ms=movetime_ms)
+        nodes_limit = max(0, values["nodes"]) if "nodes" in values else None
+        return self._run_search(depth=depth, movetime_ms=movetime_ms, nodes_limit=nodes_limit)
 
-    def _run_search(self, *, depth: int, movetime_ms: int | None) -> list[str]:
-        result = search(self.board, depth=depth, movetime_ms=movetime_ms, rng=self.rng)
-        lines: list[str] = []
-        if result.mate is not None:
-            score_part = f"score mate {result.mate}"
-        else:
-            score_part = f"score cp {result.score}"
-        lines.append(
-            f"info depth {result.depth} {score_part} nodes {result.nodes} time {result.time_ms}"
+    def _start_infinite(self) -> None:
+        self._cancel_infinite()
+        stop_event = Event()
+        self._infinite_stop = stop_event
+        self._infinite_result = None
+        self._infinite_thread = Thread(
+            target=self._search_infinite,
+            args=(stop_event,),
+            name="acemi-search",
+            daemon=True,
         )
-        if result.best_move is None:
-            lines.append(f"bestmove {NO_MOVE}")
-        else:
-            lines.append(f"bestmove {result.best_move.uci()}")
-        return lines
+        self._infinite_thread.start()
+
+    def _search_infinite(self, stop_event: Event) -> None:
+        self._infinite_result = search(
+            self.board,
+            depth=MAX_DEPTH,
+            stop_event=stop_event,
+            rng=self.rng,
+        )
+
+    def _finish_infinite(self) -> SearchResult | None:
+        thread = self._infinite_thread
+        stop_event = self._infinite_stop
+        if thread is None or stop_event is None:
+            return None
+        stop_event.set()
+        thread.join()
+        self._infinite_thread = None
+        self._infinite_stop = None
+        result = self._infinite_result
+        self._infinite_result = None
+        return result
+
+    def _cancel_infinite(self) -> None:
+        self._finish_infinite()
+
+    def _run_search(
+        self,
+        *,
+        depth: int,
+        movetime_ms: int | None,
+        nodes_limit: int | None = None,
+    ) -> list[str]:
+        result = search(
+            self.board,
+            depth=depth,
+            movetime_ms=movetime_ms,
+            nodes_limit=nodes_limit,
+            rng=self.rng,
+        )
+        return self._format_result(result)
+
+    @staticmethod
+    def _format_result(result: SearchResult) -> list[str]:
+        info = f"info depth {result.depth}"
+        if result.mate is not None:
+            info += f" score mate {result.mate}"
+        elif result.score is not None:
+            info += f" score cp {result.score}"
+        info += f" nodes {result.nodes} time {result.time_ms}"
+        best_move = NO_MOVE if result.best_move is None else result.best_move.uci()
+        return [info, f"bestmove {best_move}"]
 
 
 def main(stdin: TextIO | None = None, stdout: TextIO | None = None) -> None:

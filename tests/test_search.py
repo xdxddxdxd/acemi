@@ -2,6 +2,7 @@
 
 import random
 import unittest
+from threading import Event
 from unittest.mock import patch
 
 from engine.board import QUEEN, ROOK, Board
@@ -94,14 +95,27 @@ class SearchTests(unittest.TestCase):
         self.assertLess(result.depth, 6)
 
     def test_zero_time_still_returns_a_legal_move_without_deep_search(self) -> None:
-        # Time checks run every 256 nodes, so a trivial first iteration may still
-        # finish; what matters is a legal move and no further iterations.
+        # A zero-time search returns its legal fallback without starting an iteration.
         result = search(Board(), depth=6, movetime_ms=0)
         self.assertIsNotNone(result.best_move)
         assert result.best_move is not None
         legal = {m.uci() for m in generate_legal_moves(Board())}
         self.assertIn(result.best_move.uci(), legal)
         self.assertLessEqual(result.depth, 1)
+
+    def test_external_stop_before_search_has_no_fabricated_score(self) -> None:
+        stop_event = Event()
+        stop_event.set()
+        result = search(Board(), depth=6, stop_event=stop_event)
+        self.assertIsNotNone(result.best_move)
+        self.assertEqual(result.depth, 0)
+        self.assertIsNone(result.score)
+
+    def test_nodes_limit_is_enforced(self) -> None:
+        result = search(Board(), depth=6, nodes_limit=32)
+        self.assertEqual(result.nodes, 32)
+        self.assertEqual(result.depth, 0)
+        self.assertIsNotNone(result.best_move)
 
     def test_ties_are_broken_by_seeded_rng(self) -> None:
         # A constant evaluation makes every quiet root move tie exactly.

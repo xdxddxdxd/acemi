@@ -38,7 +38,7 @@ Human-readable factual summary of the same run. It must not contain causal analy
 Real runs add fields; absent fields in older demo runs mean not recorded.
 
 - `meta.json`: `engine_name`, `git_dirty`, `match_settings` (`games_requested`, `concurrency`, `max_plies`, `timeout_grace_ms`, `pairing`).
-- `results.json`: `aborted_games`, `board_disagreements`; `sprt` gains `enabled`, `max_games`, `lower_bound`, `upper_bound`. Decisions: `accept_h1`, `accept_h0`, `inconclusive`, `not_run`, `demo_only`.
+- `results.json`: `aborted_games`, `unpaired_games_excluded`, `board_disagreements`; `sprt` gains `enabled`, `max_games`, `lower_bound`, `upper_bound`. Decisions: `accept_h1`, `accept_h0`, `inconclusive`, `not_run`, `demo_only`. With SPRT, W/D/L and Elo use only completed colour-swapped pairs; unpaired games remain in raw artifacts but are excluded from the result.
 - `games` counts completed games only. A game where the opponent crashed, timed out or played illegally is `aborted` and excluded from W/D/L. If Acemi does that, the game is a recorded loss.
 - `moves.jsonl.gz` records add `player` (`engine` or `opponent`), `eval_mate`; `zobrist_hash` is a 16-digit hex string, or null after an Acemi/python-chess board disagreement.
 - Position database: `data/positions/<xx>.jsonl.gz` shards (xx = first two hex digits of the hash), merged across runs; counts are from the side to move's view. Extra fields `eval_samples`. Entries from demo runs live in per-run files and carry `is_demo: true`.

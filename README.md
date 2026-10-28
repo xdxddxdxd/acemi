@@ -4,11 +4,11 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 ## Aşama durumu
 
-**Aşama 4 (0.4.0):** PST'li (taper) eval, quiescence, iterative deepening, saat yönetimi (`wtime`/`btime`/`winc`/`binc`/`movestogo`) ve daha hızlı hamle üretimi. Hamle sıralama ve TT yok (Aşama 5).
+**Aşama 4 (0.4.2):** PST'li (taper) eval, quiescence, iterative deepening, saat yönetimi (`wtime`/`btime`/`winc`/`binc`/`movestogo`) ve daha hızlı hamle üretimi. `go infinite` gerçek arka plan araması ve `stop` ile durma, `go nodes` sınırı, kesinleştirilmiş süre kontrolü ve eşlenmiş açılış çiftleriyle SPRT içerir. Hamle sıralama ve TT yok (Aşama 5).
 
 **Aşama 3 (0.3.0):** materyal eval + negamax/alpha-beta. Varsayılan en fazla derinlik 3 (kökte iterative deepening; süre dolarsa son tamamlanan derinlik döner ve `info depth` o derinliktir). Eşit hamleler `Seed` ile tohumlanan RNG ile seçilir. `go depth` / `go movetime` desteklenir. PST, quiescence ve iterative deepening henüz yok.
 
-Geçiş kriteri (plan): rastgele UCI rakibi 100/100 yenmek. Notebook kısa duman maçı oynatır; tam 100’lük koşu ayrıca çalıştırılabilir.
+Geçiş kriteri (plan): rastgele UCI rakibi 100/100 yenmek. 0.3.1'in kayıtlı 100 maçlık sonucu 91 galibiyet, 9 beraberlik, 0 mağlubiyet (%95,5) olduğundan bu kriter henüz karşılanmamıştır. Notebook kısa duman maçı oynatır; tam 100’lük koşu ayrıca çalıştırılabilir.
 
 ## Dizinler
 
