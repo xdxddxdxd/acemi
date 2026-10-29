@@ -35,6 +35,27 @@ class EloTests(unittest.TestCase):
     def test_perfect_score_has_no_finite_estimate(self) -> None:
         self.assertIsNone(elo.estimate(10, 0, 0).elo)
 
+    def test_wilson_interval_reference_values(self) -> None:
+        low, high = elo.wilson_interval(0.5, 100)
+        self.assertAlmostEqual(low, 0.4038, places=3)
+        self.assertAlmostEqual(high, 0.5962, places=3)
+        low, high = elo.wilson_interval(1.0, 16)
+        self.assertAlmostEqual(low, 0.8061, places=3)
+        self.assertAlmostEqual(high, 1.0, places=9)
+
+    def test_perfect_record_has_a_finite_lower_bound_only(self) -> None:
+        result = elo.estimate(16, 0, 0)
+        self.assertIsNone(result.elo)
+        self.assertIsNone(result.high)
+        self.assertGreater(result.low, 240.0)
+
+    def test_small_sample_interval_is_wider_than_the_normal_approximation(self) -> None:
+        # 4 wins, 2 draws, 14 losses: the normal interval was [-441, -51].
+        result = elo.estimate(4, 2, 14)
+        self.assertLess(result.low, -280.0)
+        self.assertGreater(result.high, -60.0)
+        self.assertLess(result.high, -10.0)
+
 
 class SprtTests(unittest.TestCase):
     def test_log_bounds_for_five_percent_errors(self) -> None:

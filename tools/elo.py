@@ -1,8 +1,13 @@
 """Elo estimates and confidence intervals from win/draw/loss counts.
 
 Uses the logistic Elo model: expected score = 1 / (1 + 10 ** (-elo / 400)).
-The confidence interval is a normal approximation on the per-game score, so it
-is rough for small game counts and undefined at 0% or 100% scores.
+The confidence interval is the Wilson score interval on the score, with every
+game counted as one trial. That is conservative when many games are draws (a draw
+carries less variance than a win or loss), but it stays valid for small samples
+and for scores near 0% or 100% where the plain normal interval collapses. It
+ignores that games come in colour-swapped pairs, so it is not "always
+conservative" about the pairing either way. The point estimate is undefined at 0%
+or 100% (infinite Elo).
 """
 
 from __future__ import annotations
@@ -33,8 +38,16 @@ class EloEstimate:
     high: float | None
 
 
+def wilson_interval(score: float, games: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a score observed over ``games`` games."""
+    z2 = z * z
+    centre = (score + z2 / (2.0 * games)) / (1.0 + z2 / games)
+    half = z * math.sqrt(score * (1.0 - score) / games + z2 / (4.0 * games * games)) / (1.0 + z2 / games)
+    return max(0.0, centre - half), min(1.0, centre + half)
+
+
 def estimate(wins: int, draws: int, losses: int, z: float = 1.96) -> EloEstimate:
-    """Elo difference and a ~95% interval (z=1.96) from W/D/L counts.
+    """Elo difference and a ~95% Wilson interval (z=1.96) from W/D/L counts.
 
     Bounds that fall at or beyond a 0% / 100% score are returned as None.
     """
@@ -42,16 +55,13 @@ def estimate(wins: int, draws: int, losses: int, z: float = 1.96) -> EloEstimate
     if games == 0:
         return EloEstimate(0, None, None, None, None)
     score = (wins + 0.5 * draws) / games
-    variance = (
-        wins * (1.0 - score) ** 2 + draws * (0.5 - score) ** 2 + losses * score**2
-    ) / games
-    margin = z * math.sqrt(variance / games)
+    low, high = wilson_interval(score, games, z)
     return EloEstimate(
         games=games,
         score=score,
         elo=score_to_elo(score),
-        low=score_to_elo(score - margin),
-        high=score_to_elo(score + margin),
+        low=score_to_elo(low) if low > 1e-12 else None,
+        high=score_to_elo(high) if high < 1.0 - 1e-12 else None,
     )
 
 

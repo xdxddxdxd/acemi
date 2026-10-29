@@ -25,7 +25,7 @@ def _elo_line(results: dict) -> str:
         return f"- Elo difference: {elo:+.1f}"
     low = "unbounded" if interval[0] is None else f"{interval[0]:+.1f}"
     high = "unbounded" if interval[1] is None else f"{interval[1]:+.1f}"
-    return f"- Elo difference: {elo:+.1f} (95% interval {low} to {high}; normal approximation)"
+    return f"- Elo difference: {elo:+.1f} (95% Wilson interval {low} to {high})"
 
 
 def _sprt_line(sprt: dict) -> str:
