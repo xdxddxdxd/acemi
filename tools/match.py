@@ -296,6 +296,8 @@ def _play_moves(job: dict, engine: UciEngine, opponent: UciEngine, log: list[str
                 "depth": found.depth,
                 "nodes": found.nodes,
                 "time_ms": found.elapsed_ms,
+                "search_time_ms": found.search_time_ms,
+                "attempted_depth": found.attempted_depth,
             }
         )
         board.push(move)
@@ -398,6 +400,17 @@ def _ram_mb() -> int | None:
     except (OSError, ValueError, IndexError):
         pass
     return None
+
+
+def _cpu_model() -> str | None:
+    try:
+        with open("/proc/cpuinfo", encoding="utf-8", errors="replace") as stream:
+            for line in stream:
+                if line.lower().startswith("model name"):
+                    return line.split(":", 1)[1].strip()
+    except OSError:
+        pass
+    return platform.processor() or None
 
 
 def _find_stockfish(explicit: str | None) -> str | None:
@@ -607,6 +620,17 @@ def main(argv: list[str] | None = None) -> int:
         else None
     )
 
+    terminations: dict[str, int] = {}
+    for g in completed:
+        terminations[g["termination"]] = terminations.get(g["termination"], 0) + 1
+    search_timed = [m for m in engine_moves if m["nodes"] is not None and m.get("search_time_ms")]
+    nodes_per_second_search = (
+        round(sum(m["nodes"] for m in search_timed) / (sum(m["search_time_ms"] for m in search_timed) / 1000.0))
+        if search_timed
+        else None
+    )
+    moves_without_score = sum(1 for m in engine_moves if m["eval_cp"] is None and m["eval_mate"] is None)
+
     estimate = elo_tools.estimate(wins, draws, losses)
     if args.sprt:
         state = sprt_tools.status(wins, draws, losses, args.elo0, args.elo1, args.alpha, args.beta)
@@ -666,10 +690,12 @@ def main(argv: list[str] | None = None) -> int:
             "max_plies": args.max_plies,
             "timeout_grace_ms": args.grace_ms,
             "pairing": "colour_swapped_pairs",
+            "command": shlex.join(["python", "-m", "tools.match", *(sys.argv[1:] if argv is None else argv)]),
         },
         "hardware": {
             "cpu_count": cores,
             "ram_mb": _ram_mb(),
+            "cpu_model": _cpu_model(),
             "runtime": platform.python_implementation(),
             "runtime_version": platform.python_version(),
         },
@@ -706,6 +732,10 @@ def main(argv: list[str] | None = None) -> int:
         "average_plies": round(sum(g["plies"] for g in completed) / len(completed), 1) if completed else None,
         "average_depth": round(sum(depths) / len(depths), 1) if depths else None,
         "nodes_per_second": nodes_per_second,
+        "nodes_per_second_search": nodes_per_second_search,
+        "terminations": dict(sorted(terminations.items())),
+        "engine_moves": len(engine_moves),
+        "engine_moves_without_score": moves_without_score,
     }
 
     summary_md = summarize.build_summary(meta, results, completed)

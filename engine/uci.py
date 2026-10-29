@@ -255,7 +255,9 @@ class UciSession:
             info += f" score cp {result.score}"
         info += f" nodes {result.nodes} time {result.time_ms}"
         best_move = NO_MOVE if result.best_move is None else result.best_move.uci()
-        return [info, f"bestmove {best_move}"]
+        # ``depth`` is the last finished iteration; the deepest started one (whose
+        # partial result may have been played) is reported on an ``info string``.
+        return [info, f"info string attempted_depth {result.attempted_depth}", f"bestmove {best_move}"]
 
 
 def main(stdin: TextIO | None = None, stdout: TextIO | None = None) -> None:

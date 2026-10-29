@@ -91,6 +91,10 @@ class SearchResult:
     nodes: int
     time_ms: int
     mate: int | None  # positive = we mate in N, negative = we are mated in N
+    # Deepest iteration that was started (it may have been cut short, in which case
+    # its best root move so far can be the one played). Equals ``depth`` when the
+    # last iteration finished.
+    attempted_depth: int = 0
 
 
 class _SearchStopped(Exception):
@@ -297,9 +301,11 @@ class Searcher:
         best_move: Move = moves[0]
         best_score: int | None = None
         completed_depth = 0
+        attempted_depth = 0
 
         for iteration in range(1, depth + 1):
             iteration_started = time.monotonic()
+            attempted_depth = iteration
             try:
                 move, score = self._search_root(board, moves, iteration, rng)
             except _SearchStopped:
@@ -322,7 +328,7 @@ class Searcher:
                 if remaining <= 0 or remaining < last_iteration * NEXT_ITERATION_FACTOR:
                     break
 
-        return self._result(best_move, best_score, completed_depth, started)
+        return self._result(best_move, best_score, completed_depth, started, attempted_depth)
 
     def _search_root(
         self, board: Board, moves: list[Move], depth: int, rng: random.Random | None
@@ -352,7 +358,14 @@ class Searcher:
         chosen = candidates[0] if rng is None or len(candidates) == 1 else rng.choice(candidates)
         return chosen, best_score
 
-    def _result(self, move: Move | None, score: int | None, depth: int, started: float) -> SearchResult:
+    def _result(
+        self,
+        move: Move | None,
+        score: int | None,
+        depth: int,
+        started: float,
+        attempted_depth: int | None = None,
+    ) -> SearchResult:
         return SearchResult(
             best_move=move,
             score=score,
@@ -360,6 +373,7 @@ class Searcher:
             nodes=self.nodes,
             time_ms=int((time.monotonic() - started) * 1000),
             mate=None if score is None else _mate_distance(score),
+            attempted_depth=depth if attempted_depth is None else attempted_depth,
         )
 
     def _check_stopped(self) -> None:

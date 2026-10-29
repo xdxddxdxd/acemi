@@ -45,7 +45,9 @@ class SearchResult:
     nodes: int | None
     score_cp: int | None
     score_mate: int | None
-    elapsed_ms: int
+    elapsed_ms: int  # wall clock from ``go`` to ``bestmove`` (includes pipe latency)
+    search_time_ms: int | None = None  # the engine's own ``info time``
+    attempted_depth: int | None = None  # ``info string attempted_depth`` (Acemi only)
 
 
 _OPTION_KEYWORDS = ("name", "type", "default", "min", "max", "var")
@@ -85,16 +87,24 @@ def parse_option_line(line: str) -> UciOption | None:
     )
 
 
-def parse_info_line(line: str) -> dict[str, int] | None:
-    """Extract depth/nodes and cp or mate score from an ``info`` line with a score.
+_PROGRESS_TOKENS = ("currmove", "currmovenumber", "currline", "refutation")
 
-    Returns None for lines without a score, for ``info string`` lines, and for
-    bound scores (lowerbound/upperbound), so the last result is an exact score.
+
+def parse_info_line(line: str) -> dict[str, int] | None:
+    """Extract depth/nodes/time and the cp or mate score from an ``info`` line.
+
+    Returns None for ``info string`` lines, bound scores (lowerbound/upperbound)
+    and progress lines (currmove ...). A line without a score is still returned
+    when it carries both depth and nodes: an engine that was interrupted before
+    finishing any iteration (Acemi) reports exactly that, and its depth/nodes
+    are real measurements.
     """
     tokens = line.split()
     if len(tokens) < 2 or tokens[0] != "info" or tokens[1] == "string":
         return None
-    if "score" not in tokens or "lowerbound" in tokens or "upperbound" in tokens:
+    if "lowerbound" in tokens or "upperbound" in tokens:
+        return None
+    if any(token in tokens for token in _PROGRESS_TOKENS):
         return None
     values: dict[str, int] = {}
     index = 1
@@ -103,7 +113,7 @@ def parse_info_line(line: str) -> dict[str, int] | None:
             token = tokens[index]
             if token == "pv":
                 break
-            if token in ("depth", "nodes"):
+            if token in ("depth", "nodes", "time"):
                 values[token] = int(tokens[index + 1])
                 index += 2
             elif token == "score":
@@ -113,9 +123,22 @@ def parse_info_line(line: str) -> dict[str, int] | None:
                 index += 1
     except (IndexError, ValueError):
         return None
-    if "cp" not in values and "mate" not in values:
-        return None
-    return values
+    if "cp" in values or "mate" in values:
+        return values
+    if "depth" in values and "nodes" in values:
+        return values
+    return None
+
+
+def parse_attempted_depth(line: str) -> int | None:
+    """Read ``info string attempted_depth N`` (Acemi's deepest started iteration)."""
+    tokens = line.split()
+    if len(tokens) == 4 and tokens[:3] == ["info", "string", "attempted_depth"]:
+        try:
+            return int(tokens[3])
+        except ValueError:
+            return None
+    return None
 
 
 class UciEngine:
@@ -209,6 +232,7 @@ class UciEngine:
         self._send(f"go movetime {movetime_ms}")
         deadline = started + (movetime_ms + grace_ms) / 1000.0
         info: dict[str, int] = {}
+        attempted: int | None = None
         while True:
             line = self._next_line(deadline)
             if line.startswith("bestmove"):
@@ -222,10 +246,19 @@ class UciEngine:
                     score_cp=info.get("cp"),
                     score_mate=info.get("mate"),
                     elapsed_ms=elapsed_ms,
+                    search_time_ms=info.get("time"),
+                    attempted_depth=attempted,
                 )
+            attempted_update = parse_attempted_depth(line)
+            if attempted_update is not None:
+                attempted = attempted_update
+                continue
             update = parse_info_line(line)
             if update is not None:
-                info = update
+                scored = "cp" in update or "mate" in update
+                # A later line without a score never replaces an earlier scored one.
+                if scored or not ("cp" in info or "mate" in info):
+                    info = update
 
     def close(self) -> None:
         process = self._process

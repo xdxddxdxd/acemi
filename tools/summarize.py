@@ -71,6 +71,28 @@ def _phase_line(games: list[dict]) -> str:
     )
 
 
+def _telemetry_lines(results: dict) -> list[str]:
+    lines: list[str] = []
+    terminations = results.get("terminations")
+    if terminations:
+        body = ", ".join(f"{name} {count}" for name, count in terminations.items())
+        lines.append(f"- Game endings: {body}")
+    without_score = results.get("engine_moves_without_score")
+    total = results.get("engine_moves")
+    if without_score is not None and total:
+        lines.append(
+            f"- Engine moves without a search score: {without_score} of {total} "
+            "(average depth and nodes/second above include only moves that reported them)"
+        )
+    search_nps = results.get("nodes_per_second_search")
+    if search_nps is not None:
+        lines.append(
+            f"- Nodes/second by the engine's own search time: {_number(search_nps, 0)} "
+            "(the figure above divides by wall clock including pipe latency)"
+        )
+    return lines
+
+
 def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
     """Return SUMMARY.md text for one run.
 
@@ -101,6 +123,7 @@ def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
         f"nodes/second: {_number(results['nodes_per_second'], 0)}",
         *_opening_lines(games),
         _phase_line(games),
+        *_telemetry_lines(results),
     ]
     excluded = results.get("unpaired_games_excluded", 0)
     if excluded:
