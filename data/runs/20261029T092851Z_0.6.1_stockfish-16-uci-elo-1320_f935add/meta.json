@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_name": "20261029T092851Z_0.6.1_stockfish-16-uci-elo-1320_f935add",
+  "is_demo": false,
+  "date": "20261029T092851Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.6.1",
+  "git_commit": "f935add90e441cc76256e1ef86528bc23ae3eee9",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false
+  },
+  "opponent": {
+    "name": "Stockfish",
+    "version": "16",
+    "uci_elo": 1320
+  },
+  "opening_set": "builtin-mini-8",
+  "match_settings": {
+    "games_requested": 50,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-29T09:28:51.105685Z",
+  "finished_at": "2026-10-29T09:39:53.934872Z"
+}
