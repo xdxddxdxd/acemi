@@ -383,7 +383,9 @@ class Searcher:
             return self._quiesce(board, alpha, beta, ply)
 
         self._count_node()
-        if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
+        if board.is_fifty_move_draw():
+            return self._fifty_move_score(board, ply)
+        if board.is_threefold_repetition() or board.is_insufficient_material():
             return DRAW_SCORE
 
         key = board.zobrist_hash
@@ -501,7 +503,9 @@ class Searcher:
         used), a standard shortcut.
         """
         self._count_node()
-        if board.is_fifty_move_draw() or board.is_threefold_repetition() or board.is_insufficient_material():
+        if board.is_fifty_move_draw():
+            return self._fifty_move_score(board, ply)
+        if board.is_threefold_repetition() or board.is_insufficient_material():
             return DRAW_SCORE
         if ply >= MAX_PLY:
             return evaluate(board)
@@ -534,6 +538,18 @@ class Searcher:
             if alpha >= beta:
                 break
         return best
+
+    @staticmethod
+    def _fifty_move_score(board: Board, ply: int) -> int:
+        """Score of a position whose halfmove clock reached 100.
+
+        A checkmate on the 100th half-move still wins: the fifty-move rule cannot
+        be claimed once the game is over. Only runs when the clock is that high,
+        so the legal-move check costs nothing in normal search.
+        """
+        if board.is_checkmate():
+            return -MATE_SCORE + ply
+        return DRAW_SCORE
 
     @staticmethod
     def _terminal_score(board: Board, ply: int) -> int:

@@ -9,7 +9,7 @@ from engine.board import QUEEN, ROOK, Board
 from engine.eval.base import evaluate
 from engine.eval.classic import PIECE_VALUE
 from engine.movegen import generate_legal_moves
-from engine.search import MATE_SCORE, search
+from engine.search import MATE_SCORE, Searcher, search
 
 
 class EvalTests(unittest.TestCase):
@@ -26,6 +26,40 @@ class EvalTests(unittest.TestCase):
         # Same imbalance, black to move: black is down a queen -> negative.
         board = Board("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
         self.assertAlmostEqual(evaluate(board), -PIECE_VALUE[QUEEN], delta=30)
+
+
+class FiftyMoveVersusMateTests(unittest.TestCase):
+    """Checkmate on the 100th half-move is a win; the fifty-move draw cannot pre-empt it."""
+
+    MATED_AT_100 = "R5k1/5ppp/8/8/8/8/8/6K1 b - - 100 80"  # Black is checkmated.
+    STALEMATE_AT_100 = "7k/5P2/6K1/8/8/8/8/8 b - - 100 80"
+    QUIET_AT_100 = "4k3/8/8/8/8/8/8/4K2R w - - 100 80"
+
+    def test_negamax_scores_mate_not_draw(self) -> None:
+        score = Searcher()._negamax(Board(self.MATED_AT_100), 1, -MATE_SCORE, MATE_SCORE, 1)
+        self.assertEqual(score, -MATE_SCORE + 1)
+
+    def test_quiescence_scores_mate_not_draw(self) -> None:
+        score = Searcher()._quiesce(Board(self.MATED_AT_100), -MATE_SCORE, MATE_SCORE, 1)
+        self.assertEqual(score, -MATE_SCORE + 1)
+
+    def test_mate_that_lands_on_the_100th_halfmove_is_found(self) -> None:
+        result = search(Board("6k1/5ppp/8/8/8/8/8/R5K1 w - - 99 80"), depth=2)
+        assert result.best_move is not None
+        self.assertEqual(result.best_move.uci(), "a1a8")
+        assert result.score is not None
+        self.assertGreater(result.score, MATE_SCORE - 100)
+
+    def test_stalemate_and_quiet_positions_at_100_are_still_draws(self) -> None:
+        for fen in (self.STALEMATE_AT_100, self.QUIET_AT_100):
+            with self.subTest(fen=fen):
+                self.assertEqual(Searcher()._negamax(Board(fen), 1, -MATE_SCORE, MATE_SCORE, 1), 0)
+                self.assertEqual(Searcher()._quiesce(Board(fen), -MATE_SCORE, MATE_SCORE, 1), 0)
+
+    def test_is_draw_agrees(self) -> None:
+        self.assertFalse(Board(self.MATED_AT_100).is_draw())
+        self.assertTrue(Board(self.STALEMATE_AT_100).is_draw())
+        self.assertTrue(Board(self.QUIET_AT_100).is_draw())
 
 
 class SearchTests(unittest.TestCase):

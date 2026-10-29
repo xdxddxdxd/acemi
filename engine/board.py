@@ -552,6 +552,9 @@ class Board:
         return not next(generate_legal_moves(self), None)
 
     def is_draw(self) -> bool:
+        # Checkmate on the 100th half-move is a win, not a fifty-move draw.
+        if self.is_fifty_move_draw() and self.is_checkmate():
+            return False
         return (
             self.is_fifty_move_draw()
             or self.is_threefold_repetition()
