@@ -4,7 +4,7 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 ## Aşama durumu
 
-**Aşama 5 (0.5.0):** Hamle sıralama (MVV-LVA, TT hamlesi, PST) ve transposition table (Hash seçeneği, `ucinewgame`'de temizlenir). Aşama 4 özellikleri (PST eval, quiescence, iterative deepening, saat yönetimi) korunur. Null move/LMR yok (Aşama 6).
+**Aşama 6 (0.6.0):** Null-move pruning, late move reductions, killer ve history sıralaması (Aşama 5'in hamle sıralama + transposition table'ına ek). Aspiration window yok.
 
 **Aşama 3 (0.3.0):** materyal eval + negamax/alpha-beta. Varsayılan en fazla derinlik 3 (kökte iterative deepening; süre dolarsa son tamamlanan derinlik döner ve `info depth` o derinliktir). Eşit hamleler `Seed` ile tohumlanan RNG ile seçilir. `go depth` / `go movetime` desteklenir. PST, quiescence ve iterative deepening henüz yok.
 

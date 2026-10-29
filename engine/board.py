@@ -201,6 +201,7 @@ class Board:
         self.halfmove_clock = halfmove
         self.fullmove_number = fullmove
         self.undo_stack = []
+        self.null_stack: list[tuple[int | None, int, int]] = []
         self.zobrist_hash = self.compute_zobrist_hash()
         self.position_hashes = [self.zobrist_hash]
 
@@ -394,6 +395,30 @@ class Board:
         self.zobrist_hash ^= ZOBRIST.black_to_move
         self.position_hashes.append(self.zobrist_hash)
         return state
+
+    def make_null_move(self) -> None:
+        """Pass the turn (search only). Must be undone with ``unmake_null_move``.
+
+        Clears the en-passant square, advances the halfmove clock and keeps the
+        incremental hash and the repetition history consistent.
+        """
+        key = self.zobrist_hash
+        if self.en_passant_square is not None and self._has_legal_en_passant_capture():
+            key ^= ZOBRIST.en_passant_file[self.en_passant_square & 7]
+        key ^= ZOBRIST.black_to_move
+        self.null_stack.append((self.en_passant_square, self.halfmove_clock, self.zobrist_hash))
+        self.en_passant_square = None
+        self.halfmove_clock += 1
+        self.side_to_move = -self.side_to_move
+        self.zobrist_hash = key
+        self.position_hashes.append(key)
+
+    def unmake_null_move(self) -> None:
+        if not self.null_stack:
+            raise ValueError("No null move to undo")
+        self.en_passant_square, self.halfmove_clock, self.zobrist_hash = self.null_stack.pop()
+        self.side_to_move = -self.side_to_move
+        self.position_hashes.pop()
 
     def _clear_rook_right(self, square: int) -> None:
         self.castling_rights &= ~ROOK_RIGHT_BY_SQUARE.get(square, 0)

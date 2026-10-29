@@ -1,5 +1,5 @@
-"""Negamax search with alpha-beta pruning, quiescence, move ordering and a
-transposition table (Stage 5).
+"""Negamax search with alpha-beta pruning, quiescence, move ordering, a
+transposition table and forward pruning (Stage 6).
 
 Features:
 - Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
@@ -19,7 +19,13 @@ Features:
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
   does not shuffle and the same seed reproduces the same game.
 - Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
-- No null move, LMR, killer or history heuristics yet (Stage 6).
+- Killer moves (two quiet moves per ply that caused a beta cutoff) and a history
+  table (quiet moves that caused cutoffs anywhere) improve quiet-move ordering.
+- Null-move pruning (non-PV nodes, not in check, side has non-pawn material):
+  if passing the turn still fails high at reduced depth, the node is cut.
+- Late move reductions: late quiet moves are searched one ply shallower in a
+  zero window first and re-searched at full depth only if they beat alpha.
+- Each heuristic can be switched off on the ``Searcher`` for tests and debugging.
 
 ``SearchResult.depth`` is the depth of the last completed iteration, so it is an
 honest measurement: 0 means not even depth 1 finished (a legal move is still
@@ -33,7 +39,7 @@ import time
 from dataclasses import dataclass
 from threading import Event
 
-from engine.board import PAWN, Board, Move
+from engine.board import BISHOP, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
 from engine.eval.base import evaluate
 from engine.eval.classic import pst_delta
 from engine.movegen import generate_legal_moves
@@ -61,6 +67,14 @@ TT_LOWER = 1  # The true score is at least the stored score (a beta cutoff).
 TT_UPPER = 2  # The true score is at most the stored score (all moves failed low).
 MATE_BOUND = MATE_SCORE - 1000
 
+# Forward pruning and ordering heuristics (Stage 6).
+NULL_MOVE_MIN_DEPTH = 3
+NULL_MOVE_REDUCTION = 2
+LMR_MIN_DEPTH = 3
+LMR_FULL_DEPTH_MOVES = 3  # The first moves of a node are never reduced.
+KILLER_BONUS = (800, 790)
+HISTORY_CAP = 400
+
 
 @dataclass(slots=True)
 class SearchResult:
@@ -79,8 +93,16 @@ class _SearchStopped(Exception):
 # -- move ordering ----------------------------------------------------------
 
 
-def _move_score(board: Board, move: Move) -> int:
-    """Ordering score: captures (MVV-LVA) > promotions > quiet moves by PST gain."""
+def _move_score(
+    board: Board,
+    move: Move,
+    killers: tuple[Move, ...] = (),
+    history: dict[tuple[int, int], int] | None = None,
+) -> int:
+    """Ordering score: captures (MVV-LVA) > killers > promotions > quiet moves.
+
+    Quiet moves are ranked by history (cutoff count) plus a small piece-square gain.
+    """
     squares = board.squares
     moving_piece = squares[move.from_square]
     attacker = abs(moving_piece)
@@ -101,18 +123,33 @@ def _move_score(board: Board, move: Move) -> int:
     else:
         # Quiet move: small piece-square gain, always below every capture.
         score = pst_delta(moving_piece, move.from_square, move.to_square) // 10
+        if killers:
+            if move == killers[0]:
+                score += KILLER_BONUS[0]
+            elif len(killers) > 1 and move == killers[1]:
+                score += KILLER_BONUS[1]
+        if history:
+            bonus = history.get((moving_piece, move.to_square))
+            if bonus:
+                score += min(bonus, HISTORY_CAP)
     if move.promotion is not None:
         score += 600 + move.promotion
     return score
 
 
-def order_moves(board: Board, moves: list[Move], first: Move | None = None) -> None:
+def order_moves(
+    board: Board,
+    moves: list[Move],
+    first: Move | None = None,
+    killers: tuple[Move, ...] = (),
+    history: dict[tuple[int, int], int] | None = None,
+) -> None:
     """Sort ``moves`` in place, best first; ``first`` (e.g. the TT move) goes to the front.
 
     The sort is stable, so equal scores keep the generator's order and the
     result is deterministic.
     """
-    moves.sort(key=lambda move: _move_score(board, move), reverse=True)
+    moves.sort(key=lambda move: _move_score(board, move, killers, history), reverse=True)
     if first is not None and moves and moves[0] != first:
         try:
             index = moves.index(first)
@@ -142,10 +179,29 @@ def from_tt_score(score: int, ply: int) -> int:
     return score
 
 
-class Searcher:
-    """Stateful searcher: node counts, stop flags and the transposition table."""
+def _has_non_pawn_material(board: Board, color: int) -> bool:
+    """True if ``color`` has a knight, bishop, rook or queen (guards against zugzwang)."""
+    pieces = board.piece_squares
+    return any(pieces[color * piece_type] for piece_type in (KNIGHT, BISHOP, ROOK, QUEEN))
 
-    def __init__(self, hash_mb: int = DEFAULT_HASH_MB) -> None:
+
+class Searcher:
+    """Stateful searcher: node counts, stop flags, the transposition table and
+    the killer/history tables."""
+
+    def __init__(
+        self,
+        hash_mb: int = DEFAULT_HASH_MB,
+        *,
+        null_move: bool = True,
+        lmr: bool = True,
+        killers: bool = True,
+    ) -> None:
+        self.use_null_move = null_move
+        self.use_lmr = lmr
+        self.use_killers = killers
+        self._killers: list[tuple[Move, ...]] = [()] * (MAX_PLY + 2)
+        self._history: dict[tuple[int, int], int] = {}
         self.nodes = 0
         self._deadline: float | None = None
         self._nodes_limit: int | None = None
@@ -214,6 +270,8 @@ class Searcher:
         self._nodes_limit = nodes_limit
         self._stop_event = stop_event
         self._partial = None
+        self._killers = [()] * (MAX_PLY + 2)
+        self._history = {}
 
         moves = list(generate_legal_moves(board))
         if not moves:
@@ -310,7 +368,9 @@ class Searcher:
         if self.nodes % TIME_CHECK_NODES == 0:
             self._check_stopped()
 
-    def _negamax(self, board: Board, depth: int, alpha: int, beta: int, ply: int) -> int:
+    def _negamax(
+        self, board: Board, depth: int, alpha: int, beta: int, ply: int, allow_null: bool = True
+    ) -> int:
         if depth <= 0:
             return self._quiesce(board, alpha, beta, ply)
 
@@ -332,19 +392,65 @@ class Searcher:
                 ):
                     return score
 
+        in_check = board.in_check()
+
+        # Null-move pruning: if passing the turn still scores >= beta at reduced
+        # depth, this node would almost certainly fail high anyway. Only in
+        # non-PV (zero-width-ish) windows, never in check, never with just
+        # king and pawns (zugzwang), and never twice in a row.
+        if (
+            self.use_null_move
+            and allow_null
+            and depth >= NULL_MOVE_MIN_DEPTH
+            and not in_check
+            and beta - alpha == 1
+            and abs(beta) < MATE_BOUND
+            and _has_non_pawn_material(board, board.side_to_move)
+        ):
+            board.make_null_move()
+            try:
+                null_score = -self._negamax(
+                    board, depth - 1 - NULL_MOVE_REDUCTION, -beta, -beta + 1, ply + 1, False
+                )
+            finally:
+                board.unmake_null_move()
+            if null_score >= beta:
+                return beta if null_score >= MATE_BOUND else null_score
+
         moves = list(generate_legal_moves(board))
         self._check_stopped()
         if not moves:
             return self._terminal_score(board, ply)
-        order_moves(board, moves, tt_move)
+        killers = self._killers[ply] if self.use_killers and ply < len(self._killers) else ()
+        order_moves(board, moves, tt_move, killers, self._history if self.use_killers else None)
 
         original_alpha = alpha
         best = -MATE_SCORE
         best_move: Move | None = None
-        for move in moves:
+        squares = board.squares
+        for index, move in enumerate(moves):
+            moving_piece = squares[move.from_square]
+            is_quiet = (
+                squares[move.to_square] == 0
+                and move.promotion is None
+                and not (abs(moving_piece) == PAWN and (move.from_square & 7) != (move.to_square & 7))
+            )
             board.make_move(move)
             try:
-                score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                reduce = (
+                    self.use_lmr
+                    and is_quiet
+                    and index >= LMR_FULL_DEPTH_MOVES
+                    and depth >= LMR_MIN_DEPTH
+                    and not in_check
+                )
+                if reduce and not board.in_check():
+                    # Late quiet move: look one ply shallower with a zero window first.
+                    score = -self._negamax(board, depth - 2, -alpha - 1, -alpha, ply + 1)
+                    if score > alpha:
+                        score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                else:
+                    score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
             finally:
                 board.unmake_move()
             if score > best:
@@ -353,6 +459,8 @@ class Searcher:
             if score > alpha:
                 alpha = score
             if alpha >= beta:
+                if is_quiet:
+                    self._record_cutoff(move, moving_piece, depth, ply)
                 break
 
         if best <= original_alpha:
@@ -363,6 +471,17 @@ class Searcher:
             flag = TT_EXACT
         self._store(key, depth, flag, to_tt_score(best, ply), best_move)
         return best
+
+    def _record_cutoff(self, move: Move, moving_piece: int, depth: int, ply: int) -> None:
+        """Remember a quiet move that caused a beta cutoff (killer + history)."""
+        if not self.use_killers:
+            return
+        if ply < len(self._killers):
+            current = self._killers[ply]
+            if not current or current[0] != move:
+                self._killers[ply] = (move, current[0]) if current else (move,)
+        key = (moving_piece, move.to_square)
+        self._history[key] = self._history.get(key, 0) + depth * depth
 
     def _quiesce(self, board: Board, alpha: int, beta: int, ply: int) -> int:
         """Resolve captures until the position is quiet, then evaluate.

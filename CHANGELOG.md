@@ -1,5 +1,16 @@
 # Değişiklik günlüğü
 
+## 0.6.0 — Aşama 6 (ileri budama ve sıralama sezgileri)
+
+- `engine/search.py`: null-move pruning (PV olmayan düğümler, şahta değil, yalnızca piyon+şah değilken, art arda iki kez değil; derinlik ≥3, R=2).
+- Late move reductions: ilk 3 hamleden sonraki sakin hamleler (alma/terfi/şah veren değil) bir ply az aranır, alpha'yı geçerse tam derinlikte yeniden aranır.
+- Killer hamleler (ply başına 2) ve history tablosu (derinlik² ile artar, sıralamada 400 ile sınırlı) sakin hamle sıralamasını iyileştirir. Her arama başında sıfırlanır.
+- Her sezgi `Searcher(null_move=, lmr=, killers=)` ile kapatılabilir (test ve hata ayıklama için).
+- `engine/board.py`: `make_null_move` / `unmake_null_move` (ep, halfmove, Zobrist ve tekrar geçmişi tutarlı).
+- Aspiration window bu sürümde YOK (kök beraberlik pencerelemesiyle çakışmaması için ertelendi).
+- `tests/test_stage6.py` eklendi. Kod yazan tarafta test ÇALIŞTIRILMADI; Kaggle doğrulaması bekleniyor.
+- Notebook: 0.6.0, 0.5.0'a (commit `e985c10`) karşı 500 ms'de SPRT; Stockfish UCI_Elo 1320 ölçümü 60 oyuna çıkarıldı.
+
 ## 0.5.0 — Aşama 5 (hamle sıralama + transposition table)
 
 - `engine/search.py`: hamle sıralama (TT hamlesi, MVV-LVA ile alma hamleleri, terfiler, sakin hamleler için PST kazancı) negamax, quiescence ve kökte kullanılır.
