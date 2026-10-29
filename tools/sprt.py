@@ -1,15 +1,20 @@
 """Sequential probability ratio test (SPRT) for engine-vs-engine matches.
 
-H0: the true Elo difference is ``elo0``. H1: it is ``elo1``. The log-likelihood
-ratio uses the normal (GSPRT) approximation on the per-game score:
+H0: the true Elo difference is ``elo0``. H1: it is ``elo1``. Each game is a win,
+draw or loss (trinomial). For a hypothesis with expected score s the win, draw
+and loss probabilities must satisfy ``p_win + p_draw / 2 = s``; the draw
+probability is a nuisance parameter. The log-likelihood ratio is
 
-    LLR = N * (s1 - s0) * (2 * s - s0 - s1) / (2 * variance)
+    LLR = max_{p: score(p) = s1} loglik(p) - max_{p: score(p) = s0} loglik(p)
 
-where s is the observed score and s0 / s1 are the expected scores under H0 / H1.
-Half a game is added to each of W, D and L so the variance is never zero.
+(the generalised SPRT): each hypothesis gets the draw probability that explains
+the observed counts best. No smoothing is added and no observed-variance normal
+approximation is used, so extreme records (16-0-0) give the true, small LLR
+instead of an inflated one.
 
-Openings are played in colour-swapped pairs, which makes the trinomial variance
-slightly pessimistic; the test stays valid, just a little conservative.
+Consequence: a huge improvement is not "accepted" after a handful of games when
+H1 is only a few Elo above H0. Use a larger ``elo1`` (for example 0/30) for
+features expected to gain a lot.
 """
 
 from __future__ import annotations
@@ -28,16 +33,51 @@ def log_bounds(alpha: float, beta: float) -> tuple[float, float]:
     return lower, upper
 
 
+def _max_loglik(wins: int, draws: int, losses: int, score: float) -> float:
+    """Maximum trinomial log-likelihood over all (win, draw, loss) with this expected score.
+
+    With draw probability t: p_win = score - t/2, p_loss = 1 - score - t/2. The
+    log-likelihood is concave in t, so its derivative is bisected to zero.
+    """
+    t_max = 2.0 * min(score, 1.0 - score)
+
+    def probabilities(t: float) -> tuple[float, float, float]:
+        return score - t / 2.0, t, 1.0 - score - t / 2.0
+
+    def loglik(t: float) -> float:
+        total = 0.0
+        for count, probability in zip((wins, draws, losses), probabilities(t)):
+            if count:
+                total += count * math.log(max(probability, 1e-300))
+        return total
+
+    def slope(t: float) -> float:
+        p_win, p_draw, p_loss = probabilities(t)
+        value = 0.0
+        if wins:
+            value -= wins / (2.0 * max(p_win, 1e-300))
+        if draws:
+            value += draws / max(p_draw, 1e-300)
+        if losses:
+            value -= losses / (2.0 * max(p_loss, 1e-300))
+        return value
+
+    low, high = 0.0, t_max
+    for _ in range(100):
+        middle = (low + high) / 2.0
+        if slope(middle) > 0.0:
+            low = middle
+        else:
+            high = middle
+    return loglik((low + high) / 2.0)
+
+
 def llr(wins: int, draws: int, losses: int, elo0: float, elo1: float) -> float:
     """Log-likelihood ratio of H1 against H0 for the observed W/D/L counts."""
     if wins + draws + losses == 0:
         return 0.0
-    w, d, l = wins + 0.5, draws + 0.5, losses + 0.5
-    games = w + d + l
-    score = (w + 0.5 * d) / games
-    variance = (w * (1.0 - score) ** 2 + d * (0.5 - score) ** 2 + l * score**2) / games
     s0, s1 = expected_score(elo0), expected_score(elo1)
-    return games * (s1 - s0) * (2.0 * score - s0 - s1) / (2.0 * variance)
+    return _max_loglik(wins, draws, losses, s1) - _max_loglik(wins, draws, losses, s0)
 
 
 def decide(value: float, alpha: float, beta: float) -> str:

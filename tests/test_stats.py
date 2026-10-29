@@ -51,6 +51,59 @@ class SprtTests(unittest.TestCase):
     def test_losing_record_gives_negative_llr(self) -> None:
         self.assertLess(sprt.llr(40, 0, 60, 0.0, 10.0), 0.0)
 
+    @staticmethod
+    def _brute_force_llr(wins: int, draws: int, losses: int, elo0: float, elo1: float) -> float:
+        """Independent reference: grid search over the draw probability."""
+
+        def best(score: float) -> float:
+            t_max = 2.0 * min(score, 1.0 - score)
+            top = -math.inf
+            steps = 20000
+            for i in range(steps + 1):
+                t = t_max * i / steps
+                probabilities = (score - t / 2.0, t, 1.0 - score - t / 2.0)
+                total = 0.0
+                for count, p in zip((wins, draws, losses), probabilities):
+                    if count:
+                        total += count * math.log(max(p, 1e-300))
+                top = max(top, total)
+            return top
+
+        return best(elo.expected_score(elo1)) - best(elo.expected_score(elo0))
+
+    def test_llr_matches_brute_force_maximum_likelihood(self) -> None:
+        for counts in [(42, 9, 3), (26, 22, 88), (102, 119, 79), (46, 38, 16), (3, 0, 7), (0, 10, 0)]:
+            with self.subTest(counts=counts):
+                self.assertAlmostEqual(
+                    sprt.llr(*counts, 0.0, 10.0), self._brute_force_llr(*counts, 0.0, 10.0), places=3
+                )
+
+    def test_reference_values(self) -> None:
+        # Values that the old observed-variance formula inflated (3.34 / 3.28 / 3.26).
+        self.assertAlmostEqual(sprt.llr(16, 0, 0, 0.0, 10.0), 0.4539, places=3)
+        self.assertAlmostEqual(sprt.llr(42, 9, 3, 0.0, 10.0), 1.3235, places=3)
+        self.assertAlmostEqual(sprt.llr(41, 6, 3, 0.0, 10.0), 1.2214, places=3)
+
+    def test_without_draws_it_is_the_bernoulli_ratio(self) -> None:
+        s0, s1 = elo.expected_score(0.0), elo.expected_score(10.0)
+        expected = 16 * math.log(s1 / s0)
+        self.assertAlmostEqual(sprt.llr(16, 0, 0, 0.0, 10.0), expected, places=9)
+        expected = 7 * math.log(1 - s1) - 7 * math.log(1 - s0) + 3 * math.log(s1 / s0)
+        self.assertAlmostEqual(sprt.llr(3, 0, 7, 0.0, 10.0), expected, places=9)
+
+    def test_swapping_sides_and_hypotheses_keeps_the_llr(self) -> None:
+        self.assertAlmostEqual(sprt.llr(30, 12, 8, 0.0, 10.0), sprt.llr(8, 12, 30, 0.0, -10.0), places=9)
+
+    def test_a_perfect_short_record_is_not_accepted(self) -> None:
+        self.assertEqual(sprt.status(16, 0, 0, 0.0, 10.0).decision, "continue")
+        self.assertEqual(sprt.status(42, 9, 3, 0.0, 10.0).decision, "continue")
+
+    def test_larger_elo1_accepts_a_big_gain(self) -> None:
+        self.assertEqual(sprt.status(42, 9, 3, 0.0, 30.0).decision, "accept_h1")
+
+    def test_all_draws_favour_h0(self) -> None:
+        self.assertLess(sprt.llr(0, 40, 0, 0.0, 10.0), 0.0)
+
     def test_decisions(self) -> None:
         self.assertEqual(sprt.decide(3.0, 0.05, 0.05), "accept_h1")
         self.assertEqual(sprt.decide(-3.0, 0.05, 0.05), "accept_h0")
