@@ -108,6 +108,12 @@ def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
             f"- Unpaired games excluded from result and SPRT: {excluded} "
             "(retained in raw PGN/move artifacts)"
         )
+    post_decision = results.get("post_decision_games_excluded", 0)
+    if post_decision:
+        lines.append(
+            f"- Games finished after the SPRT decision, excluded from result and SPRT: {post_decision} "
+            "(retained in raw PGN/move artifacts)"
+        )
     if opponent.get("uci_elo") is not None:
         lines.append(
             "- Note: the opponent's UCI_Elo is a rough scale and is not directly "

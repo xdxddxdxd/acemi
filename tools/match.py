@@ -45,6 +45,7 @@ except ImportError:  # pragma: no cover - environment problem, not a logic path
 from engine.board import Board as AcemiBoard  # noqa: E402
 from engine.movegen import find_legal_move  # noqa: E402
 from tools import elo as elo_tools  # noqa: E402
+from tools import pairing  # noqa: E402
 from tools import record, summarize  # noqa: E402
 from tools import sprt as sprt_tools  # noqa: E402
 from tools.uci_client import (  # noqa: E402
@@ -366,15 +367,6 @@ def play_game(job: dict) -> dict:
 # -- run setup and aggregation ----------------------------------------------
 
 
-def _completed_pairs(games: list[dict]) -> list[dict]:
-    """Return only games whose colour-swapped partner also completed normally."""
-    pairs: dict[int, list[dict]] = {}
-    for game in games:
-        if game["engine_result"] != "aborted":
-            pairs.setdefault(game["pair_no"], []).append(game)
-    return [game for pair in pairs.values() if len(pair) == 2 for game in pair]
-
-
 def _split_name_version(raw: str) -> tuple[str, str]:
     parts = raw.split()
     if len(parts) >= 2 and parts[-1][:1].isdigit():
@@ -537,6 +529,7 @@ def main(argv: list[str] | None = None) -> int:
     totals = {"win": 0, "draw": 0, "loss": 0}
     fatal: str | None = None
     stop = False
+    decided_games: list[dict] | None = None  # Finished games at the moment the SPRT decided.
     next_game = 0
     pending: set = set()
     with ProcessPoolExecutor(max_workers=concurrency) as pool:
@@ -568,7 +561,7 @@ def main(argv: list[str] | None = None) -> int:
                     flush=True,
                 )
             if args.sprt and not stop:
-                paired_games = _completed_pairs(games)
+                paired_games = pairing.completed_pairs(games)
                 paired_wins = sum(g["engine_result"] == "win" for g in paired_games)
                 paired_draws = sum(g["engine_result"] == "draw" for g in paired_games)
                 paired_losses = sum(g["engine_result"] == "loss" for g in paired_games)
@@ -577,6 +570,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 if state.decision != "continue":
                     stop = True
+                    decided_games = list(games)
     if fatal is not None:
         print(f"Run aborted: {fatal}", file=sys.stderr)
         return 2
@@ -584,11 +578,12 @@ def main(argv: list[str] | None = None) -> int:
     finished = datetime.now(timezone.utc)
     games.sort(key=lambda item: item["game_no"])
     completed_all = [g for g in games if g["engine_result"] != "aborted"]
-    completed = _completed_pairs(games) if args.sprt else completed_all
+    sample = pairing.select_sample(games, sprt_enabled=args.sprt, decided_games=decided_games)
+    completed = sample.games
     wins = sum(g["engine_result"] == "win" for g in completed)
     draws = sum(g["engine_result"] == "draw" for g in completed)
     losses = sum(g["engine_result"] == "loss" for g in completed)
-    unpaired_games_excluded = len(completed_all) - len(completed)
+    unpaired_games_excluded = sample.unpaired_excluded
 
     def color_counts(color: str) -> dict:
         subset = [g for g in completed if g["engine_color"] == color]
@@ -706,6 +701,7 @@ def main(argv: list[str] | None = None) -> int:
         "engine_crashes": forfeits("crash"),
         "aborted_games": len(games) - len(completed_all),
         "unpaired_games_excluded": unpaired_games_excluded,
+        "post_decision_games_excluded": sample.post_decision_excluded,
         "board_disagreements": sum(g["board_disagreements"] for g in games),
         "average_plies": round(sum(g["plies"] for g in completed) / len(completed), 1) if completed else None,
         "average_depth": round(sum(depths) / len(depths), 1) if depths else None,
