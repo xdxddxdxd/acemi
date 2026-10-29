@@ -4,7 +4,7 @@ import unittest
 
 from engine.board import BLACK, WHITE, Board
 from engine.movegen import generate_legal_moves
-from engine.search import Searcher, _has_non_pawn_material, order_moves
+from engine.search import Searcher, _has_non_pawn_material, _SearchStopped, order_moves
 
 
 class NullMoveBoardTests(unittest.TestCase):
@@ -99,6 +99,38 @@ class HeuristicTests(unittest.TestCase):
         result = Searcher().search(board, depth=5)
         assert result.best_move is not None
         self.assertIn(result.best_move.uci(), {m.uci() for m in generate_legal_moves(board)})
+
+
+class _InterruptedSecondIteration(Searcher):
+    """Finishes depth 1, then is interrupted during depth 2 (optionally with a partial result)."""
+
+    def __init__(self, partial_index: int | None) -> None:
+        super().__init__()
+        self.partial_index = partial_index
+        self.moves_seen: list = []
+
+    def _search_root(self, board, moves, depth, rng):  # type: ignore[no-untyped-def]
+        if depth == 1:
+            self.moves_seen = list(moves)
+            return moves[0], 10
+        self._partial = None if self.partial_index is None else (moves[self.partial_index], 50)
+        raise _SearchStopped
+
+
+class PartialIterationTests(unittest.TestCase):
+    def test_interrupted_iteration_uses_its_best_move_so_far(self) -> None:
+        searcher = _InterruptedSecondIteration(partial_index=1)
+        result = searcher.search(Board(), depth=3)
+        self.assertEqual(result.best_move, searcher.moves_seen[1])
+        self.assertEqual(result.score, 50)
+        self.assertEqual(result.depth, 1)  # Only depth 1 completed.
+
+    def test_interrupted_before_any_root_move_keeps_previous_result(self) -> None:
+        searcher = _InterruptedSecondIteration(partial_index=None)
+        result = searcher.search(Board(), depth=3)
+        self.assertEqual(result.best_move, searcher.moves_seen[0])
+        self.assertEqual(result.score, 10)
+        self.assertEqual(result.depth, 1)
 
 
 if __name__ == "__main__":

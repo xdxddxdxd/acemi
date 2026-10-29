@@ -1,5 +1,12 @@
 # Değişiklik günlüğü
 
+## 0.6.1 — Süre kullanımı düzeltmesi
+
+- 0.6.0 SPRT verisi (300 maç): motorlar 500 ms bütçenin yalnızca ~%70'ini kullanıyordu (hamle başına ~347 ms); `NEXT_ITERATION_FACTOR = 3` yeni iterasyonu çok erken engelliyordu.
+- `engine/search.py`: faktör 3.0 → 1.5. Yarım kalan iterasyon artık atılmıyor: en az bir kök hamle aranmışsa, o iterasyonun o ana kadarki en iyi kök hamlesi kullanılır (önceki en iyi hamle önce aranır, onu geçen hamle yeni derinlikte tam aranmış demektir). `SearchResult.depth` hâlâ yalnızca tamamlanan son iterasyonu bildirir.
+- `tests/test_stage6.py`: yarım iterasyon testleri (sahte kök arama ile).
+- Notebook: 0.6.1, 0.6.0'a (commit `acecedb`) karşı 500 ms'de SPRT (300 maç sınırı); Stockfish ölçümü 60 oyun. Kod yazan tarafta test ÇALIŞTIRILMADI.
+
 ## 0.6.0 — Aşama 6 (ileri budama ve sıralama sezgileri)
 
 - `engine/search.py`: null-move pruning (PV olmayan düğümler, şahta değil, yalnızca piyon+şah değilken, art arda iki kez değil; derinlik ≥3, R=2).

@@ -2,10 +2,14 @@
 transposition table and forward pruning (Stage 6).
 
 Features:
-- Root iterative deepening up to ``depth``. With ``movetime_ms`` the search
-  returns the last *fully completed* iteration, and does not start an iteration
-  it is unlikely to finish. If the first iteration is interrupted, the best
-  root move found so far is returned with depth 0 and no fabricated eval.
+- Root iterative deepening up to ``depth``. With ``movetime_ms`` the search does
+  not start an iteration it is very unlikely to finish. If an iteration is
+  interrupted after at least one root move was searched, the best root move
+  found so far is used (the previous best move is searched first, so any move
+  that replaced it was fully searched and scored higher at the new depth);
+  ``SearchResult.depth`` still reports only the last *completed* iteration. If
+  the first iteration is interrupted before any move finished, the best-ordered
+  legal move is returned with depth 0 and no fabricated eval.
 - Move ordering: transposition-table move first, then captures by MVV-LVA (most
   valuable victim, least valuable attacker), then promotions, then quiet moves
   by piece-square gain. Good ordering is what makes alpha-beta cut early, and it
@@ -53,9 +57,12 @@ MAX_PLY = 128
 # Time checks are frequent enough to keep movetime and external stop responsive
 # without paying a clock call on every node.
 TIME_CHECK_NODES = 64
-# A new iteration usually costs several times the previous one. If less than
-# this multiple of the last iteration's time remains, do not start another.
-NEXT_ITERATION_FACTOR = 3.0
+# A new iteration costs roughly 2-3x the previous one. If less than this
+# multiple of the last iteration's time remains, do not start another. It is
+# deliberately low (the 0.6.0 SPRT showed engines using only ~70% of their
+# time at 3.0): an interrupted iteration is not wasted, because its best move
+# so far is used (see ``Searcher.search``).
+NEXT_ITERATION_FACTOR = 1.5
 
 # Transposition table.
 DEFAULT_HASH_MB = 16
@@ -296,9 +303,10 @@ class Searcher:
             try:
                 move, score = self._search_root(board, moves, iteration, rng)
             except _SearchStopped:
-                if iteration == 1 and self._partial is not None:
-                    # Depth 1 did not finish: use the best root move found so far
-                    # (still reported as depth 0, because no iteration completed).
+                if self._partial is not None:
+                    # Interrupted iteration: its best root move so far was searched
+                    # fully at this depth and beat every move tried before it
+                    # (including the previous best, which is searched first).
                     best_move, best_score = self._partial
                 break
             best_move, best_score, completed_depth = move, score, iteration
