@@ -4,6 +4,9 @@
 
 Kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da. İlk Kaggle ölçümü (CPython, depth 4, 10 pozisyon): 8208 → 14419 nps, **1,76x**, skor/derinlik/düğüm sayısı/en iyi hamle birebir aynı.
 
+- Kaggle sonuçları (500 ms, 32 açılış, SPRT 0/50):
+  - 0.6.4 vs 0.6.3 (84 oyun): 38/28/18, %61.9, **+84 Elo** [+8, +160], SPRT `accept_h1` (LLR 3.05; düzeltilmiş SPRT'nin ilk gerçek kabulü). Maç içi nps 10.8k vs 6.2k (1,73x), ortalama derinlik 3.63 vs 3.17 (+0,46 ply). Karardan sonra biten 2 oyun sonuçtan çıkarıldı (`post_decision_games_excluded`).
+  - PyPy 3.9 vs CPython 3.13 (72 oyun): 18/28/26, %44.4, −39 Elo [−119, +41], SPRT `accept_h0`. Fixed-depth benchmark'ta PyPy 0,64x (9.3k vs 14.5k nps; yalnızca en uzun pozisyonlarda başa baş): kısa, her oyunda yeniden başlayan süreçlerde JIT ısınması kazancı yiyor. **Karar: PyPy kullanılmayacak.**
 - Python 3.9 uyumu: `slots=True` yalnızca Python 3.10+'da kullanılır (`DATACLASS_SLOTS`); Kaggle'ın apt ile kurduğu PyPy 3.9 motoru import edemiyordu. Notebook'ta PyPy sorunları artık notebook'u durdurmaz.
 
 - `engine/board.py`: `is_square_attacked` aynı sonucu verir, ama her kare için `is_valid_square` çağırmak yerine 0x88 bit testi kullanır, taş sabitlerini bir kez hesaplar, kayan taşları `piece == bishop/rook/queen` ile kontrol eder.
