@@ -7,6 +7,8 @@
 - `tests/test_lmp.py`: varsayılan kapalı, sakin orta oyunda düğüm azalması, mat-in-2 hâlâ bulunuyor, UCI anahtarı. Test yazan tarafta ÇALIŞTIRILDI: tam paket 198 test + 99 alt test; LMP kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama.
 - Ölçüm kararı: 150 oyunluk tek özellik testleri ölçüm tabanına çarptı (PVS +18,5; geçer piyon +20,9; paket −18,5; şah güvenliği −30,2 `accept_h0`; check extension +6,9). Bu yüzden üç arama değişikliği **paket** olarak ölçülecek: `CheckExtension=true`, `LateMovePruning=true`, `NextIterationPct=125` vs hepsi kapalı/150.
 - Notebook: 300 oyun @250 ms paket A/B (SPRT 0/30). Karar: SPRT `accept_h1` veya skor ≥%58 ise paketi aç; ≤%45 ise geri al; arası kapalı.
+- Sonuç: paket %47,7, SPRT `accept_h0` (242 oyun) → check extension, LMP ve NextIterationPct=125 kapalı kaldı.
+- `tools/tune.py`: Texel tarzı PST tuner'ı (yalnızca tools, numpy). Özellik çıkarımı klasik eval ile birebir eşleşiyor; yön düzeltmesinden sonra eval ile oyun sonucu korelasyonu 0,50. Oyun sonucu hedefiyle PST tuning'i validasyonda anlamlı kazanç vermedi (log-loss ~1,699; parametre hareketi <1 cp), bu yüzden tablolar değiştirilmedi. Öğretmen etiketli (Stockfish) tuning için altyapı.
 
 ## 0.7.3 — Arama: şah çekme uzatması (varsayılan kapalı)
 
