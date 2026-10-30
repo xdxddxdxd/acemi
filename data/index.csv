@@ -19,3 +19,4 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261029T084703Z_0.6.0_stockfish-16-uci-elo-1320_071551d,20261029T084703Z,0.6.0,Stockfish 16 UCI_Elo 1320,60,64.2,101.2,not_run
 20261029T090639Z_0.6.1_acemi-0.6.0_071152a,20261029T090639Z,0.6.1,Acemi 0.6.0,100,65.0,107.5,inconclusive
 20261029T092851Z_0.6.1_stockfish-16-uci-elo-1320_f935add,20261029T092851Z,0.6.1,Stockfish 16 UCI_Elo 1320,50,68.0,130.9,not_run
+20261030T042612Z_0.6.2_acemi-0.6.2-killers-false_10bcec0,20261030T042612Z,0.6.2,Acemi 0.6.2 Killers=false,24,64.6,104.4,inconclusive
