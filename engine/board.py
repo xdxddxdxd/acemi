@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 import random
+import sys
 from dataclasses import dataclass
+
+# ``dataclass(slots=True)`` needs Python 3.10; older interpreters (the PyPy 3.9 that apt
+# installs) just get regular classes with the same behaviour.
+DATACLASS_SLOTS = {"slots": True} if sys.version_info >= (3, 10) else {}
 
 EMPTY = 0
 PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING = range(1, 7)
@@ -61,7 +66,7 @@ def parse_square(name: str) -> int:
     return (8 - int(name[1])) * 16 + ord(name[0]) - ord("a")
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, **DATACLASS_SLOTS)
 class Move:
     """A move in 0x88 coordinates. Promotion is a piece type, not a signed piece."""
 
@@ -76,7 +81,7 @@ class Move:
         return text
 
 
-@dataclass(slots=True)
+@dataclass(**DATACLASS_SLOTS)
 class UndoState:
     move: Move
     moving_piece: int

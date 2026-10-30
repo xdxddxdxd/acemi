@@ -43,7 +43,7 @@ import time
 from dataclasses import dataclass
 from threading import Event
 
-from engine.board import BISHOP, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
+from engine.board import BISHOP, DATACLASS_SLOTS, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
 from engine.eval.base import evaluate
 from engine.eval.classic import pst_delta
 from engine.movegen import generate_legal_moves
@@ -83,7 +83,7 @@ KILLER_BONUS = (800, 790)
 HISTORY_CAP = 400
 
 
-@dataclass(slots=True)
+@dataclass(**DATACLASS_SLOTS)
 class SearchResult:
     best_move: Move | None
     score: int | None

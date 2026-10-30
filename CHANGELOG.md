@@ -1,8 +1,10 @@
 # Değişiklik günlüğü
 
-## 0.6.4 — Hız (aynı arama, daha az iş) — KOD YAZILDI, ÇALIŞTIRILMADI
+## 0.6.4 — Hız (aynı arama, daha az iş)
 
-Bu sürümdeki kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da.
+Kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da. İlk Kaggle ölçümü (CPython, depth 4, 10 pozisyon): 8208 → 14419 nps, **1,76x**, skor/derinlik/düğüm sayısı/en iyi hamle birebir aynı.
+
+- Python 3.9 uyumu: `slots=True` yalnızca Python 3.10+'da kullanılır (`DATACLASS_SLOTS`); Kaggle'ın apt ile kurduğu PyPy 3.9 motoru import edemiyordu. Notebook'ta PyPy sorunları artık notebook'u durdurmaz.
 
 - `engine/board.py`: `is_square_attacked` aynı sonucu verir, ama her kare için `is_valid_square` çağırmak yerine 0x88 bit testi kullanır, taş sabitlerini bir kez hesaplar, kayan taşları `piece == bishop/rook/queen` ile kontrol eder.
 - `engine/movegen.py`: `generate_legal_moves` artık her pseudo-legal hamleyi oynayıp geri almıyor. Yalnızca şah çekiliyorsa, şah hamlesi (rok dahil), bağlı (pinned) taş veya olası en passant varsa oynayıp test eder; diğer hamleler şahtaki olmayan taraf için zaten legaldir. Aynı hamleler aynı sırayla döner. Eski yöntem `generate_legal_moves_reference` olarak testler için korundu. İsteğe bağlı `known_in_check` parametresi aramanın zaten bildiği şah bilgisini kullanır.
