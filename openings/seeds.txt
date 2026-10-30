@@ -92,3 +92,19 @@ Reti vs c5 | g1f3 g8f6 c2c4 c7c5 b1c3 b8c6 g2g3 g7g6 f1g2 f8g7
 Reti KID | g1f3 g8f6 c2c4 g7g6 g2g3 f8g7 f1g2 e8g8
 English vs e6 | c2c4 e7e6 b1c3 d7d5 d2d4 g8f6
 
+
+# --- Extra balanced candidates ---
+Spanish Exchange | e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5c6 d7c6
+Italian Four Knights | e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 b1c3 g8f6
+Sicilian Kan | e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4 a7a6
+Sicilian Four Knights | e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4 b8c6 b1c3 g8f6
+French Rubinstein | e2e4 e7e6 d2d4 d7d5 b1c3 d5e4 c3e4
+QGD 4.Nf3 | d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 g1f3 f8e7
+KID Four Pawns | d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 f2f4
+English Anglo-Indian | c2c4 g8f6 b1c3 e7e6 g1f3 d7d5
+Reti b3 | g1f3 d7d5 c2c4 e7e6 b2b3 g8f6
+Dutch Leningrad | d2d4 f7f5 g2g3 g8f6 f1g2 g7g6
+QGA 3.e4 | d2d4 d7d5 c2c4 d5c4 e2e4
+Caro-Kann Fantasy | e2e4 c7c6 d2d4 d7d5 f2f3
+Sicilian Delayed Alapin | e2e4 c7c5 g1f3 e7e6 c2c3 d7d5
+London vs KID | d2d4 g8f6 c1f4 g7g6

@@ -10,6 +10,7 @@
 - Sonuç: paket %47,7, SPRT `accept_h0` (242 oyun) → check extension, LMP ve NextIterationPct=125 kapalı kaldı.
 - `tools/tune.py`: Texel tarzı PST tuner'ı (yalnızca tools, numpy). Özellik çıkarımı klasik eval ile birebir eşleşiyor; yön düzeltmesinden sonra eval ile oyun sonucu korelasyonu 0,50. Oyun sonucu hedefiyle PST tuning'i validasyonda anlamlı kazanç vermedi (log-loss ~1,699; parametre hareketi <1 cp), bu yüzden tablolar değiştirilmedi. Öğretmen etiketli (Stockfish) tuning için altyapı.
 - `openings/seeds.txt` + `tools/openings.py`: 75 güncel/popüler açılış seed'i; Stockfish eksik ply'leri tamamlar, son pozisyonu ±50 cp ile filtreler ve maç açılış setini üretir. Notebook hücresi sonucu `data/openings/acemi-64.txt` olarak push eder.
+- `openings/acemi-64.txt`: Stockfish 18 (tam güç) ile 89 seed'den üretilen **64 satırlık dengeli test seti** (10 ply, ±50 cp). Dağılım: İtalyan 4, İspanyol 3, Scotch 2, Viyana 2, Petrov 1, Sicilya 9, Fransız 4, Caro-Kann 6, QGD/QGA/Slav/Londra 13, Hint 10, flank 10. Dengesiz çıkan hatlar (ör. Dragon +68, Winawer +72, Pirc +92, King's Gambit −68) elendi.
 
 ## 0.7.3 — Arama: şah çekme uzatması (varsayılan kapalı)
 
