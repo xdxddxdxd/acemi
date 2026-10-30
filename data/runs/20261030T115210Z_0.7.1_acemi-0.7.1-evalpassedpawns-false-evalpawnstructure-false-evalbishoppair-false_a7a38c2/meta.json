@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_name": "20261030T115210Z_0.7.1_acemi-0.7.1-evalpassedpawns-false-evalpawnstructure-false-evalbishoppair-false_a7a38c2",
+  "is_demo": false,
+  "date": "20261030T115210Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.7.1",
+  "git_commit": "a7a38c2aeb4eb4437378e324c481b3f69089c562",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "extra_options": {
+      "EvalPassedPawns": true,
+      "EvalPawnStructure": true,
+      "EvalBishopPair": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.7.1",
+    "uci_elo": null,
+    "extra_options": {
+      "EvalPassedPawns": false,
+      "EvalPawnStructure": false,
+      "EvalBishopPair": false
+    }
+  },
+  "opening_set": "acemi-32",
+  "match_settings": {
+    "games_requested": 150,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 150 --movetime-ms 500 --openings openings/acemi-32.txt --opponent-cmd 'python -u -m engine' --opponent-cwd /kaggle/working/acemi --engine-option EvalPassedPawns=true --engine-option EvalPawnStructure=true --engine-option EvalBishopPair=true --opponent-option EvalPassedPawns=false --opponent-option EvalPawnStructure=false --opponent-option EvalBishopPair=false --sprt --elo0 0 --elo1 30"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-30T11:52:10.326304Z",
+  "finished_at": "2026-10-30T12:29:04.834928Z"
+}

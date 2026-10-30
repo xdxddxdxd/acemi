@@ -1,0 +1,26 @@
+# 20261030T115210Z_0.7.1_acemi-0.7.1-evalpassedpawns-false-evalpawnstructure-false-evalbishoppair-false_a7a38c2
+
+- Engine: Acemi 0.7.1; opponent: Acemi 0.7.1
+- Opening set: acemi-32; move time: 500 ms
+- Games: 150 (W/D/L: 43/56/51), score: 47.3%
+- Elo difference: -18.5 (95% Wilson interval -74.0 to +36.9)
+- SPRT: inconclusive (LLR -1.99, bounds -2.94 / 2.94; elo0=0.0, elo1=30.0, alpha=0.05, beta=0.05, max games=150)
+- Completed games: 150; aborted games: 0; average plies: 115.9
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 3.6; nodes/second: 8129
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6: 1/0/5
+  - e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4 d2d4 d6d5: 2/0/4
+  - e2e4 d7d6 d2d4 g8f6 b1c3 g7g6 g1f3 f8g7 f1e2 e8g8: 0/0/4
+  - e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4 b8c6 b1c3 d8c7: 2/1/3
+  - d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 d5c4 a2a4 c8f5: 0/1/3
+  - d2d4 f7f5 g2g3 g8f6 f1g2 e7e6 g1f3 f8e7 e1g1 e8g8: 0/1/3
+  - e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f8e7: 1/3/2
+  - e2e4 e7e5 b1c3 g8f6 f1c4 f6e4 c3e4 d7d5 c4d3 d5e4: 1/3/2
+  - e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5: 0/4/2
+  - e2e4 d7d5 e4d5 d8d5 b1c3 d5a5 d2d4 g8f6 g1f3 c7c6: 0/2/2
+- Losses by game phase at game end (opening 0; middlegame 10; endgame 41). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 94, fifty_moves 1, insufficient_material 3, threefold_repetition 52
+- Engine moves without a search score: 0 of 7940 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 8312 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'EvalPassedPawns': True, 'EvalPawnStructure': True, 'EvalBishopPair': True}; opponent {'EvalPassedPawns': False, 'EvalPawnStructure': False, 'EvalBishopPair': False}
