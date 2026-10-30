@@ -182,10 +182,12 @@ class EvalFlags:
     single build can play itself with a feature on and off for an A/B test.
     """
 
-    __slots__ = ("passed_pawns",)
+    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair")
 
     def __init__(self) -> None:
         self.passed_pawns = False
+        self.pawn_structure = False
+        self.bishop_pair = False
 
 
 FLAGS = EvalFlags()
@@ -244,6 +246,82 @@ def _passed_pawn_bonus(board: Board) -> tuple[int, int]:
     return mg, eg
 
 
+# Pawn structure penalties (isolated, doubled, backward) and the bishop pair bonus.
+_ISOLATED_MG = 15
+_ISOLATED_EG = 10
+_DOUBLED_MG = 12
+_DOUBLED_EG = 20
+_BACKWARD_MG = 10
+_BACKWARD_EG = 10
+_BISHOP_PAIR_MG = 20
+_BISHOP_PAIR_EG = 30
+
+
+def _pawn_structure(board: Board) -> tuple[int, int]:
+    """(middlegame, endgame) pawn structure penalty, White minus Black.
+
+    Isolated: no friendly pawn on a neighbouring file. Doubled: every pawn beyond
+    the first on a file. Backward: there are friendly pawns on neighbouring files
+    but all of them are more advanced, so this pawn cannot be supported. An
+    isolated pawn is not also charged as backward.
+    """
+    white = board.piece_squares[PAWN]
+    black = board.piece_squares[-PAWN]
+    if not white and not black:
+        return 0, 0
+    white_files: list[list[int]] = [[] for _ in range(8)]
+    black_files: list[list[int]] = [[] for _ in range(8)]
+    for square in white:
+        white_files[square & 7].append(square >> 4)
+    for square in black:
+        black_files[square & 7].append(square >> 4)
+
+    mg = 0
+    eg = 0
+    for file in range(8):
+        extra_white = len(white_files[file]) - 1
+        if extra_white > 0:
+            mg -= _DOUBLED_MG * extra_white
+            eg -= _DOUBLED_EG * extra_white
+        extra_black = len(black_files[file]) - 1
+        if extra_black > 0:
+            mg += _DOUBLED_MG * extra_black
+            eg += _DOUBLED_EG * extra_black
+
+    for square in white:
+        file, row = square & 7, square >> 4
+        neighbours = (white_files[file - 1] if file > 0 else []) + (white_files[file + 1] if file < 7 else [])
+        if not neighbours:
+            mg -= _ISOLATED_MG
+            eg -= _ISOLATED_EG
+        elif all(neighbour_row < row for neighbour_row in neighbours):
+            mg -= _BACKWARD_MG
+            eg -= _BACKWARD_EG
+    for square in black:
+        file, row = square & 7, square >> 4
+        neighbours = (black_files[file - 1] if file > 0 else []) + (black_files[file + 1] if file < 7 else [])
+        if not neighbours:
+            mg += _ISOLATED_MG
+            eg += _ISOLATED_EG
+        elif all(neighbour_row > row for neighbour_row in neighbours):
+            mg += _BACKWARD_MG
+            eg += _BACKWARD_EG
+    return mg, eg
+
+
+def _bishop_pair_bonus(board: Board) -> tuple[int, int]:
+    """(middlegame, endgame) bonus for owning two bishops, White minus Black."""
+    mg = 0
+    eg = 0
+    if len(board.piece_squares[BISHOP]) >= 2:
+        mg += _BISHOP_PAIR_MG
+        eg += _BISHOP_PAIR_EG
+    if len(board.piece_squares[-BISHOP]) >= 2:
+        mg -= _BISHOP_PAIR_MG
+        eg -= _BISHOP_PAIR_EG
+    return mg, eg
+
+
 def evaluate_classic(board: Board) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     mg = 0
@@ -262,6 +340,14 @@ def evaluate_classic(board: Board) -> int:
 
     if FLAGS.passed_pawns:
         bonus_mg, bonus_eg = _passed_pawn_bonus(board)
+        mg += bonus_mg
+        eg += bonus_eg
+    if FLAGS.pawn_structure:
+        bonus_mg, bonus_eg = _pawn_structure(board)
+        mg += bonus_mg
+        eg += bonus_eg
+    if FLAGS.bishop_pair:
+        bonus_mg, bonus_eg = _bishop_pair_bonus(board)
         mg += bonus_mg
         eg += bonus_eg
 

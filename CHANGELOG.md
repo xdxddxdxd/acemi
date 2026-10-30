@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.7.1 — Stage 7 (2/4): piyon yapısı + fil çifti (paket ölçümü)
+
+- `engine/eval/classic.py`: `EvalFlags`'a `pawn_structure` ve `bishop_pair` eklendi (ikisi de varsayılan **kapalı**). Piyon yapısı: izole (komşu hatta dost piyon yok), çift (hattaki her ek piyon), geri (komşu hatlardaki dost piyonların hepsi daha ileride) cezaları; izole piyon ayrıca geri sayılmaz. Fil çifti: iki fili olan tarafa bonus. Hepsi orta/son oyun ayrı, renkler arası simetrik, başlangıç 0.
+- `engine/uci.py`: `EvalPawnStructure` ve `EvalBishopPair` (check, varsayılan false).
+- `tests/test_eval_features.py`: her özellik için kapalı varsayılan, başlangıç 0, simetri, ceza/bonus değerleri, izole+geri çift ceza yok, UCI anahtarları. Test yazan tarafta ÇALIŞTIRILDI: tam paket 182 test + 99 alt test geçti; bayraklar kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama (skor/derinlik/düğüm/hamle); üç bayrak açık UCI duman testi geçti.
+- Ölçüm kararı: geçer piyon A/B'si %53,0 (+20,9 Elo, inconclusive) çıktı; tek tek özellikler 150 oyunda kanıtlanamadığı için bu üç özellik **paket** olarak ölçülecek (hepsi açık vs hepsi kapalı). Kural: %58+ paketi aç, %45− geri al, arası kapalı bırak.
+- Notebook: 150 oyunluk paket A/B (`EvalPassedPawns` + `EvalPawnStructure` + `EvalBishopPair` açık / kapalı, SPRT 0/30).
+
 ## 0.7.0 — Stage 7: değerlendirme özellikleri (1/4: geçer piyon)
 
 Kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da. Kural: her özellik ayrı eklenir, ayrı SPRT ile ölçülür, kazanmayan koda alınmaz.
