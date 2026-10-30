@@ -30,3 +30,4 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261030T135123Z_0.7.3_acemi-0.7.3-checkextension-false_94aac84,20261030T135123Z,0.7.3,Acemi 0.7.3 CheckExtension=false,150,51.0,6.9,inconclusive
 20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0,20261030T145056Z,0.7.4,"Acemi 0.7.4 CheckExtension=false,LateMovePruning=false,NextIterationPct=150",242,47.7,-15.8,accept_h0
 20261030T155811Z_0.7.4_stockfish-16-uci-elo-1320_504003c,20261030T155811Z,0.7.4,Stockfish 16 UCI_Elo 1320,100,68.5,135.0,not_run
+20261030T161545Z_0.7.4_stockfish-16-uci-elo-1500_1662e5e,20261030T161545Z,0.7.4,Stockfish 16 UCI_Elo 1500,100,48.0,-13.9,not_run
