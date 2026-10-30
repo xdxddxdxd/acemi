@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "run_name": "20261030T093702Z_0.6.4_acemi-0.6.4_1997dd7",
+  "is_demo": false,
+  "date": "20261030T093702Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.6.4",
+  "git_commit": "1997dd7cf65ca9f901e226ce2343336ee6251e94",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "extra_options": {}
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.6.4",
+    "uci_elo": null,
+    "extra_options": {}
+  },
+  "opening_set": "acemi-32",
+  "match_settings": {
+    "games_requested": 100,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 100 --movetime-ms 500 --openings openings/acemi-32.txt --engine-cmd 'pypy3 -u -m engine' --opponent-cmd 'python -u -m engine' --opponent-cwd /kaggle/working/acemi --sprt --elo0 0 --elo1 50"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-30T09:37:02.508868Z",
+  "finished_at": "2026-10-30T09:55:06.769877Z"
+}
