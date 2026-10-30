@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## Analiz araçları — mevcut oyunların Stockfish analizi (motor kodu değişmedi)
+
+- `tools/analyze_games.py`: `data/runs` altındaki PGN/moves kayıtlarını Stockfish depth 10 ile tarar. A/B ve Stockfish koşuları ayrı tutulur; oyunlar tekilleştirilir; `post_decision_games_excluded` için son-N vekili uygulanır. Her oyun için tam PGN hattı (zorunlu açılış hamleleri dahil) değerlendirilir; pozisyon/oyun/blunder CSV'leri üretilir. Oyun başına önbellek ve `processed_games.txt` ile oturum kesilse bile devam eder; CSV'ler birleştirilir.
+- `tools/analyze_report.py`: CSV'lerden Türkçe `REPORT.md` üretir: A açılış kitabı, B Syzygy, C oyun sonu eval, D teşhis seti + üç tekrar/50 hamle + sayılı 10 maddelik özet. A/B ve SF sayıları ayrı verilir; ölçülemeyenler açıkça yazılır.
+- `tools/synthetic_endgames.py`: KQK, KRK, KBBK, KBNK, KPK, KRPKR için rastgele başlangıçlar; Stockfish etiketli beklenen sonuç; Acemi kendine karşı 500 ms oynar; `synthetic_endgames.csv`.
+- `notebooks/kaggle_analysis.ipynb`: kurulum, süre tahmini, 1 oyunluk smoke, 250 oyunluk parçalarla tam analiz + GitHub push, depth-4 recheck, sentetik oyun sonları, rapor. `data/analysis` push edilir; cache gitignore'dadır.
+- Not: Bu commit analiz sonuçlarını içermez; sonuç CSV'leri ve REPORT.md Kaggle çalıştırmasında üretilip ayrıca push edilecek.
+
 ## 0.8.0 — Stage 8: Polyglot açılış kitabı
 
 - `engine/book.py`: Polyglot kitap okuyucusu. Standart Polyglot Zobrist anahtarı motorun kendi 0x88 tahtasından hesaplanır; rok (şahın kendi kalesine gidişi) ve terfi kodları çözülür; ağırlıklı seçim yalnızca yasal hamleler arasından yapılır.

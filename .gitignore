@@ -19,3 +19,8 @@ stockfish.exe
 .coverage
 htmlcov/
 
+
+# Analysis intermediates (per-game caches stay in the Kaggle session)
+data/analysis/cache/
+data/analysis_smoke/
+data/analysis_test*/
