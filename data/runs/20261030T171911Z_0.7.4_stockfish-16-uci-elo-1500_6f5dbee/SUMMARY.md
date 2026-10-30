@@ -1,0 +1,26 @@
+# 20261030T171911Z_0.7.4_stockfish-16-uci-elo-1500_6f5dbee
+
+- Engine: Acemi 0.7.4; opponent: Stockfish 16 (UCI_Elo 1500)
+- Opening set: acemi-32; move time: 500 ms
+- Games: 100 (W/D/L: 45/20/35), score: 55.0%
+- Elo difference: +34.9 (95% Wilson interval -33.1 to +102.9)
+- SPRT: not run
+- Completed games: 100; aborted games: 0; average plies: 101.6
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 3.5; nodes/second: 10253
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - e2e4 e7e5 g1f3 b8c6 b1c3 g8f6 f1b5 f8b4 e1g1 e8g8: 2/0/2
+  - e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6: 2/0/2
+  - e2e4 c7c5 c2c3 d7d5 e4d5 d8d5 d2d4 g8f6 g1f3 e7e6: 1/1/2
+  - e2e4 e7e6 d2d4 d7d5 b1d2 g8f6 e4e5 f6d7 f1d3 c7c5: 1/1/2
+  - e2e4 d7d6 d2d4 g8f6 b1c3 g7g6 g1f3 f8g7 f1e2 e8g8: 2/0/2
+  - d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8: 2/0/2
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 c7c5: 0/0/2
+  - d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 g2g3 c8b7 f1g2 f8e7: 0/0/2
+  - d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3: 0/0/2
+  - c2c4 e7e5 b1c3 g8f6 g1f3 b8c6 g2g3 d7d5 c4d5 f6d5: 0/0/2
+- Losses by game phase at game end (opening 0; middlegame 15; endgame 20). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 80, stalemate 1, threefold_repetition 19
+- Engine moves without a search score: 2 of 4584 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 10470 (the figure above divides by wall clock including pipe latency)
+- Note: the opponent's UCI_Elo is a rough scale and is not directly comparable with Lichess or CCRL ratings
