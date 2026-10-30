@@ -81,6 +81,9 @@ LMR_MIN_DEPTH = 3
 LMR_FULL_DEPTH_MOVES = 3  # The first moves of a node are never reduced.
 # A checked node searches one ply deeper, at most this many times per line.
 MAX_CHECK_EXTENSIONS = 1
+# Late move pruning: at the last full ply, quiet moves after this many are skipped.
+LMP_MAX_DEPTH = 1
+LMP_QUIET_MOVE_LIMIT = 10
 KILLER_BONUS = (800, 790)
 HISTORY_CAP = 400
 
@@ -211,10 +214,12 @@ class Searcher:
         killers: bool = True,
         pvs: bool = False,
         check_extension: bool = False,
+        lmp: bool = False,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
     ) -> None:
         self.use_pvs = pvs
         self.use_check_extension = check_extension
+        self.use_lmp = lmp
         self.next_iteration_factor = next_iteration_factor
         self.use_null_move = null_move
         self.use_lmr = lmr
@@ -490,6 +495,16 @@ class Searcher:
             )
             board.make_move(move)
             try:
+                if (
+                    self.use_lmp
+                    and not in_check
+                    and depth <= LMP_MAX_DEPTH
+                    and index >= LMP_QUIET_MOVE_LIMIT
+                    and is_quiet
+                    and abs(beta) < MATE_BOUND
+                    and not board.in_check()
+                ):
+                    continue
                 reduce = (
                     self.use_lmr
                     and is_quiet

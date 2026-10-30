@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.7.4 — Arama paketi denemesi: LMP + check extension + süre yönetimi
+
+- `engine/search.py`: `LateMovePruning` (varsayılan **kapalı**). Son tam ply'de (depth ≤ 1), şah çekili değilken, ilk 10 sakin hamleden sonra kalan sakin hamleler atlanır; alma/terfi/şah veren hamleler ve mat pencereleri korunur.
+- `engine/uci.py`: `LateMovePruning` (check, default false). Süre yönetimi zaten `NextIterationPct` seçeneğiyle ayarlanabiliyor.
+- `tests/test_lmp.py`: varsayılan kapalı, sakin orta oyunda düğüm azalması, mat-in-2 hâlâ bulunuyor, UCI anahtarı. Test yazan tarafta ÇALIŞTIRILDI: tam paket 198 test + 99 alt test; LMP kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama.
+- Ölçüm kararı: 150 oyunluk tek özellik testleri ölçüm tabanına çarptı (PVS +18,5; geçer piyon +20,9; paket −18,5; şah güvenliği −30,2 `accept_h0`; check extension +6,9). Bu yüzden üç arama değişikliği **paket** olarak ölçülecek: `CheckExtension=true`, `LateMovePruning=true`, `NextIterationPct=125` vs hepsi kapalı/150.
+- Notebook: 300 oyun @250 ms paket A/B (SPRT 0/30). Karar: SPRT `accept_h1` veya skor ≥%58 ise paketi aç; ≤%45 ise geri al; arası kapalı.
+
 ## 0.7.3 — Arama: şah çekme uzatması (varsayılan kapalı)
 
 - `engine/search.py`: `Searcher(check_extension=...)` ve `_negamax(..., extensions=0)`. Şah çekilen düğümde kalan derinlik +1 ply; **hat başına en fazla 1 uzatma**, kökte ve quiescence'ta yok, `MAX_PLY - 2` sınırına yakınken yok. Amaç: ufuktaki mat/keşif şahı taktiklerini görmek, ağacı patlatmadan.

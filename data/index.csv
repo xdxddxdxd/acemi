@@ -27,4 +27,3 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261030T104120Z_0.7.0_acemi-0.7.0-evalpassedpawns-false_df23248,20261030T104120Z,0.7.0,Acemi 0.7.0 EvalPassedPawns=false,150,53.0,20.9,inconclusive
 20261030T115210Z_0.7.1_acemi-0.7.1-evalpassedpawns-false-evalpawnstructure-false-evalbishoppair-false_a7a38c2,20261030T115210Z,0.7.1,"Acemi 0.7.1 EvalPassedPawns=false,EvalPawnStructure=false,EvalBishopPair=false",150,47.3,-18.5,inconclusive
 20261030T124401Z_0.7.2_acemi-0.7.2-evalkingsafety-false_eb7558d,20261030T124401Z,0.7.2,Acemi 0.7.2 EvalKingSafety=false,150,45.7,-30.2,accept_h0
-20261030T135123Z_0.7.3_acemi-0.7.3-checkextension-false_94aac84,20261030T135123Z,0.7.3,Acemi 0.7.3 CheckExtension=false,150,51.0,6.9,inconclusive

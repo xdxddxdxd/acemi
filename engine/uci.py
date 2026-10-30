@@ -51,6 +51,7 @@ OPTION_LINES = (
     "option name Killers type check default true",
     "option name PVS type check default false",
     "option name CheckExtension type check default false",
+    "option name LateMovePruning type check default false",
     # Stage 7 evaluation features (off until proven by a match).
     "option name EvalPassedPawns type check default false",
     "option name EvalPawnStructure type check default false",
@@ -65,6 +66,7 @@ CHECK_OPTIONS = {
     "killers": "use_killers",
     "pvs": "use_pvs",
     "checkextension": "use_check_extension",
+    "latemovepruning": "use_lmp",
 }
 EVAL_OPTIONS = {
     "evalpassedpawns": "passed_pawns",
