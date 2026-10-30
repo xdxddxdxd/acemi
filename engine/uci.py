@@ -54,11 +54,17 @@ OPTION_LINES = (
     "option name EvalPassedPawns type check default false",
     "option name EvalPawnStructure type check default false",
     "option name EvalBishopPair type check default false",
+    "option name EvalKingSafety type check default false",
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
 )
 CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers", "pvs": "use_pvs"}
-EVAL_OPTIONS = {"evalpassedpawns": "passed_pawns", "evalpawnstructure": "pawn_structure", "evalbishoppair": "bishop_pair"}
+EVAL_OPTIONS = {
+    "evalpassedpawns": "passed_pawns",
+    "evalpawnstructure": "pawn_structure",
+    "evalbishoppair": "bishop_pair",
+    "evalkingsafety": "king_safety",
+}
 
 
 class UciSession:

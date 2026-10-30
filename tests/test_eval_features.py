@@ -145,6 +145,60 @@ class BishopPairTests(FlagTestCase):
         self.assertEqual(self.score(self.WHITE_PAIR, False), self.score(self.BLACK_PAIR, False))
 
 
+class KingSafetyTests(FlagTestCase):
+    # White Kg1 with f2/g2/h2, Black Ke8 with d7/e7/f7: both kings have a full shield.
+    SHIELDED = "3qk3/3ppp2/8/8/8/8/5PPP/3Q2K1 w - - 0 1"
+    # Same, but White's f2/g2/h2 are gone: f, g and h files are all semi-open.
+    BARE_WHITE = "3qk3/3ppp2/8/8/8/8/8/3Q2K1 w - - 0 1"
+    # Only the f2 pawn is gone: the f file next to the king is semi-open.
+    OPEN_NEAR_KING = "3qk3/3ppp2/8/8/8/8/6PP/3Q2K1 w - - 0 1"
+    # Colour-symmetric: both kings shielded, same position with each side to move.
+    SYMMETRIC = "3q2k1/5ppp/8/8/8/8/5PPP/3Q2K1 w - - 0 1"
+    # White king has left the back two ranks, so king safety does not apply to it.
+    ADVANCED_KING = "3q2k1/5ppp/8/8/4K3/8/8/3Q4 w - - 0 1"
+
+    def score(self, fen: str, on: bool) -> int:
+        FLAGS.king_safety = on
+        return evaluate(Board(fen))
+
+    def test_off_by_default(self) -> None:
+        self.assertFalse(FLAGS.king_safety)
+
+    def test_start_position_stays_zero(self) -> None:
+        self.assertEqual(self.score(START, True), 0)
+
+    def test_full_shield_gets_no_penalty(self) -> None:
+        from engine.eval.classic import _king_safety
+
+        self.assertEqual(_king_safety(Board(self.SHIELDED)), (0, 0))
+        self.assertEqual(self.score(self.SHIELDED, True), self.score(self.SHIELDED, False))
+
+    def test_bare_king_is_penalised_on_all_three_files(self) -> None:
+        from engine.eval.classic import _KING_OPEN_PENALTY_MG, _king_safety
+
+        self.assertEqual(_king_safety(Board(self.BARE_WHITE)), (-3 * _KING_OPEN_PENALTY_MG, 0))
+        self.assertLess(self.score(self.BARE_WHITE, True), self.score(self.BARE_WHITE, False))
+
+    def test_open_file_next_to_king_is_penalised(self) -> None:
+        from engine.eval.classic import _KING_OPEN_PENALTY_MG, _king_safety
+
+        self.assertEqual(_king_safety(Board(self.OPEN_NEAR_KING)), (-_KING_OPEN_PENALTY_MG, 0))
+        self.assertLess(self.score(self.OPEN_NEAR_KING, True), self.score(self.OPEN_NEAR_KING, False))
+
+    def test_no_queens_means_no_king_safety(self) -> None:
+        from engine.eval.classic import _king_safety
+
+        self.assertEqual(_king_safety(Board("6k1/5ppp/8/8/8/8/5PPP/6K1 w - - 0 1")), (0, 0))
+
+    def test_advanced_king_is_ignored(self) -> None:
+        from engine.eval.classic import _king_safety
+
+        self.assertEqual(_king_safety(Board(self.ADVANCED_KING)), (0, 0))
+
+    def test_symmetric_between_colours(self) -> None:
+        self.assertEqual(self.score(self.SYMMETRIC, True), self.score(self.SYMMETRIC, False))
+
+
 class UciSwitchTests(FlagTestCase):
     def test_option_is_declared_and_toggles(self) -> None:
         session = UciSession()
@@ -162,7 +216,11 @@ class UciSwitchTests(FlagTestCase):
     def test_new_options_toggle(self) -> None:
         session = UciSession()
         options = "\n".join(session.handle_line("uci"))
-        for name, flag in (("EvalPawnStructure", "pawn_structure"), ("EvalBishopPair", "bishop_pair")):
+        for name, flag in (
+            ("EvalPawnStructure", "pawn_structure"),
+            ("EvalBishopPair", "bishop_pair"),
+            ("EvalKingSafety", "king_safety"),
+        ):
             self.assertIn(f"option name {name} type check default false", options)
             self.assertEqual(session.handle_line(f"setoption name {name} value true"), [])
             self.assertTrue(getattr(FLAGS, flag))

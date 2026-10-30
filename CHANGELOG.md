@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.7.2 — Stage 7 (3/4): şah güvenliği (tek özellik)
+
+- `engine/eval/classic.py`: `EvalFlags.king_safety` ve `_king_safety` (varsayılan **kapalı**). Yalnızca tahtada vezir varken ve şah kendi arka iki sırasındayken uygulanır. Kralın hattı ve iki komşu hatta, kralın 1–2 sıra önünde dost piyon yoksa her hat için **−12 mg** ceza; EG katkısı 0. Başlangıç 0, renkler arası simetrik.
+- `engine/uci.py`: `EvalKingSafety` (check, varsayılan false).
+- `tests/test_eval_features.py`: kapalı varsayılan, başlangıç 0, tam kalkan cezasız, çıplak şah üç hat, açık hat cezası, vezirsiz durumda etkisizlik, ilerlemiş şahın yok sayılması, simetri, UCI anahtarı. Test yazan tarafta ÇALIŞTIRILDI: eval testleri 31/31; bayraklar kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama.
+- Notebook: 150 oyunluk A/B (`EvalKingSafety` açık vs kapalı, SPRT 0/30).
+- Ölçüm sonuçları: geçer piyon %53,0 (+20,9), paket %47,3 (−18,5) — ikisi de belirsiz; üç bayrak da kapalı kalıyor. Şah güvenliği tek başına ölçülecek.
+
 ## 0.7.1 — Stage 7 (2/4): piyon yapısı + fil çifti (paket ölçümü)
 
 - `engine/eval/classic.py`: `EvalFlags`'a `pawn_structure` ve `bishop_pair` eklendi (ikisi de varsayılan **kapalı**). Piyon yapısı: izole (komşu hatta dost piyon yok), çift (hattaki her ek piyon), geri (komşu hatlardaki dost piyonların hepsi daha ileride) cezaları; izole piyon ayrıca geri sayılmaz. Fil çifti: iki fili olan tarafa bonus. Hepsi orta/son oyun ayrı, renkler arası simetrik, başlangıç 0.

@@ -182,12 +182,13 @@ class EvalFlags:
     single build can play itself with a feature on and off for an A/B test.
     """
 
-    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair")
+    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety")
 
     def __init__(self) -> None:
         self.passed_pawns = False
         self.pawn_structure = False
         self.bishop_pair = False
+        self.king_safety = False
 
 
 FLAGS = EvalFlags()
@@ -255,6 +256,7 @@ _BACKWARD_MG = 10
 _BACKWARD_EG = 10
 _BISHOP_PAIR_MG = 20
 _BISHOP_PAIR_EG = 30
+_KING_OPEN_PENALTY_MG = 12
 
 
 def _pawn_structure(board: Board) -> tuple[int, int]:
@@ -322,6 +324,44 @@ def _bishop_pair_bonus(board: Board) -> tuple[int, int]:
     return mg, eg
 
 
+def _king_safety(board: Board) -> tuple[int, int]:
+    """(middlegame, endgame) king safety penalty, White minus Black.
+
+    Only applies while queens are on the board and the king is still on its back
+    two ranks. A king file (and its two neighbours) without a friendly pawn one or
+    two ranks in front of the king is semi-open and gets the penalty. Endgame
+    score is zero: a shielded king matters in the middlegame, not the endgame.
+    """
+    if not board.piece_squares[QUEEN] and not board.piece_squares[-QUEEN]:
+        return 0, 0
+    mg = 0
+    for color, sign in ((WHITE, 1), (-WHITE, -1)):
+        king_square = board.king_squares[color]
+        row = king_square >> 4
+        if color == WHITE and row < 6:
+            continue
+        if color != WHITE and row > 1:
+            continue
+        file = king_square & 7
+        pawns = board.piece_squares[color * PAWN]
+        missing = 0
+        for shield_file in (file - 1, file, file + 1):
+            if shield_file < 0 or shield_file > 7:
+                continue
+            shielded = False
+            for square in pawns:
+                if square & 7 != shield_file:
+                    continue
+                distance = row - (square >> 4) if color == WHITE else (square >> 4) - row
+                if 0 < distance <= 2:
+                    shielded = True
+                    break
+            if not shielded:
+                missing += 1
+        mg -= sign * _KING_OPEN_PENALTY_MG * missing
+    return mg, 0
+
+
 def evaluate_classic(board: Board) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     mg = 0
@@ -348,6 +388,10 @@ def evaluate_classic(board: Board) -> int:
         eg += bonus_eg
     if FLAGS.bishop_pair:
         bonus_mg, bonus_eg = _bishop_pair_bonus(board)
+        mg += bonus_mg
+        eg += bonus_eg
+    if FLAGS.king_safety:
+        bonus_mg, bonus_eg = _king_safety(board)
         mg += bonus_mg
         eg += bonus_eg
 
