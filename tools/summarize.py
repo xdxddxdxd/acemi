@@ -131,6 +131,12 @@ def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
             f"- Unpaired games excluded from result and SPRT: {excluded} "
             "(retained in raw PGN/move artifacts)"
         )
+    engine_options = meta["engine_settings"].get("extra_options") or {}
+    opponent_options = opponent.get("extra_options") or {}
+    if engine_options or opponent_options:
+        lines.append(
+            f"- Extra UCI options: engine {engine_options or 'none'}; opponent {opponent_options or 'none'}"
+        )
     post_decision = results.get("post_decision_games_excluded", 0)
     if post_decision:
         lines.append(

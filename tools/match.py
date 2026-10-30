@@ -429,6 +429,30 @@ def _split_command(text: str) -> list[str]:
     return shlex.split(text, posix=(os.name != "nt"))
 
 
+def parse_option_assignments(items: list[str] | None) -> list[list]:
+    """Turn ``Name=Value`` strings into [name, value, required] option entries.
+
+    ``true``/``false`` become booleans and digits become integers. They are required:
+    an engine that does not declare the option makes the preflight fail instead of
+    silently playing with the default (a typo must not produce a fake A/B test).
+    """
+    options: list[list] = []
+    for item in items or []:
+        name, separator, raw = item.partition("=")
+        name, raw = name.strip(), raw.strip()
+        if not separator or not name or not raw:
+            raise ValueError(f"option {item!r} must look like Name=Value")
+        lowered = raw.lower()
+        if lowered in ("true", "false"):
+            value: str | int | bool = lowered == "true"
+        elif raw.lstrip("-").isdigit():
+            value = int(raw)
+        else:
+            value = raw
+        options.append([name, value, True])
+    return options
+
+
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--games", type=int, default=20, help="games to play (maximum with --sprt)")
@@ -441,6 +465,14 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--engine-cmd", default=None, help="engine under test (default: python -m engine)")
     parser.add_argument("--engine-cwd", default=None)
     parser.add_argument("--openings", default=None, help="opening file (FEN/EPD or UCI-move lines)")
+    parser.add_argument(
+        "--engine-option", action="append", default=[], metavar="NAME=VALUE",
+        help="extra UCI option for the engine under test (repeatable), e.g. NullMove=false",
+    )
+    parser.add_argument(
+        "--opponent-option", action="append", default=[], metavar="NAME=VALUE",
+        help="extra UCI option for the opponent (repeatable), e.g. NullMove=false",
+    )
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--hash-mb", type=int, default=16)
     parser.add_argument("--max-plies", type=int, default=400)
@@ -457,6 +489,12 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
+    try:
+        extra_engine_options = parse_option_assignments(args.engine_option)
+        extra_opponent_options = parse_option_assignments(args.opponent_option)
+    except ValueError as error:
+        print(f"Bad option: {error}", file=sys.stderr)
+        return 2
     root = Path(args.root)
     cores = os.cpu_count() or 1
     concurrency = args.concurrency if args.concurrency is not None else max(1, cores - 1)
@@ -489,6 +527,8 @@ def main(argv: list[str] | None = None) -> int:
     base_opponent_options: list[list] = [["Hash", args.hash_mb, False], ["Threads", 1, False]]
     if uci_elo is not None:
         base_opponent_options += [["UCI_LimitStrength", True, True], ["UCI_Elo", uci_elo, True]]
+    base_engine_options += extra_engine_options
+    base_opponent_options += extra_opponent_options
 
     # Preflight: start both engines once to read their names and validate options.
     log_lines: list[str] = []
@@ -663,6 +703,8 @@ def main(argv: list[str] | None = None) -> int:
     opponent_label = f"{opponent_name} {opponent_version}".strip()
     if uci_elo is not None:
         opponent_label += f" UCI_Elo {uci_elo}"
+    if extra_opponent_options:
+        opponent_label += " " + ",".join(f"{name}={str(value).lower()}" for name, value, _ in extra_opponent_options)
     slug = re.sub(r"[^a-z0-9.]+", "-", opponent_label.lower()).strip("-")
     short_hash = (git["commit"] or hashlib.sha1(date_key.encode()).hexdigest())[:7]
     run_name = f"{date_key}_{engine_version}_{slug}_{short_hash}"
@@ -681,8 +723,14 @@ def main(argv: list[str] | None = None) -> int:
             "hash_mb": args.hash_mb,
             "random_seed": args.seed,
             "opening_book": False,
+            "extra_options": {name: value for name, value, _ in extra_engine_options},
         },
-        "opponent": {"name": opponent_name, "version": opponent_version, "uci_elo": uci_elo},
+        "opponent": {
+            "name": opponent_name,
+            "version": opponent_version,
+            "uci_elo": uci_elo,
+            "extra_options": {name: value for name, value, _ in extra_opponent_options},
+        },
         "opening_set": opening_set,
         "match_settings": {
             "games_requested": args.games,

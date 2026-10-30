@@ -44,7 +44,14 @@ OPTION_LINES = (
     "option name Hash type spin default 16 min 1 max 4096",
     "option name Threads type spin default 1 min 1 max 1",
     "option name Seed type spin default 1 min 0 max 2147483647",
+    # Feature switches so one build can play against itself with a feature off (A/B tests).
+    "option name NullMove type check default true",
+    "option name LMR type check default true",
+    "option name Killers type check default true",
+    # A new iteration starts only if the time left is at least this percent of the last one.
+    "option name NextIterationPct type spin default 150 min 50 max 500",
 )
+CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers"}
 
 
 class UciSession:
@@ -111,6 +118,21 @@ class UciSession:
         name = " ".join(name_tokens).lower()
         value = " ".join(value_tokens)
 
+        if name in CHECK_OPTIONS:
+            text = value.strip().lower()
+            if text not in ("true", "false"):
+                return [f"info string Option {name} needs true or false"]
+            setattr(self.searcher, CHECK_OPTIONS[name], text == "true")
+            return []
+        if name == "nextiterationpct":
+            try:
+                percent = int(value)
+            except ValueError:
+                return [f"info string Option {name} needs an integer value"]
+            if not 50 <= percent <= 500:
+                return [f"info string Option {name} must be between 50 and 500"]
+            self.searcher.next_iteration_factor = percent / 100.0
+            return []
         if name in ("hash", "threads", "seed"):
             try:
                 number = int(value)

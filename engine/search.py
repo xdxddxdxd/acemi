@@ -207,7 +207,9 @@ class Searcher:
         null_move: bool = True,
         lmr: bool = True,
         killers: bool = True,
+        next_iteration_factor: float = NEXT_ITERATION_FACTOR,
     ) -> None:
+        self.next_iteration_factor = next_iteration_factor
         self.use_null_move = null_move
         self.use_lmr = lmr
         self.use_killers = killers
@@ -325,7 +327,7 @@ class Searcher:
             if self._deadline is not None:
                 remaining = self._deadline - time.monotonic()
                 last_iteration = time.monotonic() - iteration_started
-                if remaining <= 0 or remaining < last_iteration * NEXT_ITERATION_FACTOR:
+                if remaining <= 0 or remaining < last_iteration * self.next_iteration_factor:
                     break
 
         return self._result(best_move, best_score, completed_depth, started, attempted_depth)

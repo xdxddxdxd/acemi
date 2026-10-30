@@ -1,5 +1,20 @@
 # Değişiklik günlüğü
 
+## 0.6.2 — Ölçüm altyapısı onarımı (motor gücü değişmedi)
+
+Harici bir inceleme raporunun bulguları tek tek koda karşı doğrulandı; doğrulananlar düzeltildi, doğrulanmayan veya zarar verecek olanlar bilerek yapılmadı.
+
+- `tools/sprt.py`: LLR artık her hipotez için beraberlik olasılığını en olabilir seçen trinomial genelleştirilmiş SPRT. Eski formül gözlenen varyansa bölüyordu ve uç skorlarda şişiyordu (16-0-0: 3.34, doğrusu 0.45; 42-9-3: 3.28, doğrusu 1.32). Smoothing yok. Sonuç: tek tarafa çok kayan kısa koşular artık "kabul" edilmez; büyük kazançlar için `--elo1 30` gibi daha yüksek bir H1 kullanın. 0.4.0, 0.4.1 ve 0.5.0 için kayıtlı `accept_h1` kararları eski formülün ürünüdür, `data/` değişmedi.
+- `tools/match.py`, `tools/pairing.py`: SPRT kararı verildiği andaki oyun örneği dondurulur; karardan sonra biten oyunlar PGN/hamle kayıtlarında kalır ama sonuçtan çıkarılır (`post_decision_games_excluded`). Böylece kayıtlı W/D/L, LLR ve karar aynı örneği anlatır.
+- `engine/search.py`, `engine/board.py`: 100. yarım hamlede mat artık beraberlik değil mat sayılır (negamax, quiescence, `is_draw`). Yeni testler eski kodda başarısız, yenisinde geçer.
+- Telemetri: skorsuz `info` satırlarından depth/nodes/time kaydedilir; motorun kendi `info time` değeri `search_time_ms`, en derin başlanan iterasyon `attempted_depth` olarak kaydedilir (`SearchResult.depth` hâlâ son tamamlanan iterasyondur); `results.json` bitiş türlerini, skorsuz hamle sayısını ve `nodes_per_second_search` değerini içerir; `meta` CPU modelini ve çalıştırılan komutu içerir.
+- `tools/elo.py`: güven aralığı Wilson skor aralığı; yanlış "her zaman muhafazakâr" iddiası kaldırıldı.
+- A/B altyapısı: motor `NullMove`, `LMR`, `Killers` (check) ve `NextIterationPct` (spin, varsayılan 150) UCI seçeneklerini sunar; `tools.match` `--engine-option NAME=VALUE` ve `--opponent-option NAME=VALUE` alır (tekrarlanabilir; motorun tanımlamadığı seçenek kurulumu durdurur). Seçenekler `meta.json` ve `SUMMARY.md`'de görünür. Varsayılan davranış değişmedi.
+- `openings/acemi-32.txt`: 32 satırlık açılış seti (`--openings openings/acemi-32.txt`). Denge yalnızca motorun kendi sığ aramasıyla kabaca kontrol edildi; Stockfish ±100 cp filtresi henüz uygulanmadı.
+- Notebook: `checkout_commit` eski sürüm dizini varsa bile `fetch` + `checkout` yapar ve HEAD'i doğrular; ana hücre 0.6.2 ölçüm duman testi (24 oyun, Killers açık/kapalı, SPRT 0/20).
+- Testler: `test_stats` (SPRT/Wilson referansları), `test_pairing`, `test_telemetry`, `test_ab_options`, 50 hamle/mat testleri. Bu ortamda tam paket çalıştırıldı (aşağıdaki commit'te sonuç); Kaggle doğrulaması bekleniyor.
+- Bilerek yapılmayanlar: `grace_ms` düşürme (paralel gecikmede haksız kayıp riski), qsearch pat tespiti (hız maliyeti), TT/null+tekrar teorik riskleri, perft d5/6, tarihsel `data/` düzeltmeleri.
+
 ## 0.6.1 — Süre kullanımı düzeltmesi
 
 - 0.6.0 SPRT verisi (300 maç): motorlar 500 ms bütçenin yalnızca ~%70'ini kullanıyordu (hamle başına ~347 ms); `NEXT_ITERATION_FACTOR = 3` yeni iterasyonu çok erken engelliyordu.
