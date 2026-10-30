@@ -171,12 +171,79 @@ def generate_pseudo_legal_moves(board: Board, captures_only: bool = False) -> It
                     target += delta
 
 
-def generate_legal_moves(board: Board, captures_only: bool = False) -> Iterator[Move]:
-    """Yield moves that do not leave the moving side's king in check."""
+def generate_legal_moves_reference(board: Board, captures_only: bool = False) -> Iterator[Move]:
+    """Slow reference: play every pseudo-legal move and test the king.
+
+    Kept for tests: ``generate_legal_moves`` must return exactly the same moves in
+    exactly the same order.
+    """
     moving_color = board.side_to_move
     for move in generate_pseudo_legal_moves(board, captures_only):
         board.make_move(move)
         legal = not board.is_square_attacked(board.king_squares[moving_color], -moving_color)
+        board.unmake_move()
+        if legal:
+            yield move
+
+
+def _pinned_squares(board: Board, color: int, king_square: int) -> set[int]:
+    """Squares of ``color``'s pieces that are pinned to their king by an enemy slider."""
+    squares = board.squares
+    pinned: set[int] = set()
+    for directions, slider in ((BISHOP_DIRECTIONS, BISHOP), (ROOK_DIRECTIONS, ROOK)):
+        for delta in directions:
+            source = king_square + delta
+            candidate = -1
+            while not source & 0x88:
+                piece = squares[source]
+                if piece != EMPTY:
+                    if piece * color > 0:
+                        if candidate >= 0:
+                            break  # Two own pieces in a row: neither is pinned on this line.
+                        candidate = source
+                    else:
+                        if candidate >= 0 and (abs(piece) == slider or abs(piece) == QUEEN):
+                            pinned.add(candidate)
+                        break
+                source += delta
+    return pinned
+
+
+def generate_legal_moves(
+    board: Board, captures_only: bool = False, known_in_check: bool | None = None
+) -> Iterator[Move]:
+    """Yield moves that do not leave the moving side's king in check.
+
+    Same moves and order as ``generate_legal_moves_reference``, but a move is only
+    played to test the king when it can actually be illegal: the side is in check,
+    the king moves (castling included), the moving piece is pinned, or the move
+    may be en passant. Every other move of a side that is not in check is legal.
+    ``known_in_check`` lets a caller that already knows whether the side to move
+    is in check skip recomputing it.
+    """
+    color = board.side_to_move
+    opponent = -color
+    squares = board.squares
+    king_square = board.king_squares[color]
+    if known_in_check is None:
+        in_check = board.is_square_attacked(king_square, opponent)
+    else:
+        in_check = known_in_check
+    pinned = set() if in_check else _pinned_squares(board, color, king_square)
+    ep_square = board.en_passant_square
+
+    for move in generate_pseudo_legal_moves(board, captures_only):
+        from_square = move.from_square
+        if (
+            not in_check
+            and from_square != king_square
+            and from_square not in pinned
+            and move.to_square != ep_square
+        ):
+            yield move
+            continue
+        board.make_move(move)
+        legal = not board.is_square_attacked(board.king_squares[color], opponent)
         board.unmake_move()
         if legal:
             yield move

@@ -37,6 +37,12 @@ PROMOTION_CHARS = {KNIGHT: "n", BISHOP: "b", ROOK: "r", QUEEN: "q"}
 PROMOTION_TYPES = (QUEEN, ROOK, BISHOP, KNIGHT)
 
 
+_KNIGHT_DELTAS = (-33, -31, -18, -14, 14, 18, 31, 33)
+_KING_DELTAS = (-17, -16, -15, -1, 1, 15, 16, 17)
+_DIAGONAL_DELTAS = (-17, -15, 15, 17)
+_ORTHOGONAL_DELTAS = (-16, -1, 1, 16)
+
+
 def is_valid_square(square: int) -> bool:
     return 0 <= square < 128 and (square & 0x88) == 0
 
@@ -459,33 +465,54 @@ class Board:
         if not is_valid_square(square):
             raise ValueError(f"Invalid 0x88 square: {square}")
 
-        pawn_sources = (square + 15, square + 17) if by_color == WHITE else (square - 15, square - 17)
-        if any(is_valid_square(src) and self.squares[src] == by_color * PAWN for src in pawn_sources):
+        # Hot path (called for every legality test). ``source & 0x88`` is the 0x88
+        # off-board test: every source below is within -33..160 of a valid square,
+        # and all of those values that are off the board have bit 0x08 or 0x80 set.
+        squares = self.squares
+        pawn_piece = by_color * PAWN
+        if by_color == WHITE:
+            pawn_a, pawn_b = square + 15, square + 17
+        else:
+            pawn_a, pawn_b = square - 15, square - 17
+        if (not pawn_a & 0x88 and squares[pawn_a] == pawn_piece) or (
+            not pawn_b & 0x88 and squares[pawn_b] == pawn_piece
+        ):
             return True
 
-        for delta in (-33, -31, -18, -14, 14, 18, 31, 33):
+        knight_piece = by_color * KNIGHT
+        for delta in _KNIGHT_DELTAS:
             source = square + delta
-            if is_valid_square(source) and self.squares[source] == by_color * KNIGHT:
+            if not source & 0x88 and squares[source] == knight_piece:
                 return True
 
-        for delta in (-17, -16, -15, -1, 1, 15, 16, 17):
+        king_piece = by_color * KING
+        for delta in _KING_DELTAS:
             source = square + delta
-            if is_valid_square(source) and self.squares[source] == by_color * KING:
+            if not source & 0x88 and squares[source] == king_piece:
                 return True
 
-        for directions, sliders in (
-            ((-17, -15, 15, 17), (BISHOP, QUEEN)),
-            ((-16, -1, 1, 16), (ROOK, QUEEN)),
-        ):
-            for delta in directions:
-                source = square + delta
-                while is_valid_square(source):
-                    piece = self.squares[source]
-                    if piece != EMPTY:
-                        if (WHITE if piece > 0 else BLACK) == by_color and abs(piece) in sliders:
-                            return True
-                        break
-                    source += delta
+        queen_piece = by_color * QUEEN
+        bishop_piece = by_color * BISHOP
+        for delta in _DIAGONAL_DELTAS:
+            source = square + delta
+            while not source & 0x88:
+                piece = squares[source]
+                if piece != EMPTY:
+                    if piece == bishop_piece or piece == queen_piece:
+                        return True
+                    break
+                source += delta
+
+        rook_piece = by_color * ROOK
+        for delta in _ORTHOGONAL_DELTAS:
+            source = square + delta
+            while not source & 0x88:
+                piece = squares[source]
+                if piece != EMPTY:
+                    if piece == rook_piece or piece == queen_piece:
+                        return True
+                    break
+                source += delta
         return False
 
     def in_check(self, color: int | None = None) -> bool:

@@ -45,6 +45,8 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
 - Position database: `data/positions/<xx>.jsonl.gz` shards (xx = first two hex digits of the hash), merged across runs; counts are from the side to move's view. Extra fields `eval_samples`. Entries from demo runs live in per-run files and carry `is_demo: true`.
 - Acemi's `eval_cp`, `depth` and `nodes` are null until search exists (not measured, not zero).
 
+- `data/bench/<label>.json`: output of `python -m tools.bench` (fixed-depth search of 10 positions: per position `score`, `depth`, `nodes`, `best_move`, `seconds`; totals and `nodes_per_second`; runtime and CPU). Two builds that search identically must have equal scores, depths, nodes and best moves; only seconds differ. Compare with `python -m tools.bench --compare A.json B.json`.
+
 ### Compressed artifacts
 
 - `games.pgn.gz`: PGN games with run metadata and outcomes.

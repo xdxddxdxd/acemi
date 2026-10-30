@@ -445,7 +445,7 @@ class Searcher:
             if null_score >= beta:
                 return beta if null_score >= MATE_BOUND else null_score
 
-        moves = list(generate_legal_moves(board))
+        moves = list(generate_legal_moves(board, known_in_check=in_check))
         self._check_stopped()
         if not moves:
             return self._terminal_score(board, ply)
@@ -543,7 +543,7 @@ class Searcher:
             return evaluate(board)
 
         if board.in_check():
-            moves = list(generate_legal_moves(board))
+            moves = list(generate_legal_moves(board, known_in_check=True))
             if not moves:
                 return -MATE_SCORE + ply
             best = -MATE_SCORE + ply
@@ -553,7 +553,7 @@ class Searcher:
                 return best
             if best > alpha:
                 alpha = best
-            moves = list(generate_legal_moves(board, captures_only=True))
+            moves = list(generate_legal_moves(board, captures_only=True, known_in_check=False))
 
         self._check_stopped()
         order_moves(board, moves)

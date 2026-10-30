@@ -1,5 +1,18 @@
 # Değişiklik günlüğü
 
+## 0.6.4 — Hız (aynı arama, daha az iş) — KOD YAZILDI, ÇALIŞTIRILMADI
+
+Bu sürümdeki kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da.
+
+- `engine/board.py`: `is_square_attacked` aynı sonucu verir, ama her kare için `is_valid_square` çağırmak yerine 0x88 bit testi kullanır, taş sabitlerini bir kez hesaplar, kayan taşları `piece == bishop/rook/queen` ile kontrol eder.
+- `engine/movegen.py`: `generate_legal_moves` artık her pseudo-legal hamleyi oynayıp geri almıyor. Yalnızca şah çekiliyorsa, şah hamlesi (rok dahil), bağlı (pinned) taş veya olası en passant varsa oynayıp test eder; diğer hamleler şahtaki olmayan taraf için zaten legaldir. Aynı hamleler aynı sırayla döner. Eski yöntem `generate_legal_moves_reference` olarak testler için korundu. İsteğe bağlı `known_in_check` parametresi aramanın zaten bildiği şah bilgisini kullanır.
+- `engine/search.py`: negamax ve quiescence `known_in_check` geçirir.
+- `tools/bench.py`: sabit derinlikte 10 pozisyonlu benchmark. İki sürüm (veya CPython/PyPy) karşılaştırılır; skor, derinlik, düğüm sayısı ve en iyi hamle birebir aynı olmak zorundadır, yalnızca süre farklı olabilir. `--engine-root` eski bir commit'i ölçer.
+- `tests/test_movegen_equivalence.py`: yeni üretici = eski üretici (özel pozisyonlar: bağlı taşlar, en passant, çifte şah, rok, terfi; depth 2 ağaçları; rastgele oyunlar).
+- Notebook: benchmark (önceki commit `fcd1d64` / yeni / PyPy), 100 oyunluk iki doğrulama maçı (yeni vs önceki, PyPy vs CPython).
+- Beklenti (tahmin, ölçülmedi): CPython'da 1,4x-2x; PyPy'de çok daha fazla. Yapılmayanlar: `make_move` doğrulamalarının hafifletilmesi, üç tekrar taraması (kazancı küçük, risk/fayda düşük).
+
+
 ## 0.6.3 — PVS (varsayılan KAPALI, ölçüm bekliyor)
 
 - `engine/search.py`: Principal Variation Search (`Searcher(pvs=...)`, UCI `PVS` seçeneği, varsayılan `false`). İlk hamle tam pencerede, sonrakiler sıfır pencerede aranır; alpha'yı aşıp beta'ya ulaşmayan hamle tam pencerede yeniden aranır (LMR ile birlikte: indirgenmiş deneme alpha'yı aşarsa önce tam derinlikte sıfır pencere, sonra gerekirse tam pencere). Kök arama değişmedi (kendi beraberlik penceresi var).
