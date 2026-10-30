@@ -207,8 +207,10 @@ class Searcher:
         null_move: bool = True,
         lmr: bool = True,
         killers: bool = True,
+        pvs: bool = False,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
     ) -> None:
+        self.use_pvs = pvs
         self.next_iteration_factor = next_iteration_factor
         self.use_null_move = null_move
         self.use_lmr = lmr
@@ -469,8 +471,22 @@ class Searcher:
                     and index >= LMR_FULL_DEPTH_MOVES
                     and depth >= LMR_MIN_DEPTH
                     and not in_check
+                    and not board.in_check()
                 )
-                if reduce and not board.in_check():
+                if self.use_pvs and index > 0:
+                    # Principal variation search: the first move is searched with the
+                    # full window; every later move is first tried with a zero window
+                    # (cheap, and what lets null-move pruning run below it), and only a
+                    # move that raises alpha without reaching beta is searched again
+                    # with the full window to get its exact score.
+                    score = -self._negamax(
+                        board, depth - 2 if reduce else depth - 1, -alpha - 1, -alpha, ply + 1
+                    )
+                    if reduce and score > alpha:
+                        score = -self._negamax(board, depth - 1, -alpha - 1, -alpha, ply + 1)
+                    if alpha < score < beta:
+                        score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                elif reduce:
                     # Late quiet move: look one ply shallower with a zero window first.
                     score = -self._negamax(board, depth - 2, -alpha - 1, -alpha, ply + 1)
                     if score > alpha:

@@ -48,10 +48,11 @@ OPTION_LINES = (
     "option name NullMove type check default true",
     "option name LMR type check default true",
     "option name Killers type check default true",
+    "option name PVS type check default false",
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
 )
-CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers"}
+CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers", "pvs": "use_pvs"}
 
 
 class UciSession:
