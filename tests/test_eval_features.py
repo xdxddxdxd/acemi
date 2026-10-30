@@ -58,11 +58,11 @@ class PassedPawnTests(FlagTestCase):
 
     def test_pawn_beside_does_not_block(self) -> None:
         # Black pawn on e4 is behind d5, and White's e2 pawn stops it being passed itself:
-        # only d5 (relative rank 3) earns a bonus.
+        # only d5 (relative rank index 4) earns a bonus.
         from engine.eval.classic import _PASSED_EG, _PASSED_MG, _passed_pawn_bonus
 
         board = Board("4k3/8/8/3P4/4p3/8/4P3/4K3 w - - 0 1")
-        self.assertEqual(_passed_pawn_bonus(board), (_PASSED_MG[3], _PASSED_EG[3]))
+        self.assertEqual(_passed_pawn_bonus(board), (_PASSED_MG[4], _PASSED_EG[4]))
 
 
 class UciSwitchTests(FlagTestCase):
