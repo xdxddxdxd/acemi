@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_name": "20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0",
+  "is_demo": false,
+  "date": "20261030T145056Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.7.4",
+  "git_commit": "26058e0c98472b72662faf4630b6cafc53b53255",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 250,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "extra_options": {
+      "CheckExtension": true,
+      "LateMovePruning": true,
+      "NextIterationPct": 125
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.7.4",
+    "uci_elo": null,
+    "extra_options": {
+      "CheckExtension": false,
+      "LateMovePruning": false,
+      "NextIterationPct": 150
+    }
+  },
+  "opening_set": "acemi-32",
+  "match_settings": {
+    "games_requested": 300,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 300 --movetime-ms 250 --openings openings/acemi-32.txt --opponent-cmd 'python -u -m engine' --opponent-cwd /kaggle/working/acemi --engine-option CheckExtension=true --engine-option LateMovePruning=true --engine-option NextIterationPct=125 --opponent-option CheckExtension=false --opponent-option LateMovePruning=false --opponent-option NextIterationPct=150 --sprt --elo0 0 --elo1 30"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-30T14:50:56.686978Z",
+  "finished_at": "2026-10-30T15:21:20.274774Z"
+}

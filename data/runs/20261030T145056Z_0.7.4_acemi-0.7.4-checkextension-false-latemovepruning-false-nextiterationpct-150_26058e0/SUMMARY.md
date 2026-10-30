@@ -1,0 +1,27 @@
+# 20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0
+
+- Engine: Acemi 0.7.4; opponent: Acemi 0.7.4
+- Opening set: acemi-32; move time: 250 ms
+- Games: 242 (W/D/L: 70/91/81), score: 47.7%
+- Elo difference: -15.8 (95% Wilson interval -59.5 to +27.9)
+- SPRT: accept_h0 (LLR -2.96, bounds -2.94 / 2.94; elo0=0.0, elo1=30.0, alpha=0.05, beta=0.05, max games=300)
+- Completed games: 242; aborted games: 0; average plies: 110.2
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 2.9; nodes/second: 9708
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - e2e4 e7e6 d2d4 d7d5 b1d2 g8f6 e4e5 f6d7 f1d3 c7c5: 2/0/6
+  - d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 d5c4 a2a4 c8f5: 1/2/5
+  - d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 e2e3 e8g8 f1d3 d7d5: 1/2/5
+  - d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3: 2/1/5
+  - d2d4 g8f6 c2c4 e7e6 g2g3 d7d5 f1g2 f8e7 g1f3 e8g8: 0/1/5
+  - c2c4 c7c5 g1f3 g8f6 b1c3 e7e6 g2g3 b7b6 f1g2 c8b7: 0/1/5
+  - e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f8e7: 2/3/3
+  - e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d3 d7d6: 2/3/3
+  - e2e4 e7e5 b1c3 g8f6 f1c4 f6e4 c3e4 d7d5 c4d3 d5e4: 1/4/3
+  - e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5 f8e7 e4e5 f6d7: 5/0/3
+- Losses by game phase at game end (opening 0; middlegame 6; endgame 75). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 151, fifty_moves 1, insufficient_material 5, threefold_repetition 85
+- Engine moves without a search score: 1 of 12123 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 10104 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'CheckExtension': True, 'LateMovePruning': True, 'NextIterationPct': 125}; opponent {'CheckExtension': False, 'LateMovePruning': False, 'NextIterationPct': 150}
+- Games finished after the SPRT decision, excluded from result and SPRT: 2 (retained in raw PGN/move artifacts)

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "is_demo": false,
+  "games": 242,
+  "wins": 70,
+  "draws": 91,
+  "losses": 81,
+  "score_pct": 47.7,
+  "elo_diff": -15.8,
+  "elo_confidence_interval": [
+    -59.5,
+    27.9
+  ],
+  "sprt": {
+    "enabled": true,
+    "elo0": 0.0,
+    "elo1": 30.0,
+    "alpha": 0.05,
+    "beta": 0.05,
+    "max_games": 300,
+    "llr": -2.9566,
+    "lower_bound": -2.9444,
+    "upper_bound": 2.9444,
+    "decision": "accept_h0"
+  },
+  "by_color": {
+    "white": {
+      "wins": 37,
+      "draws": 46,
+      "losses": 38
+    },
+    "black": {
+      "wins": 33,
+      "draws": 45,
+      "losses": 43
+    }
+  },
+  "tactics": null,
+  "timeouts": 0,
+  "illegal_moves": 0,
+  "engine_crashes": 0,
+  "aborted_games": 0,
+  "unpaired_games_excluded": 0,
+  "post_decision_games_excluded": 2,
+  "board_disagreements": 0,
+  "average_plies": 110.2,
+  "average_depth": 2.9,
+  "nodes_per_second": 9708,
+  "nodes_per_second_search": 10104,
+  "terminations": {
+    "checkmate": 151,
+    "fifty_moves": 1,
+    "insufficient_material": 5,
+    "threefold_repetition": 85
+  },
+  "engine_moves": 12123,
+  "engine_moves_without_score": 1
+}
