@@ -1,0 +1,26 @@
+# 20261030T124401Z_0.7.2_acemi-0.7.2-evalkingsafety-false_eb7558d
+
+- Engine: Acemi 0.7.2; opponent: Acemi 0.7.2
+- Opening set: acemi-32; move time: 500 ms
+- Games: 150 (W/D/L: 35/67/48), score: 45.7%
+- Elo difference: -30.2 (95% Wilson interval -85.8 to +25.4)
+- SPRT: accept_h0 (LLR -3.01, bounds -2.94 / 2.94; elo0=0.0, elo1=30.0, alpha=0.05, beta=0.05, max games=150)
+- Completed games: 150; aborted games: 0; average plies: 110.8
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 3.5; nodes/second: 8975
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d3 d7d6: 1/1/4
+  - e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4 b8c6 b1c3 d8c7: 1/1/4
+  - d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 g2g3 c8b7 f1g2 f8e7: 0/0/4
+  - e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6 d4c6 b7c6: 1/2/3
+  - e2e4 e7e5 b1c3 g8f6 f1c4 f6e4 c3e4 d7d5 c4d3 d5e4: 1/2/3
+  - e2e4 e7e5 g1f3 b8c6 b1c3 g8f6 f1b5 f8b4 e1g1 e8g8: 0/3/3
+  - e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5 f8e7 e4e5 f6d7: 0/1/3
+  - d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 e7e6 e2e3 b8d7: 0/1/3
+  - e2e4 e7e5 g1f3 b8c6 f1b5 g8f6 e1g1 f6e4 d2d4 e4d6: 1/3/2
+  - e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5: 1/3/2
+- Losses by game phase at game end (opening 0; middlegame 3; endgame 45). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 83, fifty_moves 1, stalemate 1, threefold_repetition 65
+- Engine moves without a search score: 0 of 7558 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 9183 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'EvalKingSafety': True}; opponent {'EvalKingSafety': False}
