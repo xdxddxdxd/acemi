@@ -6,7 +6,7 @@
 - Neden: null move `beta - alpha == 1` koşuluyla yalnızca sıfır pencereli düğümlerde çalışıyor, PVS yokken pratikte hiç tetiklenmiyordu (bir pozisyonda depth 5'te 0 çağrı, PVS ile 60). Bu yüzden 0.6.0'ın null move'u fiilen ölçülmemişti.
 - Doğrulama: null move ve LMR kapalıyken PVS, alpha-beta ile aynı skoru verir (7 pozisyon, depth 2-4; yeniden arama koşulu bozulursa test başarısız olur — mutasyonla denendi). Düğüm sayısı pozisyona göre azalıyor ya da artıyor; kazanç ancak maçla ölçülür.
 - `tests/test_pvs.py`: eşdeğerlik, null move'un PVS ile devreye girmesi, yalnızca piyon+şah pozisyonunda null yok, UCI seçeneği.
-- Notebook: deney A (`PVS=true NullMove=false` / `PVS=false NullMove=false`) ve deney B (`PVS=true NullMove=true` / `PVS=true NullMove=false`), 300 oyun sınırı, 500 ms, 32 açılış, SPRT 0/20. Sonuçlara göre varsayılanlar değiştirilecek; kazanmayan özellik geri alınır (PLAN kuralı).
+- Notebook: deney A (`PVS=true NullMove=false` / `PVS=false NullMove=false`) ve deney B (`PVS=true NullMove=true` / `PVS=true NullMove=false`), 150 oyun sınırı, 500 ms, 32 açılış, SPRT 0/20. Sonuçlara göre varsayılanlar değiştirilecek; kazanmayan özellik geri alınır (PLAN kuralı).
 
 ## 0.6.2 — Ölçüm altyapısı onarımı (motor gücü değişmedi)
 
