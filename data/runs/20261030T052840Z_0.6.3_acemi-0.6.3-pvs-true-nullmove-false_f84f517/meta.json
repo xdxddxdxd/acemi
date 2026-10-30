@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_name": "20261030T052840Z_0.6.3_acemi-0.6.3-pvs-true-nullmove-false_f84f517",
+  "is_demo": false,
+  "date": "20261030T052840Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.6.3",
+  "git_commit": "f84f5178fa99610c299a819d14557d71e7282ac6",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "extra_options": {
+      "PVS": true,
+      "NullMove": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.6.3",
+    "uci_elo": null,
+    "extra_options": {
+      "PVS": true,
+      "NullMove": false
+    }
+  },
+  "opening_set": "acemi-32",
+  "match_settings": {
+    "games_requested": 150,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 150 --movetime-ms 500 --openings openings/acemi-32.txt --opponent-cmd 'python -u -m engine' --opponent-cwd /kaggle/working/acemi --engine-option PVS=true --engine-option NullMove=true --opponent-option PVS=true --opponent-option NullMove=false --sprt --elo0 0 --elo1 20"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-30T05:28:40.295752Z",
+  "finished_at": "2026-10-30T06:08:02.853753Z"
+}
