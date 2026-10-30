@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_name": "20261030T104120Z_0.7.0_acemi-0.7.0-evalpassedpawns-false_df23248",
+  "is_demo": false,
+  "date": "20261030T104120Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.7.0",
+  "git_commit": "df2324809d29e8c23f2b79f88f519faa0537d764",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "extra_options": {
+      "EvalPassedPawns": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.7.0",
+    "uci_elo": null,
+    "extra_options": {
+      "EvalPassedPawns": false
+    }
+  },
+  "opening_set": "acemi-32",
+  "match_settings": {
+    "games_requested": 150,
+    "concurrency": 3,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 150 --movetime-ms 500 --openings openings/acemi-32.txt --opponent-cmd 'python -u -m engine' --opponent-cwd /kaggle/working/acemi --engine-option EvalPassedPawns=true --opponent-option EvalPassedPawns=false --sprt --elo0 0 --elo1 30"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "AMD EPYC 7B12",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-10-30T10:41:20.766723Z",
+  "finished_at": "2026-10-30T11:15:54.128677Z"
+}
