@@ -79,6 +79,8 @@ NULL_MOVE_MIN_DEPTH = 3
 NULL_MOVE_REDUCTION = 2
 LMR_MIN_DEPTH = 3
 LMR_FULL_DEPTH_MOVES = 3  # The first moves of a node are never reduced.
+# A checked node searches one ply deeper, at most this many times per line.
+MAX_CHECK_EXTENSIONS = 1
 KILLER_BONUS = (800, 790)
 HISTORY_CAP = 400
 
@@ -208,9 +210,11 @@ class Searcher:
         lmr: bool = True,
         killers: bool = True,
         pvs: bool = False,
+        check_extension: bool = False,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
     ) -> None:
         self.use_pvs = pvs
+        self.use_check_extension = check_extension
         self.next_iteration_factor = next_iteration_factor
         self.use_null_move = null_move
         self.use_lmr = lmr
@@ -395,7 +399,14 @@ class Searcher:
             self._check_stopped()
 
     def _negamax(
-        self, board: Board, depth: int, alpha: int, beta: int, ply: int, allow_null: bool = True
+        self,
+        board: Board,
+        depth: int,
+        alpha: int,
+        beta: int,
+        ply: int,
+        allow_null: bool = True,
+        extensions: int = 0,
     ) -> int:
         if depth <= 0:
             return self._quiesce(board, alpha, beta, ply)
@@ -421,6 +432,14 @@ class Searcher:
                     return score
 
         in_check = board.in_check()
+        if (
+            self.use_check_extension
+            and in_check
+            and extensions < MAX_CHECK_EXTENSIONS
+            and ply < MAX_PLY - 2
+        ):
+            depth += 1
+            extensions += 1
 
         # Null-move pruning: if passing the turn still scores >= beta at reduced
         # depth, this node would almost certainly fail high anyway. Only in
@@ -438,7 +457,13 @@ class Searcher:
             board.make_null_move()
             try:
                 null_score = -self._negamax(
-                    board, depth - 1 - NULL_MOVE_REDUCTION, -beta, -beta + 1, ply + 1, False
+                    board,
+                    depth - 1 - NULL_MOVE_REDUCTION,
+                    -beta,
+                    -beta + 1,
+                    ply + 1,
+                    False,
+                    extensions=extensions,
                 )
             finally:
                 board.unmake_null_move()
@@ -480,19 +505,34 @@ class Searcher:
                     # move that raises alpha without reaching beta is searched again
                     # with the full window to get its exact score.
                     score = -self._negamax(
-                        board, depth - 2 if reduce else depth - 1, -alpha - 1, -alpha, ply + 1
+                        board,
+                        depth - 2 if reduce else depth - 1,
+                        -alpha - 1,
+                        -alpha,
+                        ply + 1,
+                        extensions=extensions,
                     )
                     if reduce and score > alpha:
-                        score = -self._negamax(board, depth - 1, -alpha - 1, -alpha, ply + 1)
+                        score = -self._negamax(
+                            board, depth - 1, -alpha - 1, -alpha, ply + 1, extensions=extensions
+                        )
                     if alpha < score < beta:
-                        score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                        score = -self._negamax(
+                            board, depth - 1, -beta, -alpha, ply + 1, extensions=extensions
+                        )
                 elif reduce:
                     # Late quiet move: look one ply shallower with a zero window first.
-                    score = -self._negamax(board, depth - 2, -alpha - 1, -alpha, ply + 1)
+                    score = -self._negamax(
+                        board, depth - 2, -alpha - 1, -alpha, ply + 1, extensions=extensions
+                    )
                     if score > alpha:
-                        score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                        score = -self._negamax(
+                            board, depth - 1, -beta, -alpha, ply + 1, extensions=extensions
+                        )
                 else:
-                    score = -self._negamax(board, depth - 1, -beta, -alpha, ply + 1)
+                    score = -self._negamax(
+                        board, depth - 1, -beta, -alpha, ply + 1, extensions=extensions
+                    )
             finally:
                 board.unmake_move()
             if score > best:

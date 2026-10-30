@@ -50,6 +50,7 @@ OPTION_LINES = (
     "option name LMR type check default true",
     "option name Killers type check default true",
     "option name PVS type check default false",
+    "option name CheckExtension type check default false",
     # Stage 7 evaluation features (off until proven by a match).
     "option name EvalPassedPawns type check default false",
     "option name EvalPawnStructure type check default false",
@@ -58,7 +59,13 @@ OPTION_LINES = (
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
 )
-CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers", "pvs": "use_pvs"}
+CHECK_OPTIONS = {
+    "nullmove": "use_null_move",
+    "lmr": "use_lmr",
+    "killers": "use_killers",
+    "pvs": "use_pvs",
+    "checkextension": "use_check_extension",
+}
 EVAL_OPTIONS = {
     "evalpassedpawns": "passed_pawns",
     "evalpawnstructure": "pawn_structure",

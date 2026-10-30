@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.7.3 — Arama: şah çekme uzatması (varsayılan kapalı)
+
+- `engine/search.py`: `Searcher(check_extension=...)` ve `_negamax(..., extensions=0)`. Şah çekilen düğümde kalan derinlik +1 ply; **hat başına en fazla 1 uzatma**, kökte ve quiescence'ta yok, `MAX_PLY - 2` sınırına yakınken yok. Amaç: ufuktaki mat/keşif şahı taktiklerini görmek, ağacı patlatmadan.
+- `engine/uci.py`: `CheckExtension` (check, varsayılan false). A/B'de motor açık, rakip kapalı oynar.
+- `tests/test_check_extension.py`: `1k6/8/8/1K6/1Q6/8/8/8 w` pozisyonunda depth 2'de uzatma kapalıyken mat görünmüyor (skor 931), açıkken `mate=2`; sürekli şah içeren pozisyonda arama sonlu; UCI anahtarı; varsayılan kapalı. Test yazan tarafta ÇALIŞTIRILDI: tam paket 194 test + 99 alt test.
+- Doğrulama: uzatma kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama; açıkken depth 4'te 10 benchmark pozisyonunda düğüm +%5,9 (150.018 → 158.800), mat sayısı aynı.
+- Notebook: 150 oyunluk A/B (`CheckExtension` açık vs kapalı, SPRT 0/30).
+
 ## 0.7.2 — Stage 7 (3/4): şah güvenliği (tek özellik)
 
 - `engine/eval/classic.py`: `EvalFlags.king_safety` ve `_king_safety` (varsayılan **kapalı**). Yalnızca tahtada vezir varken ve şah kendi arka iki sırasındayken uygulanır. Kralın hattı ve iki komşu hatta, kralın 1–2 sıra önünde dost piyon yoksa her hat için **−12 mg** ceza; EG katkısı 0. Başlangıç 0, renkler arası simetrik.
