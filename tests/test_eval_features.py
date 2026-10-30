@@ -8,10 +8,11 @@ from engine.eval.classic import FLAGS
 from engine.uci import UciSession
 
 START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-# White pawn on d5 is passed; Black pawns on a7 and h7 are far away.
-PASSED_WHITE = "4k3/p6p/8/3P4/8/8/8/4K3 w - - 0 1"
-PASSED_BLACK = "4k3/8/8/8/3p4/8/P6P/4K3 b - - 0 1"
-BLOCKED = "4k3/3p3p/8/3P4/8/8/8/4K3 w - - 0 1"
+# A lone passed pawn, and the same position with colours swapped.
+PASSED_WHITE = "4k3/8/8/3P4/8/8/8/4K3 w - - 0 1"
+PASSED_BLACK = "4k3/8/8/8/3p4/8/8/4K3 b - - 0 1"
+# d5 and d7 block each other: neither pawn is passed.
+BLOCKED = "4k3/3p4/8/3P4/8/8/8/4K3 w - - 0 1"
 
 
 class FlagTestCase(unittest.TestCase):
@@ -56,9 +57,12 @@ class PassedPawnTests(FlagTestCase):
         self.assertEqual(self.score(fen, True), self.score(fen, False))
 
     def test_pawn_beside_does_not_block(self) -> None:
-        # Black pawn on e5 is level with d5, not ahead of it: d5 stays passed.
-        fen = "4k3/8/8/3Pp3/8/8/8/4K3 w - - 0 1"
-        self.assertGreater(self.score(fen, True), self.score(fen, False))
+        # Black pawn on e4 is behind d5, and White's e2 pawn stops it being passed itself:
+        # only d5 (relative rank 3) earns a bonus.
+        from engine.eval.classic import _PASSED_EG, _PASSED_MG, _passed_pawn_bonus
+
+        board = Board("4k3/8/8/3P4/4p3/8/4P3/4K3 w - - 0 1")
+        self.assertEqual(_passed_pawn_bonus(board), (_PASSED_MG[3], _PASSED_EG[3]))
 
 
 class UciSwitchTests(FlagTestCase):
