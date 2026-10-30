@@ -16,6 +16,7 @@ from typing import TextIO
 
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
+from engine.book import PolyglotBook
 from engine.eval.classic import FLAGS
 from engine.movegen import find_legal_move
 from engine.search import DEFAULT_DEPTH, MAX_DEPTH, Searcher, SearchResult
@@ -52,6 +53,8 @@ OPTION_LINES = (
     "option name PVS type check default false",
     "option name CheckExtension type check default false",
     "option name LateMovePruning type check default false",
+    "option name OwnBook type check default false",
+    "option name BookFile type string default openings/book.bin",
     # Stage 7 evaluation features (off until proven by a match).
     "option name EvalPassedPawns type check default false",
     "option name EvalPawnStructure type check default false",
@@ -86,6 +89,9 @@ class UciSession:
         self.hash_mb = DEFAULT_HASH_MB
         self.searcher = Searcher(self.hash_mb)  # Keeps its transposition table between moves.
         self.threads = 1
+        self.use_book = False
+        self.book: PolyglotBook | None = None
+        self.book_path = "openings/book.bin"
         self.quit_requested = False
         self._infinite_thread: Thread | None = None
         self._infinite_stop: Event | None = None
@@ -140,6 +146,29 @@ class UciSession:
         name = " ".join(name_tokens).lower()
         value = " ".join(value_tokens)
 
+        if name == "bookfile":
+            path = value.strip()
+            if not path:
+                self.book = None
+                return []
+            try:
+                self.book = PolyglotBook(path)
+                self.book_path = path
+                return []
+            except (OSError, ValueError) as error:
+                self.book = None
+                return [f"info string Book file error: {error}"]
+        if name == "ownbook":
+            text = value.strip().lower()
+            if text not in ("true", "false"):
+                return [f"info string Option {name} needs true or false"]
+            self.use_book = text == "true"
+            if self.use_book and self.book is None:
+                try:
+                    self.book = PolyglotBook(self.book_path)
+                except (OSError, ValueError) as error:
+                    return [f"info string Book file error: {error}"]
+            return []
         if name in EVAL_OPTIONS:
             text = value.strip().lower()
             if text not in ("true", "false"):
@@ -208,6 +237,10 @@ class UciSession:
             return []
 
         self._cancel_infinite()
+        if self.use_book and self.book is not None and len(self.board.undo_stack) < 24:
+            move = self.book.find_move(self.board, self.rng)
+            if move is not None:
+                return [f"info string book move {move.uci()}", f"bestmove {move.uci()}"]
         values: dict[str, int] = {}
         index = 0
         while index < len(args):

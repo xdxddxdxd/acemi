@@ -1,5 +1,14 @@
 # Değişiklik günlüğü
 
+## 0.8.0 — Stage 8: Polyglot açılış kitabı
+
+- `engine/book.py`: Polyglot kitap okuyucusu. Standart Polyglot Zobrist anahtarı motorun kendi 0x88 tahtasından hesaplanır; rok (şahın kendi kalesine gidişi) ve terfi kodları çözülür; ağırlıklı seçim yalnızca yasal hamleler arasından yapılır.
+- `engine/polyglot_keys.py`: standart 781 anahtarlık Polyglot tablosu (python-chess ile birebir aynı olduğu test edildi).
+- `engine/uci.py`: `OwnBook` (check, varsayılan **kapalı**) ve `BookFile` (string, varsayılan `openings/book.bin`). Kitap yalnızca ilk 24 yarım hamlede kullanılır; kitap yoksa/boşsa normal aramaya düşer.
+- `tools/bookgen.py` + `tools/polyglot.py`: `openings/acemi-64.txt`'ten 24 dal seçer, Stockfish 18 (tam güç, depth 12, MultiPV 3) ile her düğümde ±30 cp içindeki hamleleri toplar, 12 ply'e kadar ilerler ve Polyglot `.bin` yazar.
+- `openings/book.bin`: 24 dal, **211 pozisyon, 584 hamle, 9,4 KB**. `acemi-64` setinden üretildi; testlerde/benchmark'ta varsayılan kapalı.
+- Testler: Polyglot anahtarı python-chess ile birebir; normal/rok/terfi kodlama-çözme; ağırlıklı seçim; UCI anahtarları ve kitap hamlesi; üretilen kitabın motor tarafından okunması. Tam paket **226 test + 111 alt test** geçti; kitap kapalıyken `tools.bench` 0.6.4 ile birebir aynı arama.
+
 ## 0.7.4 — Arama paketi denemesi: LMP + check extension + süre yönetimi
 
 - `engine/search.py`: `LateMovePruning` (varsayılan **kapalı**). Son tam ply'de (depth ≤ 1), şah çekili değilken, ilk 10 sakin hamleden sonra kalan sakin hamleler atlanır; alma/terfi/şah veren hamleler ve mat pencereleri korunur.
