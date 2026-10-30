@@ -16,6 +16,7 @@ from typing import TextIO
 
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
+from engine.eval.classic import FLAGS
 from engine.movegen import find_legal_move
 from engine.search import DEFAULT_DEPTH, MAX_DEPTH, Searcher, SearchResult
 
@@ -49,10 +50,13 @@ OPTION_LINES = (
     "option name LMR type check default true",
     "option name Killers type check default true",
     "option name PVS type check default false",
+    # Stage 7 evaluation features (off until proven by a match).
+    "option name EvalPassedPawns type check default false",
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
 )
 CHECK_OPTIONS = {"nullmove": "use_null_move", "lmr": "use_lmr", "killers": "use_killers", "pvs": "use_pvs"}
+EVAL_OPTIONS = {"evalpassedpawns": "passed_pawns"}
 
 
 class UciSession:
@@ -119,6 +123,12 @@ class UciSession:
         name = " ".join(name_tokens).lower()
         value = " ".join(value_tokens)
 
+        if name in EVAL_OPTIONS:
+            text = value.strip().lower()
+            if text not in ("true", "false"):
+                return [f"info string Option {name} needs true or false"]
+            setattr(FLAGS, EVAL_OPTIONS[name], text == "true")
+            return []
         if name in CHECK_OPTIONS:
             text = value.strip().lower()
             if text not in ("true", "false"):

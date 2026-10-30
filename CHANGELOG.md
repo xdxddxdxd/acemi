@@ -1,5 +1,15 @@
 # Değişiklik günlüğü
 
+## 0.7.0 — Stage 7: değerlendirme özellikleri (1/4: geçer piyon)
+
+Kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da. Kural: her özellik ayrı eklenir, ayrı SPRT ile ölçülür, kazanmayan koda alınmaz.
+
+- `engine/eval/classic.py`: `FLAGS` (özellik anahtarları, hepsi varsayılan **kapalı**) ve geçer piyon bonusu (göreli sıraya göre orta/son oyun tablosu; aynı veya komşu hatta önünde düşman piyonu yoksa geçer). Renkler arası tam simetrik, başlangıç 0.
+- `engine/uci.py`: `EvalPassedPawns` (check, varsayılan false). Aynı build açık/kapalı kendine karşı oynayabilir.
+- `tests/test_eval_features.py`: kapalıyken eski skor, başlangıç 0, simetri, engellenmiş piyon bonus almaz, yandaki piyon engellemez, UCI anahtarı.
+- Notebook: 150 oyunluk A/B (açık vs kapalı, SPRT 0/30).
+- Sıradaki: piyon yapısı, fil çifti + kale hatları, şah güvenliği/mobilite. Geçer piyon kanıtlanmadan varsayılan açılmaz.
+
 ## 0.6.4 — Hız (aynı arama, daha az iş)
 
 Kod yazan tarafta ne test ne benchmark çalıştırıldı; doğrulama Kaggle'da. İlk Kaggle ölçümü (CPython, depth 4, 10 pozisyon): 8208 → 14419 nps, **1,76x**, skor/derinlik/düğüm sayısı/en iyi hamle birebir aynı.

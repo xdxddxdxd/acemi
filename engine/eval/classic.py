@@ -175,6 +175,75 @@ def pst_delta(piece: int, from_square: int, to_square: int) -> int:
     return values[to_square] - values[from_square]
 
 
+class EvalFlags:
+    """Stage 7 evaluation features. Every one is off until a match proves it helps.
+
+    One engine process has one set of flags (UCI ``setoption`` changes them), so a
+    single build can play itself with a feature on and off for an A/B test.
+    """
+
+    __slots__ = ("passed_pawns",)
+
+    def __init__(self) -> None:
+        self.passed_pawns = False
+
+
+FLAGS = EvalFlags()
+
+# Passed pawn bonus by relative rank (0 = own back rank, 6 = one step from promotion).
+_PASSED_MG = (0, 5, 8, 15, 28, 50, 80, 0)
+_PASSED_EG = (0, 10, 18, 35, 65, 110, 170, 0)
+
+
+def _passed_pawn_bonus(board: Board) -> tuple[int, int]:
+    """(middlegame, endgame) passed pawn bonus, White minus Black.
+
+    A pawn is passed when no enemy pawn stands ahead of it on its own or a
+    neighbouring file. The bonus grows with how far it has advanced.
+    """
+    white_pawns = board.piece_squares[PAWN]
+    black_pawns = board.piece_squares[-PAWN]
+    if not white_pawns and not black_pawns:
+        return 0, 0
+    # Most advanced enemy pawn per file: black's smallest row, white's largest row.
+    black_min = [8] * 8
+    for square in black_pawns:
+        file, row = square & 7, square >> 4
+        if row < black_min[file]:
+            black_min[file] = row
+    white_max = [-1] * 8
+    for square in white_pawns:
+        file, row = square & 7, square >> 4
+        if row > white_max[file]:
+            white_max[file] = row
+
+    mg = 0
+    eg = 0
+    for square in white_pawns:
+        file, row = square & 7, square >> 4
+        if black_min[file] < row:
+            continue
+        if file > 0 and black_min[file - 1] < row:
+            continue
+        if file < 7 and black_min[file + 1] < row:
+            continue
+        rank = 7 - row
+        mg += _PASSED_MG[rank]
+        eg += _PASSED_EG[rank]
+    for square in black_pawns:
+        file, row = square & 7, square >> 4
+        if white_max[file] > row:
+            continue
+        if file > 0 and white_max[file - 1] > row:
+            continue
+        if file < 7 and white_max[file + 1] > row:
+            continue
+        rank = row
+        mg -= _PASSED_MG[rank]
+        eg -= _PASSED_EG[rank]
+    return mg, eg
+
+
 def evaluate_classic(board: Board) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     mg = 0
@@ -190,6 +259,11 @@ def evaluate_classic(board: Board) -> int:
             mg += sign * mg_values[square]
             eg += sign * eg_values[square]
         phase += PHASE_WEIGHT[abs(piece)] * len(squares)
+
+    if FLAGS.passed_pawns:
+        bonus_mg, bonus_eg = _passed_pawn_bonus(board)
+        mg += bonus_mg
+        eg += bonus_eg
 
     if phase > MAX_PHASE:
         phase = MAX_PHASE  # Promotions can push the total above the opening maximum.
