@@ -22,3 +22,4 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261030T042612Z_0.6.2_acemi-0.6.2-killers-false_10bcec0,20261030T042612Z,0.6.2,Acemi 0.6.2 Killers=false,24,64.6,104.4,inconclusive
 20261030T045117Z_0.6.3_acemi-0.6.3-pvs-false-nullmove-false_fcd1d64,20261030T045117Z,0.6.3,"Acemi 0.6.3 PVS=false,NullMove=false",150,52.7,18.5,inconclusive
 20261030T052840Z_0.6.3_acemi-0.6.3-pvs-true-nullmove-false_f84f517,20261030T052840Z,0.6.3,"Acemi 0.6.3 PVS=true,NullMove=false",150,50.0,-0.0,inconclusive
+20261030T091540Z_0.6.4_acemi-0.6.3_78c4cb2,20261030T091540Z,0.6.4,Acemi 0.6.3,84,61.9,84.3,accept_h1
