@@ -1,0 +1,190 @@
+{
+ "runs_total": 33,
+ "runs_used": 25,
+ "games_total": 2460,
+ "games_used": 2447,
+ "excluded_demo_other": 0,
+ "excluded_missing_moves": 0,
+ "duplicates": 13,
+ "by_type": {
+  "SF": 474,
+  "AB": 1986
+ },
+ "runs": [
+  {
+   "name": "20261027T161419Z_0.2.0_stockfish-16-uci-elo-1320_5920575",
+   "type": "SF",
+   "games": 4,
+   "counted": 4,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27",
+   "type": "AB",
+   "games": 17,
+   "counted": 17,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0",
+   "type": "AB",
+   "games": 54,
+   "counted": 54,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T064916Z_0.4.1_stockfish-16-uci-elo-1320_753d788",
+   "type": "SF",
+   "games": 20,
+   "counted": 20,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T094439Z_0.4.2_acemi-0.4.1_03adad2",
+   "type": "AB",
+   "games": 136,
+   "counted": 136,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T100022Z_0.4.2_stockfish-16-uci-elo-1320_79c9cb5",
+   "type": "SF",
+   "games": 20,
+   "counted": 20,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T101934Z_0.5.0_acemi-0.4.2_e985c10",
+   "type": "AB",
+   "games": 50,
+   "counted": 50,
+   "post_decision": 0
+  },
+  {
+   "name": "20261028T102745Z_0.5.0_stockfish-16-uci-elo-1320_d5e4024",
+   "type": "SF",
+   "games": 20,
+   "counted": 20,
+   "post_decision": 0
+  },
+  {
+   "name": "20261029T074834Z_0.6.0_acemi-0.5.0_acecedb",
+   "type": "AB",
+   "games": 300,
+   "counted": 300,
+   "post_decision": 0
+  },
+  {
+   "name": "20261029T084703Z_0.6.0_stockfish-16-uci-elo-1320_071551d",
+   "type": "SF",
+   "games": 60,
+   "counted": 60,
+   "post_decision": 0
+  },
+  {
+   "name": "20261029T090639Z_0.6.1_acemi-0.6.0_071152a",
+   "type": "AB",
+   "games": 100,
+   "counted": 100,
+   "post_decision": 0
+  },
+  {
+   "name": "20261029T092851Z_0.6.1_stockfish-16-uci-elo-1320_f935add",
+   "type": "SF",
+   "games": 50,
+   "counted": 50,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T042612Z_0.6.2_acemi-0.6.2-killers-false_10bcec0",
+   "type": "AB",
+   "games": 24,
+   "counted": 24,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T045117Z_0.6.3_acemi-0.6.3-pvs-false-nullmove-false_fcd1d64",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T052840Z_0.6.3_acemi-0.6.3-pvs-true-nullmove-false_f84f517",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T091540Z_0.6.4_acemi-0.6.3_78c4cb2",
+   "type": "AB",
+   "games": 87,
+   "counted": 84,
+   "post_decision": 2
+  },
+  {
+   "name": "20261030T093702Z_0.6.4_acemi-0.6.4_1997dd7",
+   "type": "AB",
+   "games": 74,
+   "counted": 72,
+   "post_decision": 2
+  },
+  {
+   "name": "20261030T104120Z_0.7.0_acemi-0.7.0-evalpassedpawns-false_df23248",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T115210Z_0.7.1_acemi-0.7.1-evalpassedpawns-false-evalpawnstructure-false-evalbishoppair-false_a7a38c2",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T124401Z_0.7.2_acemi-0.7.2-evalkingsafety-false_eb7558d",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T135123Z_0.7.3_acemi-0.7.3-checkextension-false_94aac84",
+   "type": "AB",
+   "games": 150,
+   "counted": 150,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0",
+   "type": "AB",
+   "games": 244,
+   "counted": 242,
+   "post_decision": 2
+  },
+  {
+   "name": "20261030T155811Z_0.7.4_stockfish-16-uci-elo-1320_504003c",
+   "type": "SF",
+   "games": 100,
+   "counted": 100,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T161545Z_0.7.4_stockfish-16-uci-elo-1500_1662e5e",
+   "type": "SF",
+   "games": 100,
+   "counted": 100,
+   "post_decision": 0
+  },
+  {
+   "name": "20261030T171911Z_0.7.4_stockfish-16-uci-elo-1500_6f5dbee",
+   "type": "SF",
+   "games": 100,
+   "counted": 100,
+   "post_decision": 0
+  }
+ ]
+}

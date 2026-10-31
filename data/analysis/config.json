@@ -1,0 +1,10 @@
+{
+ "stockfish_path": "/usr/games/stockfish",
+ "stockfish_version": "Stockfish 16 by the Stockfish developers (see AUTHORS file)",
+ "depth": 10,
+ "workers": 3,
+ "types": "AB,SF",
+ "syzygy_dir": null,
+ "syzygy_files": 0,
+ "generated_utc": "2026-10-31T05:15:45.067755+00:00"
+}
