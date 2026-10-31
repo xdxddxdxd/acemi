@@ -1,0 +1,93 @@
+theme,game_id,ply,fen,sf_best_move,move,sf_cp,phase
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,12,r1b1kbnr/1pp2ppp/p1p5/4N3/4P3/8/PPPN1PPP/R1BQK2R b KQkq - 0 6,g8f6,c8f5,697,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,14,r3kbnr/1pp2ppp/p1p5/4NP2/8/8/PPPN1PPP/R1BQK2R b KQkq - 0 7,f8d6,e8c8,879,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,18,2k1rbnr/1pp2Npp/p1p5/5P2/8/8/PPPN1PPP/R1BQ1K1R b - - 2 9,g8h6,a6a5,975,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,20,2k1rbnr/1pp2Npp/2p5/p4P2/8/5Q2/PPPN1PPP/R1B2K1R b - - 1 10,g8h6,e8e2,1071,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#10,19,r3kb1r/ppp2ppp/2n5/3q2B1/3Pb3/8/PPP2PPP/R3KBNR w KQkq - 0 10,c2c3,g2g4,-938,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,16,rn2kbnr/pp2pppp/2p5/8/3PQ3/8/PPPK1PPP/R4BNR b kq - 0 8,e7e6,c6c5,587,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,18,rn2kbnr/pQ2pppp/8/2p5/3P4/8/PPPK1PPP/R4BNR b kq - 0 9,e7e6,f7f6,1067,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,13,rn2kbnr/pp2pppp/2p5/8/2Pqb3/8/PP1B1PPP/R2QKBNR w KQkq - 0 7,d1g4,a1b1,-412,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#13,20,rn1qkb1r/pp1b1ppp/8/3N4/3Q4/5NP1/PPP2PB1/R1B1K2R b KQkq - 0 10,d7e6,g7g5,624,opening
+pozisyonel,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#14,9,r1bqkb1r/ppp2ppp/2n1pn2/3p4/8/3P1NP1/PPP1PPBP/RNBQK2R w KQkq - 1 5,e1g1,c1h6,7,opening
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,30,4kbn1/2p3pp/2p5/pp2NP2/4N3/5Q2/PPP1KPPP/R1B4R b - - 4 15,f8d6,e8d8,1573,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,31,3k1bn1/2p3pp/2p5/pp2NP2/4N3/5Q2/PPP1KPPP/R1B4R w - - 5 16,e4c5,e5c6,1850,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,34,2k2bn1/N1p3pp/8/pp3P2/4N3/5Q2/PPP1KPPP/R1B4R b - - 2 17,c8b8,c8b7,1575,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,35,5bn1/Nkp3pp/8/pp3P2/4N3/5Q2/PPP1KPPP/R1B4R w - - 3 18,e4d6,a7b5,9997,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#1,44,1k4n1/6pp/1Q1b4/p4P2/3N4/8/PPP1KPPP/R1B4R b - - 2 22,b8c8,b8a8,1586,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#10,21,r3k2r/ppp2ppp/2n5/3q2B1/1b1Pb1P1/8/PPP2P1P/R3KBNR w KQkq - 1 11,c2c3,e1e2,-982,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,24,5bnr/Q3pkpp/5p2/8/3p4/8/PPPK1PPP/R4BNR b - - 0 12,d4d3,f7e6,1312,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,28,5bnr/Q3p2p/4kp2/6p1/2Bp4/5N2/PPPK1PPP/R6R b - - 1 14,e6f5,e6d6,1736,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,29,5bnr/Q3p2p/3k1p2/6p1/2Bp4/5N2/PPPK1PPP/R6R w - - 2 15,f3d4,a7d4,2292,endgame
+kale oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#11,30,5bnr/4p2p/3k1p2/6p1/2BQ4/5N2/PPPK1PPP/R6R b - - 0 15,d6c6,d6c7,2062,endgame
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#10,9,rnbqkb1r/ppp2ppp/5n2/3p4/3P4/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 5,g1f3,c3d5,5,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#10,17,r3kb1r/ppp2ppp/2n5/3q1bB1/3Pn3/8/PPP1QPPP/R3KBNR w KQkq - 6 9,f2f3,e2e4,-407,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#10,20,r3kb1r/ppp2ppp/2n5/3q2B1/3Pb1P1/8/PPP2P1P/R3KBNR b KQkq - 0 10,d5g5,f8b4,-1171,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,17,rn2kb1r/pp2pppp/2p2n2/8/2Pq4/8/PP1B1PPP/1Q2KBNR w Kkq - 1 9,f1d3,b1h7,-600,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#13,18,rn1qkb1r/pp1b1ppp/8/3N3n/3Q4/5NP1/PPP2PBP/R1B1K2R b KQkq - 0 9,b8c6,h5g3,310,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#14,17,r1bq1rk1/ppp2p1p/2nbp2p/3p4/6nP/P2P1NP1/1PPQPPB1/RN2K2R w KQ - 3 9,c2c4,d2h6,-517,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,16,r1bqkb1r/pppp1ppp/8/5N2/2P1N3/8/PP3PPP/R1BQKB1R b KQkq - 0 8,d7d5,f8b4,523,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#16,7,r1bqkb1r/pppp1ppp/2n2n2/4p3/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 4 4,e2e3,f3e5,0,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#16,15,r1bqkb1r/ppp2ppp/8/3p4/2n1n3/6P1/PPQPPP1P/R1B1KB1R w KQkq - 0 8,f1g2,c2e4,-741,opening
+taktik,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#3,16,r1b1kb1r/pp1npppp/3p4/qB6/3NN3/8/PPPB1PPP/R2QK2R b KQkq - 2 8,a5c7,a5d2,451,opening
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,29,rn2kb2/pp2ppp1/2p2n2/8/2P5/4B3/PP3PPq/4KBN1 w q - 0 15,g1f3,e3a7,-961,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,30,rn2kb2/Bp2ppp1/2p2n2/8/2P5/8/PP3PPq/4KBN1 b q - 0 15,a8a7,h2g1,-1346,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,41,1r2k3/1p3pp1/2p2n2/2b1p3/1PP5/8/P5P1/3K1q2 w - - 0 21,d1d2,d1c2,-1203,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,44,1r2k3/1p3pp1/2p2n2/2b1p3/1Pq5/8/PK4P1/8 b - - 1 22,c4b4,c5b4,-4659,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,48,r3k3/1p3pp1/2p2n2/P3p3/1bq5/8/1K4P1/8 b - - 0 24,b4a3,e8e7,-9996,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#12,49,r7/1p2kpp1/2p2n2/P3p3/1bq5/8/1K4P1/8 w - - 1 25,b2b1,b2a1,-4471,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#3,61,8/pP6/6k1/6pp/2B3P1/3K4/1P5P/R7 w - - 0 31,a1a6,g4h5,1280,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#3,62,8/pP6/6k1/6pP/2B5/3K4/1P5P/R7 b - - 0 31,g6h5,g6h6,1019,endgame
+fil/at oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#3,64,1Q6/p7/7k/6pP/2B5/3K4/1P5P/R7 b - - 0 32,h6h5,g5g4,4268,endgame
+fil/at oyun sonu,20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#10,107,8/4k2P/2P5/3Q2n1/8/8/R5K1/8 w - - 1 54,h7h8q,d5g5,9998,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#13,24,rn2kb1Q/pp1b1p1p/8/q2N2p1/8/6P1/PPPN1PB1/R1B1K2R b KQq - 2 12,b8c6,a5d5,883,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,21,r1bqk1r1/pppp1ppp/8/5N2/2P1N3/8/PP1Q1PPP/R3KB1R w KQq - 1 11,f5g3,f1d3,810,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,22,r1bqk1r1/pppp1ppp/8/5N2/2P1N3/3B4/PP1Q1PPP/R3K2R b KQq - 2 11,d7d5,a7a5,631,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,24,r1bqk1r1/1ppp1ppp/8/p4N2/2P1N3/3B4/PP1Q1PPP/R4RK1 b q - 1 12,d7d5,h7h5,810,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,25,r1bqk1r1/1ppp1pp1/8/p4N1p/2P1N3/3B4/PP1Q1PPP/R4RK1 w q - 0 13,e4g5,c4c5,965,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,29,r1bqk1r1/1p3pp1/2p5/pBPp1N1p/4N3/8/PP1Q1PPP/R4RK1 w q - 0 15,e4d6,a2a3,785,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,39,r1bq1r2/1p4Q1/3Nkp2/ppP4p/4N3/P7/1P3PPP/R4RK1 w - - 1 20,a1d1,d6b5,1082,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,40,r1bq1r2/1p4Q1/4kp2/pNP4p/4N3/P7/1P3PPP/R4RK1 b - - 0 20,f8g8,f8e8,731,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,42,r1bqr3/1pN3Q1/4kp2/p1P4p/4N3/P7/1P3PPP/R4RK1 b - - 2 21,d8c7,e6e5,1014,endgame
+vezir oyun sonu,20261028T051028Z_0.4.0_acemi-0.3.1_c62fc27#15,43,r1bqr3/1pN3Q1/5p2/p1P1k2p/4N3/P7/1P3PPP/R4RK1 w - - 3 22,f1e1,c7e8,1350,endgame
+diğer oyun sonu,20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#49,69,8/8/5k2/p1R5/P1p2P2/4K3/1PP5/8 w - - 4 35,c5a5,e3e4,3460,endgame
+diğer oyun sonu,20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#49,70,8/8/5k2/p1R5/P1p1KP2/8/1PP5/8 b - - 5 35,f6e7,f6g7,830,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#117,99,8/8/5p1p/3kr1p1/8/3K4/8/8 w - - 0 50,d3c3,d3d2,-3367,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#117,101,8/8/5p1p/4r1p1/2k5/8/3K4/8 w - - 2 51,d2c2,d2d1,-4062,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#128,106,8/8/P7/8/4k3/1P3pQ1/5K2/8 b - - 0 53,e4d3,e4f5,4293,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#19,90,8/8/2R5/5P2/2p5/2kQ3P/2P2P2/6K1 b - - 2 45,c3b2,c3b4,4872,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#19,91,8/8/2R5/5P2/1kp5/3Q3P/2P2P2/6K1 w - - 3 46,d3c4,d3d4,9998,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#19,92,8/8/2R5/5P2/1kpQ4/7P/2P2P2/6K1 b - - 4 46,b4a3,b4b5,4827,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#19,95,8/8/2R5/3Q1P2/1kp5/7P/2P2P2/6K1 w - - 7 48,d5c4,c6c4,9998,endgame
+diğer oyun sonu,20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#19,97,8/8/8/3Q1P2/2R5/k6P/2P2P2/6K1 w - - 1 49,d5b5,f5f6,9998,endgame
+KRK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#20,124,8/4k3/8/3K4/8/8/5R2/8 b - - 2 62,e7d7,e7d8,542,endgame
+KRK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#20,125,3k4/8/8/3K4/8/8/5R2/8 w - - 3 63,d5d6,f2f7,9997,endgame
+KRK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#67,105,8/5r2/8/8/3k4/8/4K3/8 w - - 3 53,e2d2,e2e1,-537,endgame
+KRK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#157,118,8/1k6/8/2K5/8/8/5R2/8 b - - 2 59,b7c7,b7b8,539,endgame
+KRK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#157,127,1k6/5R2/3K4/8/8/8/8/8 w - - 11 64,d6c6,d6d5,9996,endgame
+KRK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#164,173,8/6R1/8/8/5K2/7k/8/8 w - - 21 87,g7g8,g7g1,9995,endgame
+KRK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#259,151,6r1/8/8/8/2k5/8/1K6/8 w - - 2 76,b2c2,b2c1,-542,endgame
+KRK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#259,152,6r1/8/8/8/2k5/8/8/2K5 b - - 3 76,c4c3,g8g2,-9995,endgame
+KRK (mat dönüştürme),20261029T090639Z_0.6.1_acemi-0.6.0_071152a#54,176,8/8/7K/8/5k2/8/6r1/8 b - - 29 88,f4f5,g2g4,-9995,endgame
+KRK (mat dönüştürme),20261029T090639Z_0.6.1_acemi-0.6.0_071152a#54,177,8/8/7K/8/5kr1/8/8/8 w - - 30 89,h6h5,h6h7,-563,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#76,134,8/1k6/3Q4/8/4K3/8/8/8 b - - 6 67,b7c8,b7a8,3399,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#76,135,k7/8/3Q4/8/4K3/8/8/8 w - - 7 68,d6d7,d6f4,9996,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#76,138,8/k1Q5/8/8/4K3/8/8/8 b - - 10 69,a7a6,a7a8,3309,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#76,143,k7/3Q4/8/8/4K3/8/8/8 w - - 15 72,d7g7,d7d2,9996,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#91,123,8/4k3/8/8/4K3/8/5Q2/8 w - - 1 62,e4d5,f2b6,9995,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#91,129,8/1k6/4Q3/8/4K3/8/8/8 w - - 7 65,e6d7,e6d6,9993,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#91,130,8/1k6/3Q4/8/4K3/8/8/8 b - - 8 65,b7c8,b7a8,3399,endgame
+KQK (mat dönüştürme),20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#91,131,k7/8/3Q4/8/4K3/8/8/8 w - - 9 66,d6d7,d6f4,9996,endgame
+KQK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#148,122,8/8/8/8/4k3/1q6/8/5K2 b - - 13 61,b3a2,b3b6,-9996,endgame
+KQK (mat dönüştürme),20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#206,146,8/8/8/3KQ1k1/8/8/8/8 b - - 8 73,g5g4,g5g6,3354,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#148,86,8/8/6p1/6k1/4K3/8/8/8 b - - 1 43,g5g4,g5f6,-699,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#148,87,8/8/5kp1/8/4K3/8/8/8 w - - 2 44,e4f4,e4d4,-4,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#206,117,8/8/8/4k3/8/2KP4/8/8 w - - 3 59,c3c4,d3d4,709,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#206,118,8/8/8/4k3/3P4/2K5/8/8 b - - 0 59,e5d6,e5e4,8,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#206,122,8/8/8/3P1k2/2K5/8/8/8 b - - 0 61,f5f6,f5e5,830,endgame
+KPK,20261029T074834Z_0.6.0_acemi-0.5.0_acecedb#255,120,8/8/6k1/4K3/5P2/8/8/8 b - - 0 60,g6f7,g6h7,761,endgame
+KPK,20261029T090639Z_0.6.1_acemi-0.6.0_071152a#33,133,8/8/8/k7/8/5K2/6P1/8 w - - 0 67,g2g4,f3e4,3340,endgame
+KPK,20261029T090639Z_0.6.1_acemi-0.6.0_071152a#33,134,8/8/8/k7/4K3/8/6P1/8 b - - 1 67,a5b5,a5a6,704,endgame
+KPK,20261030T045117Z_0.6.3_acemi-0.6.3-pvs-false-nullmove-false_fcd1d64#59,135,8/4K3/8/1p6/3k4/8/8/8 w - - 0 68,e7d8,e7e8,-3405,endgame
+KPK,20261030T052840Z_0.6.3_acemi-0.6.3-pvs-true-nullmove-false_f84f517#70,139,8/6p1/8/7k/4K3/8/8/8 w - - 0 70,e4f4,e4f5,-443,endgame
+KBNK (mat dönüştürme),20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0#234,231,8/8/k7/1NK5/8/1B6/8/8 w - - 39 116,b5d6,c5c6,514,endgame
+KBNK (mat dönüştürme),20261030T145056Z_0.7.4_acemi-0.7.4-checkextension-false-latemovepruning-false-nextiterationpct-150_26058e0#234,235,8/8/k7/1NK5/8/1B6/8/8 w - - 43 118,b5d6,c5c6,514,endgame
