@@ -8,7 +8,9 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 **Aşama 8 (0.8.2) tamam:** Polyglot açılış kitabı okuyucu ve 90 hatlık, 18 ply kitap. Motor araması 0.8.1 ile aynı; bu sürüm ağırlıklı olarak kitap verisi ve cilalama içerir.
 
-- **Güç:** Kayıtlı ölçümlerde SF1500 500 ms'ye karşı 200 oyunun birleşiği %51,5 (+10,4 Elo; %95 GA −37,6..+58,4), yaklaşık **1510 UCI_Elo**. SF1320 250 ms'ye karşı %68,5. Ölçümlerde kitap kapalı ve `openings/acemi-64.txt` kullanıldı.
+- **Güç (`acemi-64`, kitap kapalı):** SF1500 500 ms'ye karşı 150 oyun **%53,7** (+25,5 Elo; %95 GA −30,0..+81,0); SF1320 250 ms'ye karşı 150 oyun **%62,0** (+85,0; GA +28,0..+142,1). SF1500 nokta tahmini ~1525 UCI_Elo; GA geniş ve 1500'ü içeriyor, SF1320'ye karşı üstünlük net.
+- **Eski baseline (0.7.4):** `acemi-32` setiyle SF1500 500 ms'de 200 oyunun birleşiği %51,5 (+10,4; GA −37,6..+58,4), SF1320 250 ms'de 100 oyun %68,5 idi. Set değiştiği için yeni sonuçlarla birleştirilmedi.
+- **Sağlamlık:** 400 oyunluk doğrulamada 0 timeout, 0 yasadışı hamle, 0 çökme, 0 tahta uyuşmazlığı. Kayıpların ~%44–46'sı oyun sonunda; `English` ailesi iki SF koşusunda da %50 altında (24 oyun, %43,8; örnek küçük).
 - **Kitap:** 90 hat, 18 ply, 1117 pozisyon, 3124 hamle. Test/bench'te varsayılan kapalı; gerçek oyunda `OwnBook=true` ile açılır.
 - **Bilinen sınırlar:** KBBK/KBNK dönüştürme zayıf (sentetik 3/10 ve 1/10); Syzygy yok; tek iş parçacığı (`Threads` en fazla 1); saf Python hızı. Eval mikro-terimleri ve Contempt ölçülebilir kazanç vermedi.
 
@@ -85,7 +87,7 @@ python -m tools.match --games 150 --movetime-ms 500 `
   --openings openings/acemi-64.txt
 ```
 
-`--sprt` erken durdurma, `--no-record` kayıtsız deneme, `--seed` RNG tohumu, `--concurrency` paralel oyun sayısıdır. Sonuçlar `data/runs/` altına yazılır.
+`--sprt` erken durdurma, `--no-record` kayıtsız deneme, `--seed` RNG tohumu, `--concurrency` paralel oyun sayısıdır. Sonuçlar `data/runs/` altına yazılır. Kaggle runner kod yollarına dokunan son commit'i `--git-commit` ile her maça sabitler; araya giren `data:` commit'leri motor commit'i olarak kaydedilmez.
 
 ## Dizinler
 

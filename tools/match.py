@@ -376,7 +376,7 @@ def _split_name_version(raw: str) -> tuple[str, str]:
     return raw or "unknown", "unknown"
 
 
-def _git_info(root: Path) -> dict:
+def _git_info(root: Path, override: str | None = None) -> dict:
     def run(*args: str) -> str | None:
         try:
             done = subprocess.run(
@@ -386,7 +386,7 @@ def _git_info(root: Path) -> dict:
             return None
         return done.stdout.strip()
 
-    commit = run("rev-parse", "HEAD")
+    commit = override.strip() if override else run("rev-parse", "HEAD")
     status = run("status", "--porcelain")
     return {"commit": commit, "dirty": None if status is None else bool(status)}
 
@@ -483,6 +483,10 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--beta", type=float, default=0.05)
     parser.add_argument("--root", default=str(ROOT), help="repository root that receives data/")
+    parser.add_argument(
+        "--git-commit", default=None, metavar="HASH",
+        help="record this code commit instead of git rev-parse HEAD (data pushes do not advance it)",
+    )
     parser.add_argument("--no-record", action="store_true", help="print the summary, write nothing")
     return parser.parse_args(argv)
 
@@ -552,7 +556,7 @@ def main(argv: list[str] | None = None) -> int:
 
     started = datetime.now(timezone.utc)
     date_key = started.strftime("%Y%m%dT%H%M%SZ")
-    git = _git_info(ROOT)
+    git = _git_info(ROOT, args.git_commit)
 
     def make_job(game_no: int) -> dict:
         opening_id = (game_no // 2) % len(openings)
