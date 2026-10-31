@@ -6,7 +6,7 @@
 - `openings/book.bin`: Stockfish 18, depth 12, MultiPV 3, ±40 cp, 18 ply; **1117 pozisyon, 3124 hamle, 50,0 KB** (önceki 211/584/9,4 KB). Satır hamlesi her düğümde ağırlık 10; ±40 cp içindeki Stockfish alternatifleri ağırlık 5.
 - Doğrulama: 90 hattın 1069 düğümünde python-chess ile Polyglot hash ve yasal hamle kümesi birebir; 3124 girdinin tamamı yasal ve kökten erişilebilir (0 eksik, 0 yasadışı); UCI duman testinde kitap hamlesi veriyor, 24 ply sonrası aramaya düşüyor. 10 pozisyonluk kalite örneğinde yeniden ölçülen en büyük cp farkı 58 (satır hamlesi kapsam için pencere dışında da tutuluyor).
 - Testlerde/benchmark'ta kitap varsayılan **kapalı**; gerçek oyunda `OwnBook=true`, `BookFile=openings/book.bin`.
-- Testler: kitap/bookgen/UCI odaklı 28 test geçti. Tam paket 271 testte yalnızca Windows'a özgü sahte-UCI testi hata verdi (`test_analyze_tools.FullPipelineWithFakeEngineTests`; bilinen platform sorunu, Linux/Kaggle'da geçiyor).
+- Cilalama: README 0.8.2 için güncellendi; GitHub Actions (Ubuntu + Windows) eklendi; `tests/test_shipped_book.py` kitabın yasallığını, kökten erişilebilirliğini ve seed kapsamını doğrular; Windows'ta sahte-UCI testi platforma uygun `.cmd`/`.sh` başlatıcıyla düzeltildi. Tam paket **275 test geçti** (0 hata).
 
 ## 0.8.1 — Oyun sonu mat bilgisi (deneysel, kapalı) ve Contempt (varsayılan 0)
 

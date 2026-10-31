@@ -3,6 +3,8 @@
 import csv
 import gzip
 import json
+import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -236,12 +238,22 @@ for line in sys.stdin:
 class FullPipelineWithFakeEngineTests(unittest.TestCase):
     """Runs analyze_game -> cache -> seal with a scripted UCI engine (no Stockfish needed)."""
 
+    def make_fake_engine(self, directory: Path) -> str:
+        script = directory / "fake_uci.py"
+        script.write_text(FAKE_UCI_ENGINE, encoding="utf-8")
+        if os.name == "nt":
+            launcher = directory / "fake_uci.cmd"
+            launcher.write_bytes(f'@echo off\r\n"{sys.executable}" "{script}"\r\n'.encode("utf-8"))
+        else:
+            launcher = directory / "fake_uci.sh"
+            launcher.write_text(f'#!/bin/sh\nexec "{sys.executable}" "{script}" "$@"\n', encoding="utf-8")
+            launcher.chmod(0o755)
+        return str(launcher)
+
     def test_game_is_analysed_cached_and_sealed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            engine_path = root / "fake_uci.py"
-            engine_path.write_text(FAKE_UCI_ENGINE, encoding="utf-8")
-            engine_path.chmod(0o755)
+            engine_command = self.make_fake_engine(root)
             game = {
                 "run_name": "run", "run_type": "AB", "game_no": 1, "result": "1-0",
                 "termination_header": "normal", "opening": "e2e4", "white": "Acemi", "black": "Acemi",
@@ -257,7 +269,7 @@ class FullPipelineWithFakeEngineTests(unittest.TestCase):
             }
             out = root / "analysis"
             try:
-                analyze_games._init_worker(str(engine_path), 10, str(root / "missing-syzygy"))
+                analyze_games._init_worker(engine_command, 10, str(root / "missing-syzygy"))
                 cache = Path(analyze_games._analyze_task(game, str(out), 10))
             finally:
                 analyze_games._close_worker()

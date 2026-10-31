@@ -1,56 +1,108 @@
 # Acemi
 
-Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sırası doğruluk, güç ve hızdır. Motor çekirdeği `engine/` altında standart kütüphane ile yazılır; `python-chess` yalnızca `tools/` içindeki araçlarda kullanılabilir.
+Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sırası doğruluk, güç ve hızdır. Motor çekirdeği `engine/` altında yalnızca standart kütüphaneyle çalışır; `python-chess` yalnızca `tools/` ve testlerde kullanılır.
 
-## Aşama durumu
+[![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
-**Aşama 6 (0.6.1):** Null-move pruning, late move reductions, killer ve history sıralaması (Aşama 5'in hamle sıralama + transposition table'ına ek). Aspiration window yok.
+## Durum
 
-**Aşama 3 (0.3.0):** materyal eval + negamax/alpha-beta. Varsayılan en fazla derinlik 3 (kökte iterative deepening; süre dolarsa son tamamlanan derinlik döner ve `info depth` o derinliktir). Eşit hamleler `Seed` ile tohumlanan RNG ile seçilir. `go depth` / `go movetime` desteklenir. PST, quiescence ve iterative deepening henüz yok.
+**Aşama 8 (0.8.2) tamam:** Polyglot açılış kitabı okuyucu ve 90 hatlık, 18 ply kitap. Motor araması 0.8.1 ile aynı; bu sürüm ağırlıklı olarak kitap verisi ve cilalama içerir.
 
-Geçiş kriteri (plan): rastgele UCI rakibi 100/100 yenmek. 0.3.1'in kayıtlı 100 maçlık sonucu 91 galibiyet, 9 beraberlik, 0 mağlubiyet (%95,5) olduğundan bu kriter henüz karşılanmamıştır. Notebook kısa duman maçı oynatır; tam 100’lük koşu ayrıca çalıştırılabilir.
+- **Güç:** Kayıtlı ölçümlerde SF1500 500 ms'ye karşı 200 oyunun birleşiği %51,5 (+10,4 Elo; %95 GA −37,6..+58,4), yaklaşık **1510 UCI_Elo**. SF1320 250 ms'ye karşı %68,5. Ölçümlerde kitap kapalı ve `openings/acemi-64.txt` kullanıldı.
+- **Kitap:** 90 hat, 18 ply, 1117 pozisyon, 3124 hamle. Test/bench'te varsayılan kapalı; gerçek oyunda `OwnBook=true` ile açılır.
+- **Bilinen sınırlar:** KBBK/KBNK dönüştürme zayıf (sentetik 3/10 ve 1/10); Syzygy yok; tek iş parçacığı (`Threads` en fazla 1); saf Python hızı. Eval mikro-terimleri ve Contempt ölçülebilir kazanç vermedi.
 
-## Dizinler
+## Hızlı başlangıç
 
-- `engine/`: satranç motoru, arama ve değerlendirme
-- `tests/`: doğruluk ve arama testleri
-- `tools/`: maç, ölçüm, rastgele UCI rakip ve veri kayıt araçları
-- `notebooks/kaggle_runner.ipynb`: Kaggle’da test + duman maçı + GitHub push
-- `data/`: sürümlü test verileri ve koşu indeksi
-- `analysis/`: yalnızca analiz ajanının raporları
-
-## Yerel test
+Motor UCI protokolüyle çalışır:
 
 ```powershell
-python -m unittest discover -v
+python -m engine
 ```
+
+Bir GUI'ye motor olarak eklerken komut `python -m engine`, çalışma dizini depo kökü olmalı.
+
+Gerçek oyunda açılış kitabı:
+
+```text
+setoption name OwnBook value true
+setoption name BookFile value openings/book.bin
+```
+
+`BookFile` göreli yolu çalışma dizinine göre çözülür; GUI farklı bir dizinden başlatıyorsa mutlak yol verin.
+
+## UCI seçenekleri
+
+| Seçenek | Varsayılan | Not |
+|---|---:|---|
+| `Hash` | 16 | MB; 1–4096 |
+| `Threads` | 1 | En fazla 1 (tek iş parçacığı) |
+| `Seed` | 1 | Eşit hamlelerde RNG tohumu |
+| `NullMove`, `LMR`, `Killers` | true | Varsayılan arama özellikleri |
+| `PVS`, `CheckExtension`, `LateMovePruning` | false | Deneysel; ölçülebilir kazanç yok |
+| `OwnBook`, `BookFile` | false, `openings/book.bin` | Polyglot kitap |
+| `EvalPassedPawns`, `EvalPawnStructure`, `EvalBishopPair`, `EvalKingSafety`, `EvalEndgameMate` | false | Deneysel eval terimleri |
+| `NextIterationPct` | 150 | Iteratif derinleştirme bütçesi |
+| `Contempt` | 0 | Beraberlik kontemptu; maçta kazanç yok |
+
+## Açılış kitabı
+
+- `openings/acemi-64.txt`: sabit 64 satırlık dengeli test seti. Ölçümlerde değiştirilmez.
+- `openings/book_seeds.txt`: 64 test hattı + 12 ek Fransız dalı + 14 popüler hat = 90 hat.
+- `openings/book.bin`: `tools/bookgen.py` ile üretilir.
+
+```powershell
+python -m pip install -r requirements-tools.txt
+python -m tools.bookgen --stockfish C:\path\to\stockfish.exe `
+  --openings openings/book_seeds.txt --branches 90 --max-plies 18 --depth 12 --cp-window 40
+```
+
+`tests/test_shipped_book.py` kitabın yasallığını, kökten erişilebilirliğini ve seed kapsamını doğrular. Kitaplı maçlarda `OwnBook` açıkça verilir; test protokolünde kitap kapalıdır.
+
+## Test ve CI
+
+```powershell
+python -m pip install -r requirements-tools.txt
+python -m unittest discover -s tests -v
+python -m tools.bench --depth 3
+```
+
+GitHub Actions her push/PR'da Ubuntu ve Windows üzerinde tam test paketini ve bench duman testini çalıştırır: `.github/workflows/ci.yml`.
 
 ## Maç çalıştırma
 
 ```powershell
-python -m pip install -r requirements-tools.txt
+# SF1320, 250 ms, 150 oyun
+python -m tools.match --games 150 --movetime-ms 250 --uci-elo 1320 --openings openings/acemi-64.txt
 
-# Stockfish’e karşı
-python -m tools.match --games 4 --movetime-ms 300 --uci-elo 1320
+# SF1500, 500 ms, 150 oyun
+python -m tools.match --games 150 --movetime-ms 500 --uci-elo 1500 --openings openings/acemi-64.txt
 
-# Rastgele rakibe karşı (Stage 3 geçiş testi)
-python -m tools.match --games 100 --movetime-ms 200 --opponent-cmd "python -u tools/random_uci.py"
+# A/B motor seçeneği (iki taraf da Acemi)
+python -m tools.match --games 150 --movetime-ms 500 `
+  --opponent-cmd "python -u -m engine" `
+  --engine-option Contempt=15 --opponent-option Contempt=0 `
+  --openings openings/acemi-64.txt
 ```
 
-`--sprt` ile SPRT erken durdurma, `--openings dosya.epd` ile kendi açılış seti, `--no-record` ile yazmadan deneme yapılır.
+`--sprt` erken durdurma, `--no-record` kayıtsız deneme, `--seed` RNG tohumu, `--concurrency` paralel oyun sayısıdır. Sonuçlar `data/runs/` altına yazılır.
+
+## Dizinler
+
+- `engine/`: motor, arama ve değerlendirme
+- `tests/`: doğruluk, arama, kitap ve analiz testleri
+- `tools/`: maç, ölçüm, kitap üretimi ve analiz araçları
+- `openings/`: test açılış seti, kitap seed'leri ve `book.bin`
+- `notebooks/`: Kaggle test/analiz koşucuları
+- `data/`: sürümlü koşu kayıtları ve analiz çıktıları
+- `.github/workflows/ci.yml`: Ubuntu + Windows CI
 
 ## Kaggle hazırlığı
 
-1. Public depo: [xdxddxdxd/acemi](https://github.com/xdxddxdxd/acemi). Varsayılan dal `main`.
-2. Kaggle’da `notebooks/kaggle_runner.ipynb` dosyasının güncel sürümünü açın. Internet açık olsun.
-3. **Add-ons → Secrets** içinde `GITHUB_TOKEN` (Contents: Read and write).
-4. Notebook hücrelerini sırayla çalıştırın.
-
-Token hiçbir dosyaya veya hücre çıktısına yazılmaz.
-
-## Araç bağımlılığı
-
-`python-chess` yalnızca araçlar içindir. `python -m pip install -r requirements-tools.txt`
+1. Public depo: [xdxddxdxd/acemi](https://github.com/xdxddxdxd/acemi), varsayılan dal `main`.
+2. `notebooks/kaggle_runner.ipynb` test/maç, `notebooks/kaggle_analysis.ipynb` analiz içindir. Internet açık olsun.
+3. **Add-ons → Secrets** içinde `GITHUB_TOKEN` (Contents: Read and write) tanımlayın.
+4. Hücreleri sırayla çalıştırın. Token hiçbir dosyaya veya çıktıya yazılmaz.
 
 ## Veri ve analiz
 
