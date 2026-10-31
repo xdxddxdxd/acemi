@@ -54,13 +54,34 @@ def _random_put(board: chess.Board, piece_type: int, color: bool, rng: random.Ra
         if piece_type == chess.PAWN and any(chess.square_rank(square) in (0, 7) for square in squares):
             continue
         if piece_type == chess.BISHOP and count == 2:
-            colors = {chess.square_color(square) for square in squares}
+            colors = {bool(chess.BB_DARK_SQUARES & chess.BB_SQUARES[square]) for square in squares}
             if len(colors) != 2:
                 continue
         for square in squares:
             board.set_piece_at(square, chess.Piece(piece_type, color))
         return True
     return False
+
+
+FIELDS = ["category", "fen", "expected", "result", "success", "plies", "termination", "oracle_depth", "label_source"]
+
+
+def write_rows(path: Path, rows: list[dict]) -> None:
+    """Rewrite the CSV through a temporary file so a crash never leaves a half-written result."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+    temporary.replace(path)
+
+
+def read_rows(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8", newline="") as stream:
+        return list(csv.DictReader(stream))
 
 
 def generate(category: str, rng: random.Random) -> chess.Board | None:
@@ -152,6 +173,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-plies", type=int, default=80)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--syzygy", default=None, help="directory with Syzygy WDL tables for exact labels")
+    parser.add_argument("--resume", action="store_true", help="keep finished categories already in --out")
     args = parser.parse_args(argv)
     tablebase = None
     if args.syzygy:
@@ -164,9 +186,14 @@ def main(argv: list[str] | None = None) -> int:
     stockfish = chess.engine.SimpleEngine.popen_uci(args.stockfish)
     stockfish.configure({"Threads": 1, "Hash": 64})
     acemi = chess.engine.SimpleEngine.popen_uci([sys.executable, "-m", "engine"], cwd=str(ROOT))
-    rows = []
+    rows = read_rows(args.out) if args.resume else []
     try:
         for category in [item.strip() for item in args.categories.split(",") if item.strip()]:
+            existing = sum(1 for row in rows if row["category"] == category)
+            if existing >= args.count:
+                print(f"{category}: {existing} rows already done, skipped")
+                continue
+            rows = [row for row in rows if row["category"] != category]
             kept = 0
             attempts = 0
             while kept < args.count and attempts < args.count * 50:
@@ -202,17 +229,13 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"{category} {kept}/{args.count}: expected={expected} result={result} plies={plies} {termination}")
             if kept == 0:
                 print(f"{category}: no clear positions found")
+            write_rows(args.out, rows)  # After every category: a later crash keeps what is finished.
     finally:
         stockfish.quit()
         acemi.quit()
         if tablebase is not None:
             tablebase.close()
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["category", "fen", "expected", "result", "success", "plies", "termination", "oracle_depth", "label_source"]
-    with args.out.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(rows)
+    write_rows(args.out, rows)
     print(f"wrote {args.out} ({len(rows)} rows)")
     return 0
 

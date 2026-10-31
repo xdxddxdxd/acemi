@@ -123,6 +123,47 @@ class LabelTests(unittest.TestCase):
         self.assertIsNone(_tb_wdl(chess.Board(KQK)))
 
 
+class SyntheticGeneratorTests(unittest.TestCase):
+    """Every category must build positions (a missing python-chess helper crashed KBBK on Kaggle)."""
+
+    def test_every_category_generates_valid_boards(self) -> None:
+        import random
+
+        from tools import synthetic_endgames
+
+        rng = random.Random(3)
+        for category in synthetic_endgames.CATEGORIES:
+            with self.subTest(category=category):
+                boards = [synthetic_endgames.generate(category, rng) for _ in range(40)]
+                valid = [board for board in boards if board is not None]
+                self.assertTrue(valid)
+                self.assertTrue(all(board.is_valid() for board in valid))
+
+    def test_two_bishops_stand_on_opposite_colours(self) -> None:
+        import random
+
+        from tools import synthetic_endgames
+
+        rng = random.Random(5)
+        for _ in range(30):
+            board = synthetic_endgames.generate("KBBK", rng)
+            if board is None:
+                continue
+            squares = list(board.pieces(chess.BISHOP, chess.WHITE))
+            self.assertEqual(len(squares), 2)
+            self.assertNotEqual(*[bool(chess.BB_DARK_SQUARES & chess.BB_SQUARES[s]) for s in squares])
+
+    def test_rows_survive_a_rewrite_and_resume_read(self) -> None:
+        from tools import synthetic_endgames
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "s.csv"
+            row = {field: "x" for field in synthetic_endgames.FIELDS}
+            synthetic_endgames.write_rows(path, [row])
+            self.assertEqual(synthetic_endgames.read_rows(path), [row])
+            self.assertFalse(path.with_name("s.csv.tmp").exists())
+
+
 class WorkerStartupTests(unittest.TestCase):
     """A missing Stockfish must fail with an OS error, not a scoping bug (seen on Kaggle)."""
 
