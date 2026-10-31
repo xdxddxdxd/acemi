@@ -1,5 +1,17 @@
 # Değişiklik günlüğü
 
+## Analiz araçları (motor değişmedi; sürüm 0.8.0)
+
+Test yazan tarafta ÇALIŞTIRILDI: tam paket 248 test (22 analiz testi, Stockfish gerektirmeyen sentetik verilerle). Gerçek Stockfish/Syzygy akışı bu makinede çalıştırılmadı; Kaggle'da doğrulanacak.
+
+- `tools/analyze_games.py`: çıktı artık **değişmez parçalar**: her 250 oyunluk koşu `data/analysis/parts/` altına üç dosya yazar (`positions_part_<hash>.csv.gz`, `games_part_<hash>.csv`, `blunders_part_<hash>.csv`); ad, oyun kimliklerinin hash'idir (aynı oyun kümesi aynı dosya, tekrar çalıştırma idempotent). Dosyalar geçici ada yazılıp `os.replace` ile yerine konur, `parts.json` (oyun listesi, satır sayıları, SHA-256) en son yazılır. Devam ederken manifest ve dosyalar doğrulanır; eksik/bozuk parça atılır ve oyunları yeniden analiz edilir. `positions.csv.gz` artık tek dosya olarak birleştirilmez (eski O(oyun×pozisyon) birleştirme ve Git geçmişi şişmesi kalktı); `games.csv`/`blunders.csv` parçalardan küçük birleştirmeyle üretilir.
+- `opening_plies`: başlık biçiminden bağımsız, oyunun ilk kayıtlı hamlesinden (`ilk ply − 1`, en çok 20). Rapor A bölümü "ilk motor hamlesinden 24. ply'e" olarak yazıyor.
+- Syzygy: `--syzygy DIR` ile ≤5 taşlı (rok hakkı olmayan) pozisyonlar WDL ile etiketlenir; ±1 (kısmi/50 hamle) beraberlik sayılır. Her satırda `tb_wdl` ve `label_source` (`syzygy`/`stockfish`), oyun tablosunda `first_le5/6/7_source`. Tablo yoksa veya probe başarısızsa Stockfish'e düşer. Rapor ikisini ayrı sayar ve sonucu **üst sınır** olarak işaretler (WDL, DTZ'yi içermez). `tools/synthetic_endgames.py` de aynı etiketi kullanır (`label_source` sütunu).
+- Worker başına sınırlı (50 bin) FEN önbelleği (anahtar: EPD + derinlik); kazancı tahmin (%10–20), ölçülmedi.
+- Recheck örneği: tabakalı (yarı AB, yarı SF; eksik türü diğeri tamamlar), oyun başına en fazla 2 pozisyon, sabit tohum (`recheck_meta.json`).
+- Rapor: pozisyonları parçalardan okur, oyun bazlı dizin kullanır (rapor içindeki O(oyun×pozisyon) taramalar kalktı); "post-decision vekili" yerine "PGN'deki oyun sayısı ile sayılan oyun farkı (post-decision + eşleşmemiş)".
+- Notebook: Syzygy WDL indirme hücresi (dosya sayısı ve boyutu yazdırır, 1,5 GB üstünü veya hatayı sessizce Stockfish etiketine çevirir).
+
 ## Analiz araçları — mevcut oyunların Stockfish analizi (motor kodu değişmedi)
 
 - `tools/analyze_games.py`: `data/runs` altındaki PGN/moves kayıtlarını Stockfish depth 10 ile tarar. A/B ve Stockfish koşuları ayrı tutulur; oyunlar tekilleştirilir; `post_decision_games_excluded` için son-N vekili uygulanır. Her oyun için tam PGN hattı (zorunlu açılış hamleleri dahil) değerlendirilir; pozisyon/oyun/blunder CSV'leri üretilir. Oyun başına önbellek ve `processed_games.txt` ile oturum kesilse bile devam eder; CSV'ler birleştirilir.

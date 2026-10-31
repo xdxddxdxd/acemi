@@ -22,11 +22,22 @@ def read_games(path: Path) -> list[dict]:
         return list(csv.DictReader(stream))
 
 
-def read_positions(path: Path) -> list[dict]:
-    if not path.exists():
-        return []
-    with gzip.open(path, "rt", encoding="utf-8", newline="") as stream:
-        return list(csv.DictReader(stream))
+def read_positions(out: Path) -> list[dict]:
+    """All position rows: from the sealed parts, or a legacy positions.csv.gz."""
+    manifest = out / "parts.json"
+    paths: list[Path] = []
+    if manifest.exists():
+        for part in json.loads(manifest.read_text(encoding="utf-8")).get("parts", []):
+            path = out / part["files"]["positions"]["path"]
+            if path.exists():
+                paths.append(path)
+    elif (out / "positions.csv.gz").exists():
+        paths.append(out / "positions.csv.gz")
+    rows: list[dict] = []
+    for path in paths:
+        with gzip.open(path, "rt", encoding="utf-8", newline="") as stream:
+            rows.extend(csv.DictReader(stream))
+    return rows
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -121,10 +132,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     out = args.dir
     games = read_games(out / "games.csv")
-    positions = read_positions(out / "positions.csv.gz")
+    positions = read_positions(out)
+    positions_by_game: dict[str, list[dict]] = defaultdict(list)
+    for row in positions:
+        positions_by_game[row["game_id"]].append(row)
     blunders = read_csv(out / "blunders.csv")
     synthetic = read_csv(out / "synthetic_endgames.csv")
     recheck = read_csv(out / "recheck.csv")
+    recheck_meta = json.loads((out / "recheck_meta.json").read_text(encoding="utf-8")) if (out / "recheck_meta.json").exists() else {}
     manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8")) if (out / "manifest.json").exists() else {}
     config = json.loads((out / "config.json").read_text(encoding="utf-8")) if (out / "config.json").exists() else {}
 
@@ -156,22 +171,26 @@ def main(argv: list[str] | None = None) -> int:
     add("- Örnekleme: yok; tüm benzersiz oyunlar tam olarak tarandı (süre yetersiz kalsaydı raporda belirtilecekti).")
     add("- A/B ve Stockfish sonuçları ayrı raporlanır; asla birleştirilmedi.")
     add("")
-    add("> Sınırlama: `post_decision_games_excluded` oyun bazında işaretli değil. Kayıtlı sayıya göre **game_no sırasındaki son N oyun** sonuç örnekleminden çıkarıldı (vekil). Bu, gerçek karar anıyla birebir aynı olmayabilir; pozisyon istatistiklerinde tüm oyunlar kullanıldı.")
+    add("> Sınırlama: `post_decision_games_excluded` oyun bazında işaretli değil. PGN'deki oyun sayısı ile sayılan oyun sayısı arasındaki fark (post-decision + eşleşmemiş oyunlar toplamı) kadar **game_no sırasındaki son oyun** sonuç örnekleminden çıkarıldı (vekil). Bu, gerçek karar anıyla birebir aynı olmayabilir; pozisyon istatistiklerinde tüm oyunlar kullanıldı.")
     add("")
 
     # ---------- summary ----------
     missed_le5_wins = 0
     missed_le5_draws = 0
+    missed_by_source: dict[str, list[int]] = {"syzygy": [0, 0], "stockfish": [0, 0]}
     for game in result_games:
         ply = as_int(game.get("first_le5_ply"))
         if ply is None:
             continue
         sf = game.get("first_le5_sf")
         result = game.get("result_acemi")
+        source = game.get("first_le5_source") or "stockfish"
         if sf == "win" and result in ("draw", "loss"):
             missed_le5_wins += 1
+            missed_by_source.setdefault(source, [0, 0])[0] += 1
         if sf == "draw" and result == "loss":
             missed_le5_draws += 1
+            missed_by_source.setdefault(source, [0, 0])[1] += 1
     winning_repetitions = sum(
         1
         for game in games
@@ -185,10 +204,11 @@ def main(argv: list[str] | None = None) -> int:
     opening_bad = [value for value in opening_ply24 if value is not None and value > 150]
     bad_openings = Counter()
     for row in positions:
-        if as_int(row.get("ply"), 0) != 11:
-            continue
         game = game_by_id.get(row["game_id"])
         if not game:
+            continue
+        # First position after the forced opening line (ply 11 for the 10-ply sets).
+        if as_int(row.get("ply"), 0) != (as_int(game.get("opening_plies"), 10) or 0) + 1:
             continue
         value = as_float(row.get("sf_cp"))
         if value is None:
@@ -271,7 +291,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # ---------- A ----------
     section("A. Açılış kitabı")
-    add("**Ölçülenler:**")
+    add("**Ölçülenler:** (kapsam: ilk motor hamlesinden 24. ply'e; zorunlu açılış plyleri Acemi'nin seçimi olmadığı için sayılmaz)")
     for run_type in ("AB", "SF"):
         rows = [row for row in acemi_positions if row["run_type"] == run_type and as_int(row.get("ply"), 0) <= 24]
         values = [as_float(row.get("cp_loss")) for row in rows]
@@ -311,8 +331,14 @@ def main(argv: list[str] | None = None) -> int:
         counts = Counter(game.get("result_acemi") for game in subset)
         add(f"- {run_type}: {len(subset)} oyun; W/D/L = {counts.get('win', 0)}/{counts.get('draw', 0)}/{counts.get('loss', 0)}.")
     add("")
-    add(f"- ≤5 taşta kaçırılan kazanç (SF ≥ +200 iken berabere/kayıp): **{missed_le5_wins}**.")
-    add(f"- ≤5 taşta kaçırılan beraberlik (SF ≈ 0 iken kayıp): **{missed_le5_draws}**.")
+    add(f"- ≤5 taşta kaçırılan kazanç (etiket: kazanç iken berabere/kayıp): **{missed_le5_wins}**.")
+    add(f"- ≤5 taşta kaçırılan beraberlik (etiket: beraberlik iken kayıp): **{missed_le5_draws}**.")
+    reached5_games = [game for game in result_games if as_int(game.get("first_le5_ply")) is not None]
+    source_counts = Counter((game.get("first_le5_source") or "stockfish") for game in reached5_games)
+    add(f"- Etiket kaynağı (≤5 taşa inen oyunlar): Syzygy WDL **{source_counts.get('syzygy', 0)}**, Stockfish derinlik {config.get('depth', '?')} **{source_counts.get('stockfish', 0)}**. Syzygy etiketinde ±1 (50 hamle kuralıyla beraberlik) beraberlik sayıldı.")
+    for source in ("syzygy", "stockfish"):
+        wins, draws = missed_by_source.get(source, [0, 0])
+        add(f"  - {source}: kaçırılan kazanç **{wins}**, kaçırılan beraberlik **{draws}**.")
     add("")
     add("**Oyunun bittiği taş sayısına göre kayıplar:**")
     for threshold in (5, 6):
@@ -321,7 +347,7 @@ def main(argv: list[str] | None = None) -> int:
     add(f"- 6+ taşta biten kayıp: **{sum(1 for game in result_games if game.get('result_acemi') == 'loss' and (as_int(game.get('final_piece_count')) or 99) > 6)}**.")
     add("")
     if missed_le5_wins or missed_le5_draws:
-        add(f"**Tahmini Syzygy etkisi:** ≤5 taşta kaçırılan kazanç/beraberlik toplamı **{missed_le5_wins + missed_le5_draws}** oyun; Syzygy 3–5 taş kapsar. Bu bir **üst sınır tahminidir**: her pozisyon tabloda değil, 50 hamle/DTZ ve dönüştürme hataları sonucu değiştirebilir. Kesin etki için ayrı maç gerekir.")
+        add(f"**Tahmini Syzygy etkisi:** ≤5 taşta kaçırılan kazanç/beraberlik toplamı **{missed_le5_wins + missed_le5_draws}** oyun; Syzygy 3–5 taş kapsar. Bu bir **üst sınır tahminidir**: WDL etiketi DTZ'yi içermez (teorik kazanç pratikte dönüştürülemeyebilir), tabloda olmayan pozisyonlarda Stockfish etiketi kullanıldı ve dönüştürme hataları sonucu değiştirebilir. Kesin etki için ayrı maç gerekir.")
     else:
         add("**Syzygy:** ≤5 taşta kaçırılan kazanç/beraberlik yok; bu veriye göre Syzygy öncelik değil.")
     theme_missed = Counter()
@@ -333,7 +359,7 @@ def main(argv: list[str] | None = None) -> int:
         if game.get("result_acemi") == "win":
             continue
         ply = as_int(game.get("first_le5_ply"))
-        row = next((item for item in positions if item["game_id"] == game["game_id"] and as_int(item.get("ply")) == ply), None)
+        row = next((item for item in positions_by_game.get(game["game_id"], []) if as_int(item.get("ply")) == ply), None)
         if row:
             theme_missed[theme_of(row, game)] += 1
     add("")
@@ -391,6 +417,8 @@ def main(argv: list[str] | None = None) -> int:
     if recheck:
         avoided = sum(1 for row in recheck if truth(row.get("avoids_blunder")))
         add(f"**Depth-4 yeniden arama:** {avoided} / {len(recheck)} pozisyonda aynı hata yapılmadı (ölçülen örnek).")
+        if recheck_meta:
+            add(f"Örnek tabakalı ve deterministik: tohum {recheck_meta.get('seed')}, oyun başına en fazla {recheck_meta.get('max_per_game')} pozisyon, havuz {recheck_meta.get('pool')}, örneklenen {recheck_meta.get('sampled')}.")
     else:
         add("**Depth-4 yeniden arama:** ölçülemedi (recheck.csv yok); 50 pozisyonluk adım Kaggle'da ayrıca çalıştırılmalı.")
     add("")
@@ -455,7 +483,7 @@ def main(argv: list[str] | None = None) -> int:
     add("- Tekrar öncesi son Acemi hamlesi ≤30 cp kayıpla SF'nin farklı bir hamlesine izin veriyorsa 'kaçınılabilir' sayıldı; bu yaklaşık bir ölçüdür (son 10 hamlenin tamamı taranmadı).")
     avoidable = 0
     for game in repetition_games:
-        rows = [row for row in positions if row["game_id"] == game["game_id"] and truth(row.get("is_acemi"))]
+        rows = [row for row in positions_by_game.get(game["game_id"], []) if truth(row.get("is_acemi"))]
         if not rows:
             continue
         last = rows[-1]
@@ -486,12 +514,14 @@ def main(argv: list[str] | None = None) -> int:
     add("- Faz tanımı: ply ≤ 20 açılış; piyon dışı materyal toplamı ≤ 26 oyun sonu; diğerleri orta oyun. SUMMARY'deki oyun-sonu tanımından pozisyona uyarlanmıştır.")
     add("- `cp_loss`: Acemi hamlesinde, SF depth " + str(config.get("depth", "?")) + " öncesi/sonrası beyaz bakışı skor farkı; SF en iyi hamlesi oynandıysa 0. >150 cp 'blunder'.")
     add("- `sf_cp`: beyaz bakışı; mat ±10000'e sınırlandırıldı. `acemi_eval_cp`: moves.jsonl'deki motor skoru (hamle sırasındaki taraf bakışı), `acemi_depth` onun derinliği.")
-    add("- `in_result_sample`: kayıtlı `post_decision_games_excluded` sayısına göre son N oyunun dışlanması (vekil). Pozisyon analizinde tüm oyunlar var.")
+    add("- `in_result_sample`: PGN'deki oyun sayısı ile sayılan oyun sayısı farkına (post-decision + eşleşmemiş) göre son oyunların dışlanması (vekil). Pozisyon analizinde tüm oyunlar var.")
     add("- A/B'de iki taraf da Acemi olduğu için `is_acemi` iki tarafta da doğru; oyun sonucu `focus_color` (engine) bakışındandır. SF'de yalnızca Acemi tarafı.")
-    add("- Sentetik sonuçlar Stockfish depth etiketiyle 'beklenen' kabul edildi; Syzygy tablebase değildir.")
+    add("- Sentetik sonuçlar için 'beklenen' etiket `synthetic_endgames.csv` içindeki `label_source` sütunundadır (Syzygy WDL varsa o, yoksa Stockfish derinliği).")
+    add("- `tb_wdl`: beyaz bakışı Syzygy WDL (2 kazanç … -2 kayıp; ±1 = 50 hamle kuralıyla beraberlik); yalnızca ≤5 taşlı, rok hakkı olmayan, tablosu bulunan pozisyonlarda dolu. `label_source` bu etiketin kaynağıdır (`syzygy`/`stockfish`).")
+    add("- İlk 10 ply zorunlu açılıştır ve Acemi'nin seçimi değildir; açılış ply sayısı oyunun ilk kayıtlı hamlesinden (`opening_plies`, en çok 20) türetilir, bu yüzden A bölümündeki \"ilk 24 ply\" aslında ilk motor hamlesinden 24. ply'e kadardır.")
     add("- `n<20` olan hücrelerde oranlar gürültülüdür; raporda sayılar verildiği için ayrıca işaretlenmedi.")
     add("")
-    add("Dosyalar: `positions.csv.gz`, `games.csv`, `blunders.csv`, `manifest.json`, `config.json`, `endgame_candidates.csv`, `synthetic_endgames.csv` (varsa), `recheck.csv` (varsa).")
+    add("Dosyalar: `parts/` (değişmez pozisyon/oyun/blunder parçaları) ve `parts.json`, `games.csv`, `blunders.csv`, `manifest.json`, `config.json`, `endgame_candidates.csv`, `synthetic_endgames.csv` (varsa), `recheck.csv` ve `recheck_meta.json` (varsa).")
 
     (out / "REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {out / 'REPORT.md'} ({len(lines)} lines)")

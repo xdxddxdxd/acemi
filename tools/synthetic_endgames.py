@@ -1,7 +1,9 @@
 """Synthetic endgame diagnostic: Acemi self-play from standard material.
 
-Positions are generated randomly, labelled by full-strength Stockfish (fixed
-depth; not Syzygy), then Acemi plays both sides at a fixed move time. The CSV
+Positions are generated randomly and labelled with Syzygy WDL when ``--syzygy``
+tables are available (cursed wins and blessed losses count as draws), otherwise by
+full-strength Stockfish at a fixed depth. The CSV records which one in
+``label_source``. Acemi then plays both sides at a fixed move time. The CSV
 answers "does Acemi convert basic endgames?" for KQK, KRK, KBBK, KBNK, KPK and
 KRP KR-like positions.
 
@@ -88,6 +90,18 @@ def generate(category: str, rng: random.Random) -> chess.Board | None:
     return board
 
 
+def tablebase_expected(board: chess.Board, tablebase) -> str | None:
+    """Exact WDL label (win/draw/loss for White), or None when the tables cannot answer."""
+    if tablebase is None or board.castling_rights or len(board.piece_map()) > 5:
+        return None
+    try:
+        value = tablebase.probe_wdl(board)
+    except Exception:
+        return None
+    value = value if board.turn == chess.WHITE else -value
+    return "win" if value == 2 else "loss" if value == -2 else "draw"
+
+
 def oracle_expected(board: chess.Board, engine, depth: int) -> str | None:
     info = engine.analyse(board, chess.engine.Limit(depth=depth))
     score = info.get("score")
@@ -136,7 +150,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--movetime-ms", type=int, default=500)
     parser.add_argument("--max-plies", type=int, default=80)
     parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument("--syzygy", default=None, help="directory with Syzygy WDL tables for exact labels")
     args = parser.parse_args(argv)
+    tablebase = None
+    if args.syzygy:
+        try:
+            import chess.syzygy
+
+            tablebase = chess.syzygy.open_tablebase(args.syzygy)
+        except Exception as error:
+            print(f"Syzygy unavailable ({error}); labelling with Stockfish only.", file=sys.stderr)
 
     rng = random.Random(args.seed)
     stockfish = chess.engine.SimpleEngine.popen_uci(args.stockfish)
@@ -152,7 +175,11 @@ def main(argv: list[str] | None = None) -> int:
                 board = generate(category, rng)
                 if board is None:
                     continue
-                expected = oracle_expected(board, stockfish, ORACLE_DEPTH[category])
+                expected = tablebase_expected(board, tablebase)
+                label_source = "syzygy"
+                if expected is None:
+                    expected = oracle_expected(board, stockfish, ORACLE_DEPTH[category])
+                    label_source = "stockfish"
                 if expected is None:
                     continue
                 if category in ("KQK", "KRK", "KBBK", "KBNK") and expected != "win":
@@ -169,6 +196,7 @@ def main(argv: list[str] | None = None) -> int:
                         "plies": plies,
                         "termination": termination,
                         "oracle_depth": ORACLE_DEPTH[category],
+                        "label_source": label_source,
                     }
                 )
                 kept += 1
@@ -178,8 +206,10 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         stockfish.quit()
         acemi.quit()
+        if tablebase is not None:
+            tablebase.close()
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["category", "fen", "expected", "result", "success", "plies", "termination", "oracle_depth"]
+    fields = ["category", "fen", "expected", "result", "success", "plies", "termination", "oracle_depth", "label_source"]
     with args.out.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
