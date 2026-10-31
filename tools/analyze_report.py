@@ -126,6 +126,11 @@ def theme_of(row: dict, game: dict | None) -> str:
     return "pozisyonel"
 
 
+def is_missed_result(sf_label: str | None, result: str | None) -> bool:
+    """True only when a clear ≤5-piece result was thrown away."""
+    return (sf_label == "win" and result in ("draw", "loss")) or (sf_label == "draw" and result == "loss")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build REPORT.md from analysis CSVs.")
     parser.add_argument("--dir", type=Path, default=DEFAULT_DIR)
@@ -271,11 +276,10 @@ def main(argv: list[str] | None = None) -> int:
 
     add("## 10 maddelik özet")
     add("")
-    book_case = bool(bad_openings) and opening_losses > 0
     blunders_ab = sum(1 for row in blunders if row["run_type"] == "AB")
     blunders_sf = sum(1 for row in blunders if row["run_type"] == "SF")
-    add(f"**İlk üç yatırım (sayıyla):** 1) oyun sonu dönüştürme/tablebase adayı: A/B kaçırılan {missed_by_type['AB'][0] + missed_by_type['AB'][1]}, SF {missed_by_type['SF'][0] + missed_by_type['SF'][1]}; 2) tekrar/contempt: A/B üstünken berabere {winning_by_type['AB']}, SF {winning_by_type['SF']}; 3) arama derinliği: A/B blunder {blunders_ab}, SF {blunders_sf}; açılış kitabı adayı: A/B kötü hat {len(bad_by_type['AB'])}, SF {len(bad_by_type['SF'])}.")
-    add(f"**Yatırım yapılmayacaklar (sayıyla):** 1) kitap genişletme: A/B kötü hat **{len(bad_by_type['AB'])}**, SF **{len(bad_by_type['SF'])}** (eşik ≥6 oyun); 2) Syzygy: ≤5 taşta kaçırılan A/B **{missed_by_type['AB'][0] + missed_by_type['AB'][1]}**, SF **{missed_by_type['SF'][0] + missed_by_type['SF'][1]}**; 3) ölçülemeyen mikro-eval terimleri: tema sayısı **{len(theme_counts)}**.")
+    add(f"**İlk üç yatırım (sayıyla):** 1) oyun sonu dönüştürme/tablebase adayı: A/B kaçırılan {missed_by_type['AB'][0] + missed_by_type['AB'][1]}, SF {missed_by_type['SF'][0] + missed_by_type['SF'][1]}; 2) tekrar/contempt: A/B üstünken berabere {winning_by_type['AB']}, SF {winning_by_type['SF']}; 3) arama derinliği: A/B blunder {blunders_ab}, SF {blunders_sf}; pratik kitap adayı: A/B kötü hat {len(bad_by_type['AB'])}, SF {len(bad_by_type['SF'])}.")
+    add(f"**Yatırım yapılmayacaklar (Elo için, sayıyla):** 1) kitap genişletme (Elo için): A/B kötü hat **{len(bad_by_type['AB'])}**, SF **{len(bad_by_type['SF'])}** (eşik ≥6 oyun); 2) Syzygy: ≤5 taşta kaçırılan A/B **{missed_by_type['AB'][0] + missed_by_type['AB'][1]}**, SF **{missed_by_type['SF'][0] + missed_by_type['SF'][1]}**; 3) ölçülemeyen mikro-eval terimleri: tema sayısı **{len(theme_counts)}**.")
     add("")
     add(f"1. **≤5 taşta kaçırılan sonuç:** A/B kazanç/beraberlik **{missed_by_type['AB'][0]}/{missed_by_type['AB'][1]}**, SF **{missed_by_type['SF'][0]}/{missed_by_type['SF'][1]}** (sonuç örneklemi).")
     add(f"2. **Üstünken üç tekrar/50 hamle beraberliği:** A/B **{winning_by_type['AB']}**, SF **{winning_by_type['SF']}** oyun.")
@@ -283,10 +287,10 @@ def main(argv: list[str] | None = None) -> int:
     add(f"4. **Kötü açılış hatları (≥6 oyun):** A/B **{len(bad_by_type['AB'])}**, SF **{len(bad_by_type['SF'])}**.")
     add(f"5. **Blunder temaları:** A/B {', '.join(f'{name} ({count})' for name, count in theme_by_type['AB'].most_common(3)) or 'yok'}; SF {', '.join(f'{name} ({count})' for name, count in theme_by_type['SF'].most_common(3)) or 'yok'}.")
     add("6. **Syzygy:** yalnızca ≤5 taşta kaçırılan kazanç/beraberlik sayısı anlamlıysa düşünülmeli; tahmini etki B bölümünde.")
-    add(f"7. **Kitap genişletme:** veriye göre {'EVET' if bad_openings else 'HAYIR'}; açılışta kayıp {opening_losses}, kötü hat {len(bad_openings)}.")
+    add(f"7. **Kitap genişletme:** pratik oyun için evet, ölçülen Elo için hayır; açılışta kayıp {opening_losses}, kötü hat {len(bad_openings)}. Test maçlarında kitap kapalı.")
     add("8. **Oyun sonu eval:** temalar ve eval/arama ayrımı C bölümünde; ölçülemeyen kısımlar açıkça yazıldı.")
     add("9. **Teşhis seti:** D bölümünde gerçek hata pozisyonları ve sentetik sonuçlar var; sentetik ölçüm yoksa 'ölçülemedi'.")
-    add("10. **Yatırım yapılmayacaklar:** kitap (veri desteklemiyorsa), Syzygy (≤5 taş kaybı azsa) ve ölçülemeyen mikro-eval terimleri.")
+    add("10. **Yatırım yapılmayacaklar (Elo için):** kitap genişletme (testlerde kapalı), Syzygy (≤5 taş kaybı azsa) ve ölçülemeyen mikro-eval terimleri.")
     add("")
 
     # ---------- A ----------
@@ -314,8 +318,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             add("  - Yok (ölçülen eşikte).")
     add("")
-    book_verdict = bool(bad_openings) and opening_losses > 0
-    add(f"**Sonuç:** Kitabı genişletmek bu veriye göre ölçülebilir bir kayıp azaltır mı? **{'Evet' if book_verdict else 'Hayır'}**. Gerekçe: açılışta biten kayıp {opening_losses}; ≥6 oyunluk kötü hat {len(bad_openings)}; ilk 24 ply ortalama cp loss {fmt(mean(opening_ply24))}. Test protokolünde kitap kapalı olduğu için bu yatırım Elo ölçümüne yansımaz.")
+    add(f"**Sonuç:** Kitap genişletme **pratik oyun için evet; ölçülen Elo için hayır**. Gerekçe: açılışta biten kayıp {opening_losses}; ≥6 oyunluk kötü hat {len(bad_openings)}; ilk 24 ply ortalama cp loss {fmt(mean(opening_ply24))}. Test protokolünde kitap kapalı olduğu için bu yatırım Elo ölçümüne yansımaz.")
     add("")
 
     # ---------- B ----------
@@ -354,9 +357,7 @@ def main(argv: list[str] | None = None) -> int:
     for game in result_games:
         if as_int(game.get("first_le5_ply")) is None:
             continue
-        if game.get("first_le5_sf") not in ("win", "draw"):
-            continue
-        if game.get("result_acemi") == "win":
+        if not is_missed_result(game.get("first_le5_sf"), game.get("result_acemi")):
             continue
         ply = as_int(game.get("first_le5_ply"))
         row = next((item for item in positions_by_game.get(game["game_id"], []) if as_int(item.get("ply")) == ply), None)

@@ -355,7 +355,7 @@ def _termination(board: chess.Board, headers: dict) -> str:
         return "insufficient_material"
     if board.is_fifty_moves():
         return "fifty_moves"
-    if board.is_repetition(3):
+    if board.can_claim_threefold_repetition():
         return "threefold_repetition"
     return str(headers.get("Termination", "normal")) or "normal"
 
@@ -803,6 +803,78 @@ def recheck_blunders(out_dir: Path, limit: int = 50, seed: int = RECHECK_SEED) -
     return {"rechecked": len(output), "path": str(path), **meta}
 
 
+def pgn_terminations(runs_dir: Path) -> dict[str, str]:
+    """Correct game terminations directly from the PGN histories (no engine)."""
+    result: dict[str, str] = {}
+    for run_dir in sorted(runs_dir.iterdir()):
+        path = run_dir / "games.pgn.gz"
+        if not path.exists():
+            continue
+        with gzip.open(path, "rt", encoding="utf-8") as stream:
+            while True:
+                game = chess.pgn.read_game(stream)
+                if game is None:
+                    break
+                board = game.board()
+                for move in game.mainline_moves():
+                    board.push(move)
+                result[f"{run_dir.name}#{game.headers.get('Round')}"] = _termination(board, dict(game.headers))
+    return result
+
+
+def repair_terminations(out_dir: Path, runs_dir: Path) -> dict:
+    """Rewrite termination in games.csv and sealed game parts from PGNs.
+
+    This is a one-time correction for records produced before
+    ``can_claim_threefold_repetition`` was used; no Stockfish run is needed.
+    """
+    mapping = pgn_terminations(runs_dir)
+    changed = 0
+    games_path = out_dir / "games.csv"
+    if games_path.exists():
+        with games_path.open(encoding="utf-8", newline="") as stream:
+            reader = csv.DictReader(stream)
+            fields = reader.fieldnames or []
+            rows = list(reader)
+        for row in rows:
+            new = mapping.get(row.get("game_id", ""))
+            if new and row.get("termination") != new:
+                row["termination"] = new
+                changed += 1
+        with games_path.open("w", encoding="utf-8", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+    parts_path = out_dir / "parts.json"
+    part_changes = 0
+    if parts_path.exists():
+        manifest = json.loads(parts_path.read_text(encoding="utf-8"))
+        for part in manifest.get("parts", []):
+            game_file = part.get("files", {}).get("games")
+            if not game_file:
+                continue
+            path = out_dir / game_file["path"]
+            with path.open(encoding="utf-8", newline="") as stream:
+                reader = csv.DictReader(stream)
+                fields = reader.fieldnames or []
+                rows = list(reader)
+            local_changed = 0
+            for row in rows:
+                new = mapping.get(row.get("game_id", ""))
+                if new and row.get("termination") != new:
+                    row["termination"] = new
+                    local_changed += 1
+            if local_changed:
+                with path.open("w", encoding="utf-8", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
+                    writer.writeheader()
+                    writer.writerows(rows)
+                game_file["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+                part_changes += local_changed
+        parts_path.write_text(json.dumps(manifest, indent=1, ensure_ascii=False), encoding="utf-8")
+    return {"terminations_from_pgn": len(mapping), "games_changed": changed, "parts_changed": part_changes}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Analyze recorded Acemi games with Stockfish.")
     parser.add_argument("--runs", type=Path, default=DEFAULT_RUNS)
@@ -815,6 +887,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-new-games", type=int, default=None)
     parser.add_argument("--aggregate-only", action="store_true")
     parser.add_argument("--recheck", action="store_true")
+    parser.add_argument("--repair-termination", action="store_true")
     parser.add_argument("--estimate", action="store_true")
     parser.add_argument("--ms-per-eval", type=float, default=30.0)
     parser.add_argument("--smoke", action="store_true")
@@ -823,6 +896,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     args.out.mkdir(parents=True, exist_ok=True)
+    if args.repair_termination:
+        print(repair_terminations(args.out, args.runs))
+        return 0
     if args.recheck:
         print(recheck_blunders(args.out, seed=args.seed))
         return 0

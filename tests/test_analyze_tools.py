@@ -54,6 +54,25 @@ class AnalyzeHelpersTests(unittest.TestCase):
         self.assertEqual(analyze_report.opening_line("Ruy Lopez: e2e4 e7e5"), "e2e4 e7e5")
         self.assertEqual(analyze_report.opening_name("Ruy Lopez: e2e4 e7e5"), "Ruy Lopez")
 
+    def test_threefold_claim_is_labelled(self) -> None:
+        class ClaimableBoard:
+            def is_checkmate(self): return False
+            def is_stalemate(self): return False
+            def is_insufficient_material(self): return False
+            def is_fifty_moves(self): return False
+            def is_repetition(self, count): return False
+            def can_claim_threefold_repetition(self): return True
+
+        self.assertEqual(analyze_games._termination(ClaimableBoard(), {}), "threefold_repetition")
+
+    def test_missed_result_filter(self) -> None:
+        self.assertTrue(analyze_report.is_missed_result("win", "draw"))
+        self.assertTrue(analyze_report.is_missed_result("win", "loss"))
+        self.assertTrue(analyze_report.is_missed_result("draw", "loss"))
+        self.assertFalse(analyze_report.is_missed_result("draw", "draw"))
+        self.assertFalse(analyze_report.is_missed_result("win", "win"))
+        self.assertFalse(analyze_report.is_missed_result("loss", "loss"))
+
     def test_theme_labels_for_basic_mates(self) -> None:
         row = {"fen": KQK, "phase": "endgame", "category": "positional"}
         self.assertEqual(analyze_report.theme_of(row, None), "KQK (mat dönüştürme)")

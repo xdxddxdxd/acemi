@@ -16,6 +16,7 @@ Test yazan tarafta ÇALIŞTIRILDI: tam paket 254 test (28 analiz testi, Stockfis
 
 ## Analiz araçları — mevcut oyunların Stockfish analizi (motor kodu değişmedi)
 
+- Düzeltme (analiz): üç tekrar artık `can_claim_threefold_repetition()` ile etiketleniyor; mevcut `games.csv` ve sealed game parçaları PGN'lerden yeniden etiketlendi (744 oyun, %30,4). B bölümü yalnızca gerçek kaçırılan sonuçları sayıyor (108→18); kitap kararı “pratik evet / ölçülen Elo hayır” olarak ayrıldı; `REPORT.md` yeniden üretildi.
 - `tools/analyze_games.py`: `data/runs` altındaki PGN/moves kayıtlarını Stockfish depth 10 ile tarar. A/B ve Stockfish koşuları ayrı tutulur; oyunlar tekilleştirilir; `post_decision_games_excluded` için son-N vekili uygulanır. Her oyun için tam PGN hattı (zorunlu açılış hamleleri dahil) değerlendirilir; pozisyon/oyun/blunder CSV'leri üretilir. Oyun başına önbellek ve `processed_games.txt` ile oturum kesilse bile devam eder; CSV'ler birleştirilir.
 - `tools/analyze_report.py`: CSV'lerden Türkçe `REPORT.md` üretir: A açılış kitabı, B Syzygy, C oyun sonu eval, D teşhis seti + üç tekrar/50 hamle + sayılı 10 maddelik özet. A/B ve SF sayıları ayrı verilir; ölçülemeyenler açıkça yazılır.
 - `tools/synthetic_endgames.py`: KQK, KRK, KBBK, KBNK, KPK, KRPKR için rastgele başlangıçlar; Stockfish etiketli beklenen sonuç; Acemi kendine karşı 500 ms oynar; `synthetic_endgames.csv`.

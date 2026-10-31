@@ -11,19 +11,19 @@
 
 ## 10 maddelik özet
 
-**İlk üç yatırım (sayıyla):** 1) oyun sonu dönüştürme/tablebase adayı: A/B kaçırılan 18, SF 0; 2) tekrar/contempt: A/B üstünken berabere 0, SF 0; 3) arama derinliği: A/B blunder 21955, SF 1796; açılış kitabı adayı: A/B kötü hat 23, SF 7.
-**Yatırım yapılmayacaklar (sayıyla):** 1) kitap genişletme: A/B kötü hat **23**, SF **7** (eşik ≥6 oyun); 2) Syzygy: ≤5 taşta kaçırılan A/B **18**, SF **0**; 3) ölçülemeyen mikro-eval terimleri: tema sayısı **10**.
+**İlk üç yatırım (sayıyla):** 1) oyun sonu dönüştürme/tablebase adayı: A/B kaçırılan 18, SF 0; 2) tekrar/contempt: A/B üstünken berabere 176, SF 6; 3) arama derinliği: A/B blunder 21955, SF 1796; pratik kitap adayı: A/B kötü hat 23, SF 7.
+**Yatırım yapılmayacaklar (Elo için, sayıyla):** 1) kitap genişletme (Elo için): A/B kötü hat **23**, SF **7** (eşik ≥6 oyun); 2) Syzygy: ≤5 taşta kaçırılan A/B **18**, SF **0**; 3) ölçülemeyen mikro-eval terimleri: tema sayısı **10**.
 
 1. **≤5 taşta kaçırılan sonuç:** A/B kazanç/beraberlik **18/0**, SF **0/0** (sonuç örneklemi).
-2. **Üstünken üç tekrar/50 hamle beraberliği:** A/B **0**, SF **0** oyun.
+2. **Üstünken üç tekrar/50 hamle beraberliği:** A/B **176**, SF **6** oyun.
 3. **Açılış ilk 24 ply:** A/B ortalama cp loss **52.5**, >150 hata **2490**; SF **50.1**, **294**; açılışta biten kayıp A/B **0**, SF **1**.
 4. **Kötü açılış hatları (≥6 oyun):** A/B **23**, SF **7**.
 5. **Blunder temaları:** A/B vezir oyun sonu (11139), kale oyun sonu (6649), fil/at oyun sonu (1676); SF vezir oyun sonu (946), kale oyun sonu (513), pozisyonel (116).
 6. **Syzygy:** yalnızca ≤5 taşta kaçırılan kazanç/beraberlik sayısı anlamlıysa düşünülmeli; tahmini etki B bölümünde.
-7. **Kitap genişletme:** veriye göre EVET; açılışta kayıp 1, kötü hat 20.
+7. **Kitap genişletme:** pratik oyun için evet, ölçülen Elo için hayır; açılışta kayıp 1, kötü hat 20. Test maçlarında kitap kapalı.
 8. **Oyun sonu eval:** temalar ve eval/arama ayrımı C bölümünde; ölçülemeyen kısımlar açıkça yazıldı.
 9. **Teşhis seti:** D bölümünde gerçek hata pozisyonları ve sentetik sonuçlar var; sentetik ölçüm yoksa 'ölçülemedi'.
-10. **Yatırım yapılmayacaklar:** kitap (veri desteklemiyorsa), Syzygy (≤5 taş kaybı azsa) ve ölçülemeyen mikro-eval terimleri.
+10. **Yatırım yapılmayacaklar (Elo için):** kitap genişletme (testlerde kapalı), Syzygy (≤5 taş kaybı azsa) ve ölçülemeyen mikro-eval terimleri.
 
 
 ## A. Açılış kitabı
@@ -62,7 +62,7 @@
   - e2e4 e7e6 d2d4 d7d5 b1d2 g8f6 e4e5 f6d7 f1d3 c7c5 — 6 oyun
   - e2e4 d7d5 e4d5 d8d5 b1c3 d5a5 d2d4 g8f6 g1f3 c7c6 — 6 oyun
 
-**Sonuç:** Kitabı genişletmek bu veriye göre ölçülebilir bir kayıp azaltır mı? **Evet**. Gerekçe: açılışta biten kayıp 1; ≥6 oyunluk kötü hat 20; ilk 24 ply ortalama cp loss 52.2. Test protokolünde kitap kapalı olduğu için bu yatırım Elo ölçümüne yansımaz.
+**Sonuç:** Kitap genişletme **pratik oyun için evet; ölçülen Elo için hayır**. Gerekçe: açılışta biten kayıp 1; ≥6 oyunluk kötü hat 20; ilk 24 ply ortalama cp loss 52.2. Test protokolünde kitap kapalı olduğu için bu yatırım Elo ölçümüne yansımaz.
 
 
 ## B. Syzygy / tablebase
@@ -89,10 +89,9 @@
 **Tahmini Syzygy etkisi:** ≤5 taşta kaçırılan kazanç/beraberlik toplamı **18** oyun; Syzygy 3–5 taş kapsar. Bu bir **üst sınır tahminidir**: WDL etiketi DTZ'yi içermez (teorik kazanç pratikte dönüştürülemeyebilir), tabloda olmayan pozisyonlarda Stockfish etiketi kullanıldı ve dönüştürme hataları sonucu değiştirebilir. Kesin etki için ayrı maç gerekir.
 
 **Kaçırılan kazanç/beraberlik temaları:**
-- kale oyun sonu: 48
-- fil/at oyun sonu: 40
-- diğer oyun sonu: 19
-- vezir oyun sonu: 1
+- diğer oyun sonu: 7
+- fil/at oyun sonu: 6
+- kale oyun sonu: 5
 
 
 ## C. Oyun sonu eval paketi
@@ -166,12 +165,35 @@
 
 ## Üç tekrar ve 50 hamle
 
-- Üç tekrar/50 hamle ile biten oyun: **0 / 2447 (0.0%)**.
-- AB: 0 oyun.
-- SF: 0 oyun.
-- Bunlarda Acemi SF'ye göre üstünken (final_sf_cp ≥ +200) berabere: **0**.
+- Üç tekrar/50 hamle ile biten oyun: **744 / 2447 (30.4%)**.
+- AB: 675 oyun.
+- SF: 69 oyun.
+- Bunlarda Acemi SF'ye göre üstünken (final_sf_cp ≥ +200) berabere: **182**.
 - Tekrar öncesi son Acemi hamlesi ≤30 cp kayıpla SF'nin farklı bir hamlesine izin veriyorsa 'kaçınılabilir' sayıldı; bu yaklaşık bir ölçüdür (son 10 hamlenin tamamı taranmadı).
-- Kaçınılabilir tekrar (yaklaşık): **0**.
+- Kaçınılabilir tekrar (yaklaşık): **193**.
+
+| oyun | tür | sonuç | bitiş | final SF |
+|---|---|---|---|---|
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#14 | AB | draw | threefold_repetition | 0 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#27 | AB | draw | threefold_repetition | 518 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#28 | AB | draw | threefold_repetition | 9994 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#35 | AB | draw | threefold_repetition | -209 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#36 | AB | draw | threefold_repetition | -123 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#46 | AB | draw | threefold_repetition | 1750 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#48 | AB | draw | threefold_repetition | -466 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#6 | AB | draw | threefold_repetition | 948 |
+| 20261028T064103Z_0.4.1_acemi-0.4.0_e23cad0#9 | AB | draw | threefold_repetition | 425 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#10 | AB | draw | threefold_repetition | -1641 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#104 | AB | draw | threefold_repetition | -332 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#111 | AB | draw | threefold_repetition | 453 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#14 | AB | draw | threefold_repetition | 62 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#24 | AB | draw | threefold_repetition | 9997 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#28 | AB | draw | threefold_repetition | -1147 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#29 | AB | draw | threefold_repetition | 9995 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#35 | AB | draw | threefold_repetition | -9999 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#39 | AB | draw | threefold_repetition | -2005 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#42 | AB | draw | threefold_repetition | 0 |
+| 20261028T094439Z_0.4.2_acemi-0.4.1_03adad2#44 | AB | draw | threefold_repetition | -1673 |
 
 
 ## Veri kapsamı ve sözlük

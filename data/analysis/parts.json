@@ -266,7 +266,7 @@
     },
     "games": {
      "path": "parts/games_part_6410ecc76a.csv",
-     "sha256": "4bbf5e06d34dd7f7e3c888a457b40349fcac9b9b5169ae6618ef4bda97342fc4"
+     "sha256": "2f7f91bc46a444b093bfa25ede9c49c269a4682f41e168ecf4b89c024fe95541"
     },
     "blunders": {
      "path": "parts/blunders_part_6410ecc76a.csv",
@@ -541,7 +541,7 @@
     },
     "games": {
      "path": "parts/games_part_d80d848d54.csv",
-     "sha256": "4fc70d07a9b04b8bcfec51cb00c181947a6033b2bddf33a0fafbe9dbf1e97429"
+     "sha256": "52d87c5c52a14628ca4f8ef0225b7564014005e8eb681ad391ce90fcbbe4127a"
     },
     "blunders": {
      "path": "parts/blunders_part_d80d848d54.csv",
@@ -816,7 +816,7 @@
     },
     "games": {
      "path": "parts/games_part_f973cb506c.csv",
-     "sha256": "7d6a57c2ea6bd82f2b2b6e0160b8bb920534b53c57a3f5c964cd084dd6e66e80"
+     "sha256": "f3281748b7b5e9daf56702fbbb3ea2d09df21c5dcbdd8dd31d37f5bb3ffb97b9"
     },
     "blunders": {
      "path": "parts/blunders_part_f973cb506c.csv",
@@ -1091,7 +1091,7 @@
     },
     "games": {
      "path": "parts/games_part_a023d183f2.csv",
-     "sha256": "2fb307d7b0bc43f44f91d222c7734217202e1b216b1ba319c2fa74aa3fc0ded6"
+     "sha256": "3d342c1b94188b43a014870e0574194d29002e1dac460cbff1b716d3f2335eba"
     },
     "blunders": {
      "path": "parts/blunders_part_a023d183f2.csv",
@@ -1366,7 +1366,7 @@
     },
     "games": {
      "path": "parts/games_part_534dd1d7e4.csv",
-     "sha256": "d20fd6e3c2715b6ba97fcec9cd0d9c64cc334dd2da38995b5a965487fe05cdba"
+     "sha256": "17de7d183d93e7b2fed75313bf7f56b108d2eba2f0357fd683a85234744fadfe"
     },
     "blunders": {
      "path": "parts/blunders_part_534dd1d7e4.csv",
@@ -1641,7 +1641,7 @@
     },
     "games": {
      "path": "parts/games_part_b2914a3868.csv",
-     "sha256": "c97599b995e316b5ad914a939a1b5ce75ee0fbe22111f8570c699b3f5dc74c95"
+     "sha256": "d888742ba4b54986f364877649ee71d602e53d65a1f8f2a2fd758c97a1bd2069"
     },
     "blunders": {
      "path": "parts/blunders_part_b2914a3868.csv",
@@ -1916,7 +1916,7 @@
     },
     "games": {
      "path": "parts/games_part_d31b8e4b99.csv",
-     "sha256": "42b06e71e5223604def645aff87fd0cc96d9bc4b936afac998ebd4eb6939e2ff"
+     "sha256": "15239ee8010728ddf61dab42fec92661b4524265beb4cf929d43733b6c213d7b"
     },
     "blunders": {
      "path": "parts/blunders_part_d31b8e4b99.csv",
@@ -2191,7 +2191,7 @@
     },
     "games": {
      "path": "parts/games_part_a99f4e9d88.csv",
-     "sha256": "7852bc0a5b228e3cdb47f82d207a3632b232e6fa4dd6aa8f926a79fec32acffe"
+     "sha256": "8dc9b1d5413986f19d0562ff35dfa4a09a1f9c369c342fd005760b74d56af642"
     },
     "blunders": {
      "path": "parts/blunders_part_a99f4e9d88.csv",
@@ -2466,7 +2466,7 @@
     },
     "games": {
      "path": "parts/games_part_98e82dc153.csv",
-     "sha256": "594dae043b349c0961418a9315df1c9b5741a63973975607fd0d5d469075b87d"
+     "sha256": "8749d38092529837598b82c67cc3533f4f7e57b9b36bcbee34d04a940d036f4f"
     },
     "blunders": {
      "path": "parts/blunders_part_98e82dc153.csv",
@@ -2688,7 +2688,7 @@
     },
     "games": {
      "path": "parts/games_part_28d60be6c3.csv",
-     "sha256": "d6652120692d3b1c3092999bfa777ea386e27405ca32237e5884e3716428f970"
+     "sha256": "226823b24e475f7016f6ffc982de13fbe0f855dbbe1f37756d8fd3696a5cb5c8"
     },
     "blunders": {
      "path": "parts/blunders_part_28d60be6c3.csv",
