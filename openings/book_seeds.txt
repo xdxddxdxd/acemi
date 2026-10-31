@@ -1,0 +1,278 @@
+# Acemi opening book seed list for tools/bookgen.py
+# Sources: the accepted 64-line balanced test set plus French branches and popular
+# lines that are not in the test set. tools/bookgen.py follows each line and adds
+# Stockfish MultiPV moves within its cp window.
+# Format: a '# <name>' comment line followed by the line's UCI moves.
+
+# --- Accepted balanced test lines (64) ---
+# Italian Giuoco Piano
+e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d4 e5d4
+
+# Italian Two Knights
+e2e4 e7e5 g1f3 b8c6 f1c4 g8f6 f3g5 d7d5 e4d5 c6a5
+
+# Italian d3
+e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d3 d7d6
+
+# Spanish Morphy
+e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f6e4
+
+# Spanish Berlin
+e2e4 e7e5 g1f3 b8c6 f1b5 g8f6 e1g1 f6e4 f1e1 e4d6
+
+# Scotch
+e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6 d4c6 b7c6
+
+# Scotch Four Knights
+e2e4 e7e5 g1f3 b8c6 b1c3 g8f6 f1b5 c6d4 f3d4 e5d4
+
+# Vienna
+e2e4 e7e5 b1c3 g8f6 f1c4 b8c6 d2d3 c6a5 a2a3 a5c4
+
+# Vienna 2...Nc6
+e2e4 e7e5 b1c3 b8c6 f1c4 f8c5 d1g4 e8f8 g4d1 d8h4
+
+# Petrov
+e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4 d2d4 d6d5
+
+# Sicilian Najdorf
+e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6
+
+# Sicilian Sveshnikov
+e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5
+
+# Sicilian Accelerated Dragon
+e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g7g6 b1c3 f8g7
+
+# Sicilian Rossolimo
+e2e4 c7c5 g1f3 b8c6 f1b5 g7g6 e1g1 f8g7 c2c3 g8f6
+
+# Sicilian Alapin
+e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 g1f3 b8c6
+
+# Sicilian Closed
+e2e4 c7c5 b1c3 b8c6 g2g3 g7g6 f1g2 f8g7 d2d3 d7d6
+
+# Sicilian Moscow
+e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 d8d7 e1g1 g8f6
+
+# Sicilian Grand Prix
+e2e4 c7c5 b1c3 b8c6 f2f4 g7g6 g1f3 f8g7 a2a4 a7a6
+
+# French Classical
+e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 e4e5 f6d7 f2f4 c7c5
+
+# French Tarrasch
+e2e4 e7e6 d2d4 d7d5 b1d2 c7c5 g1f3 c5d4 e4d5 d8d5
+
+# French Advance
+e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3 g8e7 g1f3 b8c6
+
+# French Exchange
+e2e4 e7e6 d2d4 d7d5 e4d5 e6d5 g1f3 g8f6 f1d3 f8d6
+
+# Caro-Kann Classical
+e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3 f5g6
+
+# Caro-Kann Advance
+e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 h2h4 h7h5 f1d3 f5d3
+
+# Caro-Kann Exchange
+e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 e7e6
+
+# Caro-Kann Panov
+e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 b8c6
+
+# Caro-Kann Two Knights
+e2e4 c7c6 g1f3 d7d5 b1c3 d5e4 c3e4 g8f6 d1e2 f6e4
+
+# QGD
+d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 g1f3 f8e7 c1g5 h7h6
+
+# QGD Exchange
+d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5 f8e7 e2e3 e8g8
+
+# QGD 3.Nf3
+d2d4 d7d5 c2c4 e7e6 g1f3 g8f6 b1c3 f8e7 c1f4 a7a6
+
+# QGA
+d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 c7c5
+
+# QGA Classical
+d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 a7a6
+
+# Slav
+d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 d5c4 a2a4 c8f5
+
+# Slav 3.Nf3
+d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 e2e3 c8f5 b1c3 e7e6
+
+# Semi-Slav
+d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 e7e6 e2e3 b8d7
+
+# Semi-Slav Botvinnik
+d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 e7e6 c1g5 f8e7
+
+# Exchange Slav
+d2d4 d7d5 c2c4 c7c6 c4d5 c6d5 b1c3 g8f6 c1f4 b8c6
+
+# London
+d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 c7c5 c2c3 b8c6
+
+# London vs Nf6
+d2d4 g8f6 g1f3 e7e6 c1f4 d7d5 e2e3 c7c5 c2c3 b8c6
+
+# KID Samisch
+d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 f2f3 e8g8
+
+# KID Fianchetto
+d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 g2g3 d7d6 f1g2 e8g8
+
+# Nimzo Classical
+d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 d1c2 e8g8 a2a3 b4c3
+
+# Nimzo Rubinstein
+d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 e2e3 b7b6 f1d3 c8b7
+
+# Grunfeld Exchange
+d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3
+
+# Queen's Indian
+d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 g2g3 c8b7 f1g2 f8e7
+
+# Catalan
+d2d4 g8f6 c2c4 e7e6 g2g3 d7d5 f1g2 f8e7 g1f3 e8g8
+
+# Trompowsky
+d2d4 g8f6 c1g5 e7e6 e2e4 h7h6 g5f6 d8f6 b1c3 d7d6
+
+# Dutch Classical
+d2d4 f7f5 c2c4 g8f6 b1c3 e7e6 g1f3 f8b4 c1d2 b4c3
+
+# English Symmetrical
+c2c4 c7c5 g1f3 g8f6 b1c3 b8c6 g2g3 d7d5 c4d5 f6d5
+
+# English Four Knights
+c2c4 e7e5 b1c3 g8f6 g1f3 b8c6 g2g3 d7d5 c4d5 f6d5
+
+# English Reversed
+c2c4 e7e5 b1c3 g8f6 g1f3 b8c6 g2g3 f8b4 f1g2 e8g8
+
+# English KID setup
+c2c4 g7g6 b1c3 f8g7 g2g3 g8f6 f1g2 e8g8 g1f3 d7d6
+
+# Reti
+g1f3 d7d5 c2c4 e7e6 g2g3 g8f6 f1g2 f8e7 e1g1 e8g8
+
+# Reti vs c5
+g1f3 g8f6 c2c4 c7c5 b1c3 b8c6 g2g3 g7g6 f1g2 f8g7
+
+# Reti KID
+g1f3 g8f6 c2c4 g7g6 g2g3 f8g7 f1g2 e8g8 b1c3 d7d5
+
+# English vs e6
+c2c4 e7e6 b1c3 d7d5 d2d4 g8f6 g1f3 c7c5 c4d5 c5d4
+
+# Spanish Exchange
+e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5c6 d7c6 e1g1 d8f6
+
+# Italian Four Knights
+e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 b1c3 g8f6 d2d3 a7a6
+
+# KID Four Pawns
+d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 f2f4 c7c5
+
+# English Anglo-Indian
+c2c4 g8f6 b1c3 e7e6 g1f3 d7d5 d2d4 f8e7 c1f4 e8g8
+
+# Reti b3
+g1f3 d7d5 c2c4 e7e6 b2b3 g8f6 e2e3 c7c5 c4d5 e6d5
+
+# QGA 3.e4
+d2d4 d7d5 c2c4 d5c4 e2e4 e7e5 g1f3 e5d4 f1c4 f8b4
+
+# Caro-Kann Fantasy
+e2e4 c7c6 d2d4 d7d5 f2f3 g7g6 b1c3 f8g7 e4e5 f7f6
+
+# Sicilian Delayed Alapin
+e2e4 c7c5 g1f3 e7e6 c2c3 d7d5 e4e5 b8c6 d2d4 c8d7
+
+# --- French branches (12) ---
+# French Winawer Main
+e2e4 e7e6 d2d4 d7d5 b1c3 f8b4 e4e5 c7c5 a2a3 b4c3 b2c3 g8e7 g1f3
+
+# French Winawer Poisoned Pawn
+e2e4 e7e6 d2d4 d7d5 b1c3 f8b4 e4e5 c7c5 a2a3 b4c3 b2c3 g8e7 d1g4 d8c7 g4g7 h8g8 g7h7 c5d4
+
+# French Classical Steinitz
+e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 e4e5 f6d7 f2f4 c7c5 g1f3 b8c6 c1e3
+
+# French Burn
+e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5 d5e4 c3e4 f8e7 g5f6 e7f6 g1f3 e8g8
+
+# French McCutcheon
+e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5 f8b4 e4e5 h7h6 g5d2 b4c3 b2c3 f6e4
+
+# French Tarrasch 4.e5
+e2e4 e7e6 d2d4 d7d5 b1d2 g8f6 e4e5 f6d7 f1d3 c7c5 c2c3 b8c6 g1e2
+
+# French Tarrasch Open
+e2e4 e7e6 d2d4 d7d5 b1d2 c7c5 e4d5 d8d5 g1f3 c5d4 f1c4 d5d6 e1g1 g8f6
+
+# French Advance Milner-Barry
+e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3 b8c6 g1f3 d8b6 a2a3 g8h6 b2b4 c5d4
+
+# French Advance Be2
+e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3 b8c6 g1f3 c8d7 f1e2
+
+# French Advance Bd3
+e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3 b8c6 g1f3 d8b6 f1d3 c5d4 c3d4
+
+# French Rubinstein
+e2e4 e7e6 d2d4 d7d5 b1c3 d5e4 c3e4 b8d7 g1f3 g8f6 e4f6 d7f6 f1d3 c7c5
+
+# French KIA
+e2e4 e7e6 d2d3 d7d5 b1d2 g8f6 g1f3 c7c5 g2g3 b8c6 f1g2 f8e7 e1g1
+
+# --- Popular lines outside the test set (14) ---
+# Sicilian Dragon Yugoslav
+e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3 e8g8 d1d2 b8c6 f1c4
+
+# Sicilian Classical Rauzer
+e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 d7d6 c1g5 e7e6 d1d2 a7a6
+
+# Sicilian Scheveningen Keres
+e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e6 f1e2 a7a6 e1g1 f8e7
+
+# Pirc Austrian
+e2e4 d7d6 d2d4 g8f6 b1c3 g7g6 f2f4 f8g7 g1f3 e8g8 f1d3 b8c6
+
+# Modern
+e2e4 g7g6 d2d4 f8g7 b1c3 d7d6 f2f4 g8f6 g1f3 e8g8 f1e2 c7c5
+
+# Scandinavian
+e2e4 d7d5 e4d5 d8d5 b1c3 d5a5 d2d4 g8f6 g1f3 c7c6 f1c4 c8f5
+
+# Alekhine Four Pawns
+e2e4 g8f6 e4e5 f6d5 d2d4 d7d6 g1f3 g7g6 f1c4 d5b6 c4b3 f8g7
+
+# KID Classical
+d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8 f1e2 e7e5
+
+# Benoni
+d2d4 g8f6 c2c4 c7c5 d4d5 e7e6 b1c3 e6d5 c4d5 d7d6 e2e4 g7g6
+
+# Benko
+d2d4 g8f6 c2c4 c7c5 d4d5 b7b5 c4b5 a7a6 b5a6 c8a6 b1c3 d7d6
+
+# Dutch Classical
+d2d4 f7f5 g2g3 g8f6 f1g2 e7e6 g1f3 f8e7 e1g1 e8g8 c2c4 d7d6
+
+# King's Gambit
+e2e4 e7e5 f2f4 e5f4 g1f3 g7g5 f1c4 f8g7 d2d4 d7d6 c2c3 h7h6
+
+# London vs KID
+d2d4 g8f6 c1f4 g7g6 g1f3 f8g7 e2e3 d7d6 f1e2 e8g8
+
+# Spanish Classical
+e2e4 e7e5 g1f3 b8c6 f1b5 f8c5 e1g1 g8f6 c2c3 e8g8 d2d4 c5b6

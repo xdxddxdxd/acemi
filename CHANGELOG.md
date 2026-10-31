@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.8.2 — Geniş açılış kitabı (90 hat, 18 ply)
+
+- `openings/book_seeds.txt`: kabul edilen 64 dengeli test hattı + 12 yeni Fransız dalı (Winawer ana/Poisoned Pawn, Steinitz, Burn, McCutcheon, Tarrasch 4.e5/Open, Advance Milner-Barry/Be2/Bd3, Rubinstein, KIA) + test setinde olmayan 14 popüler hat (Dragon Yugoslav, Classical Rauzer, Scheveningen Keres, Pirc, Modern, Scandinavian, Alekhine, KID Classical, Benoni, Benko, Dutch, King's Gambit, London vs KID, Spanish Classical). Toplam 90 hat; `acemi-64` test seti değişmedi.
+- `openings/book.bin`: Stockfish 18, depth 12, MultiPV 3, ±40 cp, 18 ply; **1117 pozisyon, 3124 hamle, 50,0 KB** (önceki 211/584/9,4 KB). Satır hamlesi her düğümde ağırlık 10; ±40 cp içindeki Stockfish alternatifleri ağırlık 5.
+- Doğrulama: 90 hattın 1069 düğümünde python-chess ile Polyglot hash ve yasal hamle kümesi birebir; 3124 girdinin tamamı yasal ve kökten erişilebilir (0 eksik, 0 yasadışı); UCI duman testinde kitap hamlesi veriyor, 24 ply sonrası aramaya düşüyor. 10 pozisyonluk kalite örneğinde yeniden ölçülen en büyük cp farkı 58 (satır hamlesi kapsam için pencere dışında da tutuluyor).
+- Testlerde/benchmark'ta kitap varsayılan **kapalı**; gerçek oyunda `OwnBook=true`, `BookFile=openings/book.bin`.
+- Testler: kitap/bookgen/UCI odaklı 28 test geçti. Tam paket 271 testte yalnızca Windows'a özgü sahte-UCI testi hata verdi (`test_analyze_tools.FullPipelineWithFakeEngineTests`; bilinen platform sorunu, Linux/Kaggle'da geçiyor).
+
 ## 0.8.1 — Oyun sonu mat bilgisi (deneysel, kapalı) ve Contempt (varsayılan 0)
 
 - `EvalEndgameMate` (varsayılan **kapalı**): KBBK/KBNK pozisyonlarında rakip şahı kenara/köşeye sürme, kendi şahını yaklaştırma ve KBNK'de fil rengindeki köşeye yönlendirme. Zıt renkli iki fil kontrolü var; KQK/KRK/KPK'ya dokunmuyor. Testler geçti; varsayılan kapalıyken bench 0.6.4 ile birebir aynı.
