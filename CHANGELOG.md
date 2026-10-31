@@ -2,7 +2,7 @@
 
 ## Analiz araçları (motor değişmedi; sürüm 0.8.0)
 
-Test yazan tarafta ÇALIŞTIRILDI: tam paket 248 test (22 analiz testi, Stockfish gerektirmeyen sentetik verilerle). Gerçek Stockfish/Syzygy akışı bu makinede çalıştırılmadı; Kaggle'da doğrulanacak.
+Test yazan tarafta ÇALIŞTIRILDI: tam paket 251 test (25 analiz testi, Stockfish gerektirmeyen sentetik verilerle). Gerçek Stockfish/Syzygy akışı bu makinede çalıştırılmadı; Kaggle'da doğrulanacak.
 
 - `tools/analyze_games.py`: çıktı artık **değişmez parçalar**: her 250 oyunluk koşu `data/analysis/parts/` altına üç dosya yazar (`positions_part_<hash>.csv.gz`, `games_part_<hash>.csv`, `blunders_part_<hash>.csv`); ad, oyun kimliklerinin hash'idir (aynı oyun kümesi aynı dosya, tekrar çalıştırma idempotent). Dosyalar geçici ada yazılıp `os.replace` ile yerine konur, `parts.json` (oyun listesi, satır sayıları, SHA-256) en son yazılır. Devam ederken manifest ve dosyalar doğrulanır; eksik/bozuk parça atılır ve oyunları yeniden analiz edilir. `positions.csv.gz` artık tek dosya olarak birleştirilmez (eski O(oyun×pozisyon) birleştirme ve Git geçmişi şişmesi kalktı); `games.csv`/`blunders.csv` parçalardan küçük birleştirmeyle üretilir.
 - `opening_plies`: başlık biçiminden bağımsız, oyunun ilk kayıtlı hamlesinden (`ilk ply − 1`, en çok 20). Rapor A bölümü "ilk motor hamlesinden 24. ply'e" olarak yazıyor.
@@ -10,6 +10,7 @@ Test yazan tarafta ÇALIŞTIRILDI: tam paket 248 test (22 analiz testi, Stockfis
 - Worker başına sınırlı (50 bin) FEN önbelleği (anahtar: EPD + derinlik); kazancı tahmin (%10–20), ölçülmedi.
 - Recheck örneği: tabakalı (yarı AB, yarı SF; eksik türü diğeri tamamlar), oyun başına en fazla 2 pozisyon, sabit tohum (`recheck_meta.json`).
 - Rapor: pozisyonları parçalardan okur, oyun bazlı dizin kullanır (rapor içindeki O(oyun×pozisyon) taramalar kalktı); "post-decision vekili" yerine "PGN'deki oyun sayısı ile sayılan oyun farkı (post-decision + eşleşmemiş)".
+- Düzeltme (Kaggle smoke hatası): `import chess.syzygy` fonksiyon içinde `chess` adını yerel yapıyor ve `UnboundLocalError` veriyordu; `analyze_games.py` ve `synthetic_endgames.py` modül başında `import chess.syzygy as chess_syzygy` kullanıyor. Regresyon testleri: motor başlatma adımına ulaşma (OSError beklenir) ve sahte UCI motoruyla uçtan uca (analiz → önbellek → parça) test; CLI smoke ve çok işçili koşu sahte motorla yerelde doğrulandı.
 - Notebook: Syzygy WDL indirme hücresi (dosya sayısı ve boyutu yazdırır, 1,5 GB üstünü veya hatayı sessizce Stockfish etiketine çevirir).
 
 ## Analiz araçları — mevcut oyunların Stockfish analizi (motor kodu değişmedi)

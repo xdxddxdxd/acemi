@@ -21,6 +21,7 @@ from pathlib import Path
 
 import chess
 import chess.engine
+import chess.syzygy as chess_syzygy
 
 ROOT = Path(__file__).resolve().parents[1]
 CATEGORIES = ("KQK", "KRK", "KBBK", "KBNK", "KPK", "KRPKR")
@@ -155,9 +156,7 @@ def main(argv: list[str] | None = None) -> int:
     tablebase = None
     if args.syzygy:
         try:
-            import chess.syzygy
-
-            tablebase = chess.syzygy.open_tablebase(args.syzygy)
+            tablebase = chess_syzygy.open_tablebase(args.syzygy)
         except Exception as error:
             print(f"Syzygy unavailable ({error}); labelling with Stockfish only.", file=sys.stderr)
 

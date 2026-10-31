@@ -123,6 +123,95 @@ class LabelTests(unittest.TestCase):
         self.assertIsNone(_tb_wdl(chess.Board(KQK)))
 
 
+class WorkerStartupTests(unittest.TestCase):
+    """A missing Stockfish must fail with an OS error, not a scoping bug (seen on Kaggle)."""
+
+    def test_worker_init_reaches_the_engine_launch(self) -> None:
+        with self.assertRaises(OSError):
+            analyze_games._init_worker("/nonexistent/stockfish", 10, None)
+        with self.assertRaises(OSError):
+            analyze_games._init_worker("/nonexistent/stockfish", 10, "/nonexistent/syzygy")
+
+    def test_synthetic_main_reaches_the_engine_launch(self) -> None:
+        from tools import synthetic_endgames
+
+        with self.assertRaises(OSError):
+            synthetic_endgames.main(["--stockfish", "/nonexistent/stockfish", "--syzygy", "/nonexistent/syzygy"])
+
+
+FAKE_UCI_ENGINE = """#!/usr/bin/env python3
+import sys
+import chess
+
+board = chess.Board()
+for line in sys.stdin:
+    line = line.strip()
+    if line == "uci":
+        print("id name fake", flush=True)
+        print("option name Threads type spin default 1 min 1 max 8", flush=True)
+        print("option name Hash type spin default 16 min 1 max 1024", flush=True)
+        print("uciok", flush=True)
+    elif line == "isready":
+        print("readyok", flush=True)
+    elif line.startswith("position"):
+        words = line.split()
+        if "moves" in words:
+            split = words.index("moves")
+            head, played = words[1:split], words[split + 1:]
+        else:
+            head, played = words[1:], []
+        board = chess.Board() if head[0] == "startpos" else chess.Board(" ".join(head[1:]))
+        for move in played:
+            board.push_uci(move)
+    elif line.startswith("go"):
+        moves = list(board.legal_moves)
+        best = moves[0].uci() if moves else "0000"
+        print("info depth 10 score cp 20 pv " + best, flush=True)
+        print("bestmove " + best, flush=True)
+    elif line == "quit":
+        break
+"""
+
+
+class FullPipelineWithFakeEngineTests(unittest.TestCase):
+    """Runs analyze_game -> cache -> seal with a scripted UCI engine (no Stockfish needed)."""
+
+    def test_game_is_analysed_cached_and_sealed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            engine_path = root / "fake_uci.py"
+            engine_path.write_text(FAKE_UCI_ENGINE, encoding="utf-8")
+            engine_path.chmod(0o755)
+            game = {
+                "run_name": "run", "run_type": "AB", "game_no": 1, "result": "1-0",
+                "termination_header": "normal", "opening": "e2e4", "white": "Acemi", "black": "Acemi",
+                "move_time_ms": "500", "acemi_sides": ["white", "black"], "focus_color": "white",
+                "in_result_sample": True, "result_sample_proxy": False,
+                "pgn_moves": ["e2e4", "e7e5", "g1f3", "b8c6"],
+                "records_by_ply": {
+                    3: {"player": "engine", "eval_cp": 15, "depth": 3},
+                    4: {"player": "opponent", "eval_cp": -15, "depth": 3},
+                },
+                "opening_plies": 2, "opening_plies_source": "first_record",
+                "meta": {"engine_version": "x", "opponent": {}, "engine_settings": {}, "opening_set": "t", "hardware": {}},
+            }
+            out = root / "analysis"
+            try:
+                analyze_games._init_worker(str(engine_path), 10, str(root / "missing-syzygy"))
+                cache = Path(analyze_games._analyze_task(game, str(out), 10))
+            finally:
+                analyze_games._close_worker()
+            self.assertTrue(cache.exists())
+            entry = seal_part(out)
+            self.assertEqual(entry["rows"]["games"], 1)
+            self.assertEqual(entry["rows"]["positions"], 4)
+            with gzip.open(out / entry["files"]["positions"]["path"], "rt", encoding="utf-8", newline="") as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual([row["player"] for row in rows], ["opening", "opening", "engine", "opponent"])
+            self.assertEqual({row["label_source"] for row in rows}, {"stockfish"})
+            self.assertTrue(rows[2]["sf_best_move"])
+
+
 class PartTests(unittest.TestCase):
     def test_part_id_ignores_order_and_changes_with_content(self) -> None:
         self.assertEqual(part_id(["a#1", "b#2"]), part_id(["b#2", "a#1"]))

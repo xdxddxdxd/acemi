@@ -41,6 +41,7 @@ from pathlib import Path
 import chess
 import chess.engine
 import chess.pgn
+import chess.syzygy as chess_syzygy
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUNS = ROOT / "data" / "runs"
@@ -85,9 +86,7 @@ def _init_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
     _tablebase = None
     if syzygy:
         try:
-            import chess.syzygy
-
-            _tablebase = chess.syzygy.open_tablebase(syzygy)
+            _tablebase = chess_syzygy.open_tablebase(syzygy)
         except Exception as error:  # Missing directory or unreadable tables: fall back to Stockfish labels.
             print(f"Syzygy unavailable ({error}); labelling with Stockfish only.", file=sys.stderr)
             _tablebase = None
