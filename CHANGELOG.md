@@ -7,6 +7,7 @@
 - Doğrulama: 90 hattın 1069 düğümünde python-chess ile Polyglot hash ve yasal hamle kümesi birebir; 3124 girdinin tamamı yasal ve kökten erişilebilir (0 eksik, 0 yasadışı); UCI duman testinde kitap hamlesi veriyor, 24 ply sonrası aramaya düşüyor. 10 pozisyonluk kalite örneğinde yeniden ölçülen en büyük cp farkı 58 (satır hamlesi kapsam için pencere dışında da tutuluyor).
 - Testlerde/benchmark'ta kitap varsayılan **kapalı**; gerçek oyunda `OwnBook=true`, `BookFile=openings/book.bin`.
 - Cilalama: README 0.8.2 için güncellendi; GitHub Actions (Ubuntu + Windows) eklendi; `tests/test_shipped_book.py` kitabın yasallığını, kökten erişilebilirliğini ve seed kapsamını doğrular; Windows'ta sahte-UCI testi platforma uygun `.cmd`/`.sh` başlatıcıyla düzeltildi. Tam paket **275 test geçti** (0 hata).
+- Kaggle: `notebooks/kaggle_runner.ipynb` artık test + bench, 100 oyunluk self-play stresi, 150 oyun SF1500/500 ms ve 150 oyun SF1320/250 ms koşularını ayrı hücrelerde çalıştırır; sonuçları `data/` olarak push eder.
 
 ## 0.8.1 — Oyun sonu mat bilgisi (deneysel, kapalı) ve Contempt (varsayılan 0)
 
