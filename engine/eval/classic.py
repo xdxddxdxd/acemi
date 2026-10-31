@@ -182,13 +182,14 @@ class EvalFlags:
     single build can play itself with a feature on and off for an A/B test.
     """
 
-    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety")
+    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety", "endgame_mate")
 
     def __init__(self) -> None:
         self.passed_pawns = False
         self.pawn_structure = False
         self.bishop_pair = False
         self.king_safety = False
+        self.endgame_mate = False
 
 
 FLAGS = EvalFlags()
@@ -362,6 +363,60 @@ def _king_safety(board: Board) -> tuple[int, int]:
     return mg, 0
 
 
+# KBBK/KBNK conversion: drive the bare king to the edge and bring our king close.
+_ENDGAME_MATE_EDGE = 50
+_ENDGAME_MATE_KING = 15
+_ENDGAME_MATE_CORNER = 20
+
+
+def _mating_kind(board: Board, color: int) -> str | None:
+    pieces = board.piece_squares
+    if any(pieces[color * piece] for piece in (PAWN, ROOK, QUEEN)):
+        return None
+    if any(pieces[-color * piece] for piece in (PAWN, KNIGHT, BISHOP, ROOK, QUEEN)):
+        return None
+    bishops = len(pieces[color * BISHOP])
+    knights = len(pieces[color * KNIGHT])
+    if bishops == 2 and knights == 0:
+        colors = {
+            ((square & 7) + (7 - (square >> 4))) % 2
+            for square in pieces[color * BISHOP]
+        }
+        if len(colors) < 2:
+            return None
+        return "KBB"
+    if bishops == 1 and knights == 1:
+        return "KBN"
+    return None
+
+
+def _endgame_mate_bonus(board: Board) -> tuple[int, int]:
+    """(middlegame, endgame) bonus for a KBBK/KBNK mating side, White minus Black."""
+    eg = 0
+    for color, sign in ((WHITE, 1), (-WHITE, -1)):
+        kind = _mating_kind(board, color)
+        if kind is None:
+            continue
+        own = board.king_squares[color]
+        enemy = board.king_squares[-color]
+        if own < 0 or enemy < 0:
+            continue
+        own_file, own_row = own & 7, own >> 4
+        enemy_file, enemy_row = enemy & 7, enemy >> 4
+        edge = min(enemy_file, 7 - enemy_file, enemy_row, 7 - enemy_row)
+        distance = max(abs(own_file - enemy_file), abs(own_row - enemy_row))
+        bonus = (3 - edge) * _ENDGAME_MATE_EDGE + (7 - distance) * _ENDGAME_MATE_KING
+        if kind == "KBN":
+            bishop = next(iter(board.piece_squares[color * BISHOP]))
+            bishop_light = ((bishop & 7) + (7 - (bishop >> 4))) % 2 == 1
+            enemy_rank = 7 - enemy_row
+            corners = ((7, 0), (0, 7)) if bishop_light else ((0, 0), (7, 7))
+            corner_distance = min(max(abs(enemy_file - file), abs(enemy_rank - rank)) for file, rank in corners)
+            bonus += max(0, 7 - corner_distance) * _ENDGAME_MATE_CORNER
+        eg += sign * bonus
+    return 0, eg
+
+
 def evaluate_classic(board: Board) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     mg = 0
@@ -392,6 +447,10 @@ def evaluate_classic(board: Board) -> int:
         eg += bonus_eg
     if FLAGS.king_safety:
         bonus_mg, bonus_eg = _king_safety(board)
+        mg += bonus_mg
+        eg += bonus_eg
+    if FLAGS.endgame_mate:
+        bonus_mg, bonus_eg = _endgame_mate_bonus(board)
         mg += bonus_mg
         eg += bonus_eg
 

@@ -60,8 +60,11 @@ OPTION_LINES = (
     "option name EvalPawnStructure type check default false",
     "option name EvalBishopPair type check default false",
     "option name EvalKingSafety type check default false",
+    "option name EvalEndgameMate type check default false",
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
+    # Penalise draws only when the root side is clearly ahead (0 = off).
+    "option name Contempt type spin default 0 min 0 max 200",
 )
 CHECK_OPTIONS = {
     "nullmove": "use_null_move",
@@ -76,6 +79,7 @@ EVAL_OPTIONS = {
     "evalpawnstructure": "pawn_structure",
     "evalbishoppair": "bishop_pair",
     "evalkingsafety": "king_safety",
+    "evalendgamemate": "endgame_mate",
 }
 
 
@@ -180,6 +184,15 @@ class UciSession:
             if text not in ("true", "false"):
                 return [f"info string Option {name} needs true or false"]
             setattr(self.searcher, CHECK_OPTIONS[name], text == "true")
+            return []
+        if name == "contempt":
+            try:
+                number = int(value)
+            except ValueError:
+                return [f"info string Option {name} needs an integer value"]
+            if not 0 <= number <= 200:
+                return [f"info string Option {name} must be between 0 and 200"]
+            self.searcher.contempt = number
             return []
         if name == "nextiterationpct":
             try:

@@ -215,9 +215,12 @@ class Searcher:
         pvs: bool = False,
         check_extension: bool = False,
         lmp: bool = False,
+        contempt: int = 0,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
     ) -> None:
         self.use_pvs = pvs
+        self.contempt = contempt
+        self._root_color: int | None = None
         self.use_check_extension = check_extension
         self.use_lmp = lmp
         self.next_iteration_factor = next_iteration_factor
@@ -289,6 +292,7 @@ class Searcher:
             raise ValueError("nodes limit cannot be negative")
 
         self.nodes = 0
+        self._root_color = board.side_to_move
         started = time.monotonic()
         self._deadline = started + movetime_ms / 1000.0 if movetime_ms is not None else None
         self._nodes_limit = nodes_limit
@@ -420,7 +424,7 @@ class Searcher:
         if board.is_fifty_move_draw():
             return self._fifty_move_score(board, ply)
         if board.is_threefold_repetition() or board.is_insufficient_material():
-            return DRAW_SCORE
+            return self._draw_score(board)
 
         key = board.zobrist_hash
         tt_move: Move | None = None
@@ -593,7 +597,7 @@ class Searcher:
         if board.is_fifty_move_draw():
             return self._fifty_move_score(board, ply)
         if board.is_threefold_repetition() or board.is_insufficient_material():
-            return DRAW_SCORE
+            return self._draw_score(board)
         if ply >= MAX_PLY:
             return evaluate(board)
 
@@ -626,8 +630,21 @@ class Searcher:
                 break
         return best
 
-    @staticmethod
-    def _fifty_move_score(board: Board, ply: int) -> int:
+    def _draw_score(self, board: Board) -> int:
+        """Contempt-adjusted score of a draw from the side to move's view.
+
+        Only when the root side is ahead does a draw become unattractive; equal or
+        worse positions still value the draw normally.
+        """
+        if self.contempt == 0 or self._root_color is None:
+            return DRAW_SCORE
+        side_value = evaluate(board)
+        root_value = side_value if board.side_to_move == self._root_color else -side_value
+        if root_value <= 150:
+            return DRAW_SCORE
+        return -self.contempt if board.side_to_move == self._root_color else self.contempt
+
+    def _fifty_move_score(self, board: Board, ply: int) -> int:
         """Score of a position whose halfmove clock reached 100.
 
         A checkmate on the 100th half-move still wins: the fifty-move rule cannot
@@ -636,14 +653,13 @@ class Searcher:
         """
         if board.is_checkmate():
             return -MATE_SCORE + ply
-        return DRAW_SCORE
+        return self._draw_score(board)
 
-    @staticmethod
-    def _terminal_score(board: Board, ply: int) -> int:
+    def _terminal_score(self, board: Board, ply: int) -> int:
         """Mate or stalemate score from the side that has just run out of moves."""
         if board.in_check():
             return -MATE_SCORE + ply
-        return DRAW_SCORE
+        return self._draw_score(board)
 
 
 def _mate_distance(score: int) -> int | None:

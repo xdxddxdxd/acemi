@@ -1,5 +1,13 @@
 # Değişiklik günlüğü
 
+## 0.8.1 — Oyun sonu mat bilgisi (deneysel, kapalı) ve Contempt (varsayılan 0)
+
+- `EvalEndgameMate` (varsayılan **kapalı**): KBBK/KBNK pozisyonlarında rakip şahı kenara/köşeye sürme, kendi şahını yaklaştırma ve KBNK'de fil rengindeki köşeye yönlendirme. Zıt renkli iki fil kontrolü var; KQK/KRK/KPK'ya dokunmuyor. Testler geçti; varsayılan kapalıyken bench 0.6.4 ile birebir aynı.
+- Sentetik ölçüm: küçük 2+2 örnekte açık 3/4, kapalı 1/4; ancak tam KBBK 10 başlangıçta **1/10** (hedef 8/10) — terim tek başına mat stratejisini çözmüyor. **Varsayılan kapalı bırakıldı; hedef tutmadı.** Sıradaki yol: DTZ/tablebase veya özel KBBK/KBNK mat rutini. Tam KBNK koşusu durduruldu; sonuç yok.
+- `Contempt` (UCI spin, varsayılan **0**, 0–200): kök taraf SF'ye göre >150 cp üstünken beraberlik skoru `-contempt` (rakip bakışında `+contempt`); eşit/kötü konumda 0. Birim testleri geçti; henüz maçla ölçülmedi. Düzeltilmiş veride 182 üstün-beraberlik var; 150 oyunluk A/B planlanıyor.
+- `tools/synthetic_endgames.py`: `--engine-option NAME=VALUE` eklendi; sentetik testte motor bayrağı açılıp kapatılabilir.
+- Doğrulama: 157 motor testi geçti; Contempt=0 ve EvalEndgameMate kapalıyken bench araması birebir aynı; UCI duman testi geçti.
+
 ## Analiz araçları (motor değişmedi; sürüm 0.8.0)
 
 Test yazan tarafta ÇALIŞTIRILDI: tam paket 254 test (28 analiz testi, Stockfish gerektirmeyen sentetik verilerle). Gerçek Stockfish/Syzygy akışı bu makinede çalıştırılmadı; Kaggle'da doğrulanacak.

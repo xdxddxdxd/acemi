@@ -173,6 +173,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-plies", type=int, default=80)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--syzygy", default=None, help="directory with Syzygy WDL tables for exact labels")
+    parser.add_argument(
+        "--engine-option", action="append", default=[], metavar="NAME=VALUE",
+        help="extra UCI option for the Acemi engine (repeatable), e.g. EvalEndgameMate=true",
+    )
     parser.add_argument("--resume", action="store_true", help="keep finished categories already in --out")
     args = parser.parse_args(argv)
     tablebase = None
@@ -186,6 +190,22 @@ def main(argv: list[str] | None = None) -> int:
     stockfish = chess.engine.SimpleEngine.popen_uci(args.stockfish)
     stockfish.configure({"Threads": 1, "Hash": 64})
     acemi = chess.engine.SimpleEngine.popen_uci([sys.executable, "-m", "engine"], cwd=str(ROOT))
+    engine_options: dict[str, object] = {}
+    for assignment in args.engine_option:
+        if "=" not in assignment:
+            raise SystemExit(f"--engine-option needs NAME=VALUE, got {assignment!r}")
+        name, text = assignment.split("=", 1)
+        lowered = text.strip().lower()
+        if lowered in ("true", "false"):
+            value: object = lowered == "true"
+        else:
+            try:
+                value = int(text)
+            except ValueError:
+                value = text
+        engine_options[name] = value
+    if engine_options:
+        acemi.configure(engine_options)
     rows = read_rows(args.out) if args.resume else []
     try:
         for category in [item.strip() for item in args.categories.split(",") if item.strip()]:
