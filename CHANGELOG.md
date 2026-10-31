@@ -10,6 +10,7 @@
 - Kaggle: `notebooks/kaggle_runner.ipynb` artık test + bench, 100 oyunluk self-play stresi, 150 oyun SF1500/500 ms ve 150 oyun SF1320/250 ms koşularını ayrı hücrelerde çalıştırır; sonuçları `data/` olarak push eder.
 - Nihai doğrulama (`acemi-64`, kitap kapalı, Kaggle 4 vCPU): 400 oyunda 0 timeout, 0 yasadışı hamle, 0 çökme, 0 tahta uyuşmazlığı. SF1500 500 ms 150 oyun **%53,7** (+25,5; GA −30,0..+81,0); SF1320 250 ms 150 oyun **%62,0** (+85,0; GA +28,0..+142,1); 100 oyunluk self-play stresi temiz. Eski %51,5'lik 200 oyun `acemi-32` setiyleydi; set değiştiği için yeni sonuçlarla birleştirilmedi.
 - `tools.match --git-commit`: run adı ve `meta.json` için kod commit'i açıkça verilebilir; Kaggle runner kod yollarına (`engine/tools/tests/openings/notebooks`) dokunan son commit'i alıp her maça sabitler. Böylece araya giren `data:` commit'leri (ör. `30260ae`, `2326228`) motor commit'i gibi görünmez; ham kayıtlar değiştirilmedi.
+- Yayın: **GPL-3.0** lisansı eklendi; README'ye erken erişim notu, kısa İngilizce özet ve Stockfish/GPL notu eklendi. `v0.8.2` pre-release için hazır.
 
 ## 0.8.1 — Oyun sonu mat bilgisi (deneysel, kapalı) ve Contempt (varsayılan 0)
 

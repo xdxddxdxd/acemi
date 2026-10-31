@@ -4,6 +4,12 @@ Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sır
 
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
+## English summary
+
+Acemi is a pure-Python UCI chess engine (the engine core uses only the standard library). This is an **early-access** release: UCI-only, no GUI, roughly 1500 UCI_Elo against Stockfish's UCI_Elo scale. On the 64-line balanced set it scored 53.7% vs Stockfish 1500 (500 ms) and 62.0% vs Stockfish 1320 (250 ms); 400 validation games had no timeouts, illegal moves, or crashes. The 90-line Polyglot book is off by default (`OwnBook=true` to enable). Known limits: weak KBBK/KBNK conversion, no Syzygy, single-threaded, pure-Python speed. Licensed GPL-3.0.
+
+> **Erken erişim:** UCI-only; GUI/paket yok. Davranış ve UCI seçenekleri değişebilir. Güç ~1500 UCI_Elo; kitap varsayılan kapalı. Bilinen sınırlar aşağıda.
+
 ## Durum
 
 **Aşama 8 (0.8.2) tamam:** Polyglot açılış kitabı okuyucu ve 90 hatlık, 18 ply kitap. Motor araması 0.8.1 ile aynı; bu sürüm ağırlıklı olarak kitap verisi ve cilalama içerir.
@@ -22,7 +28,7 @@ Motor UCI protokolüyle çalışır:
 python -m engine
 ```
 
-Bir GUI'ye motor olarak eklerken komut `python -m engine`, çalışma dizini depo kökü olmalı.
+Bir GUI'ye motor olarak eklerken komut `python -m engine`, çalışma dizini depo kökü olmalı. İlk klon yavaşsa `git clone --depth 1 https://github.com/xdxddxdxd/acemi.git` kullanın; `data/` yaklaşık 49 MB’tır.
 
 Gerçek oyunda açılış kitabı:
 
@@ -59,7 +65,7 @@ python -m tools.bookgen --stockfish C:\path\to\stockfish.exe `
   --openings openings/book_seeds.txt --branches 90 --max-plies 18 --depth 12 --cp-window 40
 ```
 
-`tests/test_shipped_book.py` kitabın yasallığını, kökten erişilebilirliğini ve seed kapsamını doğrular. Kitaplı maçlarda `OwnBook` açıkça verilir; test protokolünde kitap kapalıdır.
+`tests/test_shipped_book.py` kitabın yasallığını, kökten erişilebilirliğini ve seed kapsamını doğrular. Kitaplı maçlarda `OwnBook` açıkça verilir; test protokolünde kitap kapalıdır. Açılış kitabı ve test setleri Stockfish (GPL-3.0) ile üretildi; Stockfish depoda paketlenmez.
 
 ## Test ve CI
 
@@ -109,3 +115,7 @@ python -m tools.match --games 150 --movetime-ms 500 `
 ## Veri ve analiz
 
 [AGENT_GUIDE.md](AGENT_GUIDE.md). Her veri dosyası `schema_version` taşır. Gerçek sonuçlar ile sentetik demo kayıtlarını karıştırmayın.
+
+## Lisans
+
+Bu proje **GPL-3.0** ile lisanslanmıştır; tam metin [LICENSE](LICENSE). `python-chess` yalnızca araçlar/testlerde kullanılır (GPL-3.0). Açılış kitabı ve test setleri Stockfish (GPL-3.0) ile üretildi; Stockfish depoda paketlenmez.
