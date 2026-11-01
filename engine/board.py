@@ -6,8 +6,6 @@ import random
 import sys
 from dataclasses import dataclass
 
-from engine.eval.tables import _EG_VALUES, _MG_VALUES, PHASE_WEIGHT
-
 # ``dataclass(slots=True)`` needs Python 3.10; older interpreters (the PyPy 3.9 that apt
 # installs) just get regular classes with the same behaviour.
 DATACLASS_SLOTS = {"slots": True} if sys.version_info >= (3, 10) else {}
@@ -95,9 +93,6 @@ class UndoState:
     fullmove_number: int
     side_to_move: int
     zobrist_hash: int
-    classic_mg: int
-    classic_eg: int
-    classic_phase: int
 
 
 class ZobristKeys:
@@ -218,15 +213,6 @@ class Board:
         self.fullmove_number = fullmove
         self.undo_stack = []
         self.null_stack: list[tuple[int | None, int, int]] = []
-        self.classic_mg = 0
-        self.classic_eg = 0
-        self.classic_phase = 0
-        for piece, squares_for_piece in piece_squares.items():
-            sign = 1 if piece > 0 else -1
-            for square in squares_for_piece:
-                self.classic_mg += sign * _MG_VALUES[piece][square]
-                self.classic_eg += sign * _EG_VALUES[piece][square]
-            self.classic_phase += PHASE_WEIGHT[abs(piece)] * len(squares_for_piece)
         self.zobrist_hash = self.compute_zobrist_hash()
         self.position_hashes = [self.zobrist_hash]
 
@@ -275,10 +261,6 @@ class Board:
             raise ValueError("Target square is invalid or occupied")
         self.squares[square] = piece
         self.piece_squares[piece].add(square)
-        sign = 1 if piece > 0 else -1
-        self.classic_mg += sign * _MG_VALUES[piece][square]
-        self.classic_eg += sign * _EG_VALUES[piece][square]
-        self.classic_phase += PHASE_WEIGHT[abs(piece)]
         if abs(piece) == KING:
             self.king_squares[WHITE if piece > 0 else BLACK] = square
 
@@ -287,10 +269,6 @@ class Board:
         if piece != EMPTY:
             self.squares[square] = EMPTY
             self.piece_squares[piece].remove(square)
-            sign = 1 if piece > 0 else -1
-            self.classic_mg -= sign * _MG_VALUES[piece][square]
-            self.classic_eg -= sign * _EG_VALUES[piece][square]
-            self.classic_phase -= PHASE_WEIGHT[abs(piece)]
             if abs(piece) == KING:
                 self.king_squares[WHITE if piece > 0 else BLACK] = -1
         return piece
@@ -375,9 +353,6 @@ class Board:
             fullmove_number=self.fullmove_number,
             side_to_move=self.side_to_move,
             zobrist_hash=self.zobrist_hash,
-            classic_mg=self.classic_mg,
-            classic_eg=self.classic_eg,
-            classic_phase=self.classic_phase,
         )
         self.undo_stack.append(state)
 
@@ -484,9 +459,6 @@ class Board:
         self.fullmove_number = state.fullmove_number
         self.side_to_move = state.side_to_move
         self.zobrist_hash = state.zobrist_hash
-        self.classic_mg = state.classic_mg
-        self.classic_eg = state.classic_eg
-        self.classic_phase = state.classic_phase
         self.position_hashes.pop()
         return move
 
