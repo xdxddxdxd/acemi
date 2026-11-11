@@ -103,6 +103,15 @@ def _engine_result(result: str, engine_is_white: bool) -> str:
         return "loss" if engine_is_white else "win"
     return "aborted"
 
+
+def forfeit_result(who: str, engine_is_white: bool, *, symmetric: bool = False) -> str:
+    """A/B uses the same forfeit-loss rule for both builds; legacy runs keep opponent aborts."""
+    if who == "engine":
+        return "0-1" if engine_is_white else "1-0"
+    if symmetric:
+        return "1-0" if engine_is_white else "0-1"
+    return "*"
+
 def _build_pgn(job: dict, board: chess.Board, result: str, termination: str) -> str:
     game = chess.pgn.Game.from_board(board)
     engine_is_white = job["engine_is_white"]
@@ -209,10 +218,8 @@ def _play_moves(job: dict, engine: UciEngine, opponent: UciEngine, log: list[str
 
     if forfeit is not None:
         termination = forfeit["reason"]
-        if forfeit["who"] == "engine":
-            result = "0-1" if engine_is_white else "1-0"
-        else:
-            result = "*"  # Opponent failure: the game says nothing about Acemi.
+        result = forfeit_result(forfeit["who"], engine_is_white,
+                                symmetric=job.get("symmetric_forfeits", False))
 
     engine_result = _engine_result(result, engine_is_white)
     return {

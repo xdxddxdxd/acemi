@@ -148,4 +148,9 @@ def build_summary(meta: dict, results: dict, games: list[dict]) -> str:
             "- Note: the opponent's UCI_Elo is a rough scale and is not directly "
             "comparable with Lichess or CCRL ratings"
         )
+    if meta.get("experiment"):
+        experiment = meta["experiment"]
+        lines[2:2] = [f"- Experiment: {experiment['id']}; chunk {experiment['chunk']}",
+                      f"- New commit: `{experiment['new']['commit']}`; old commit: `{experiment['old']['commit']}`",
+                      "- Forfeits: either engine loses on timeout/illegal move/crash."]
     return "\n".join(lines) + "\n"

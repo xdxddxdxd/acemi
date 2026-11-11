@@ -68,8 +68,12 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 SCHEMA_VERSION = record.SCHEMA_VERSION
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, experiment: dict | None = None) -> int:
     args = _parse_args(argv)
+    if experiment is not None:
+        if (not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", str(experiment.get("id", "")))
+                or type(experiment.get("chunk")) is not int or experiment["chunk"] < 1):
+            raise ValueError("Experiment needs a safe id and positive chunk number")
     try:
         extra_engine_options = parse_option_assignments(args.engine_option)
         extra_opponent_options = parse_option_assignments(args.opponent_option)
@@ -135,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
 
     started = datetime.now(timezone.utc)
     date_key = started.strftime("%Y%m%dT%H%M%SZ")
-    git = _git_info(ROOT, args.git_commit)
+    git = _git_info(Path(engine_cwd), args.git_commit)
 
     def make_job(game_no: int) -> dict:
         opening_id = (game_no // 2) % len(openings)
@@ -159,6 +163,7 @@ def main(argv: list[str] | None = None) -> int:
             "pgn_date": started.strftime("%Y.%m.%d"),
             "engine_name": f"{engine_name} {engine_version}",
             "opponent_name": f"{opponent_name} {opponent_version}",
+            "symmetric_forfeits": experiment is not None,
         }
 
     games: list[dict] = []
@@ -229,9 +234,9 @@ def main(argv: list[str] | None = None) -> int:
             "losses": sum(g["engine_result"] == "loss" for g in subset),
         }
 
-    def forfeits(reason: str) -> int:
+    def forfeits(reason: str, who: str = "engine") -> int:
         return sum(
-            1 for g in games if g["forfeit"] and g["forfeit"]["who"] == "engine" and g["forfeit"]["reason"] == reason
+            1 for g in games if g["forfeit"] and g["forfeit"]["who"] == who and g["forfeit"]["reason"] == reason
         )
 
     engine_moves = [m for g in completed for m in g["moves"] if m["player"] == "engine"]
@@ -291,6 +296,8 @@ def main(argv: list[str] | None = None) -> int:
     slug = re.sub(r"[^a-z0-9.]+", "-", opponent_label.lower()).strip("-")
     short_hash = (git["commit"] or hashlib.sha1(date_key.encode()).hexdigest())[:7]
     run_name = f"{date_key}_{engine_version}_{slug}_{short_hash}"
+    if experiment is not None:
+        run_name += f"_{experiment['id']}_c{experiment['chunk']:02d}"
 
     meta = {
         "schema_version": SCHEMA_VERSION,
@@ -334,6 +341,9 @@ def main(argv: list[str] | None = None) -> int:
         "started_at": started.isoformat().replace("+00:00", "Z"),
         "finished_at": finished.isoformat().replace("+00:00", "Z"),
     }
+    if experiment is not None:
+        meta["experiment"] = experiment
+        meta["match_settings"]["forfeit_policy"] = "loss_for_either_engine"
     results = {
         "schema_version": SCHEMA_VERSION,
         "is_demo": False,
@@ -369,6 +379,10 @@ def main(argv: list[str] | None = None) -> int:
         "engine_moves": len(engine_moves),
         "engine_moves_without_score": moves_without_score,
     }
+    if experiment is not None:
+        results.update(opponent_timeouts=forfeits("timeout", "opponent"),
+                       opponent_illegal_moves=forfeits("illegal_move", "opponent"),
+                       opponent_engine_crashes=forfeits("crash", "opponent"))
 
     summary_md = summarize.build_summary(meta, results, completed)
     pgn_text = "\n\n".join(g["pgn"].strip() for g in games if g["pgn"]) + "\n"

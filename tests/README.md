@@ -72,3 +72,8 @@ compatibility, mocked worker cleanup, opening validation, aggregate-only routing
 AB/SF deduplication and source fingerprints for every extracted analysis module.
 The full existing fake-UCI analysis pipeline remains in the Kaggle suite; no real
 matches are needed for the module refactor.
+
+`test_ab_compare.py` uses mocked match runners and temporary fixtures for the
+100-game/50-opening plan, commit/protocol identities, chunk resume/recovery,
+artifact immutability, symmetric A/B forfeits and the Kaggle-only CLI guard.
+No real matches are launched by these tests.

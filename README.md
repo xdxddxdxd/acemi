@@ -126,6 +126,15 @@ korunan import yolları: [docs/TOOLS.md](docs/TOOLS.md).
 
 ## Maç çalıştırma
 
+Sekiz adım öncesi/sonrası **100 oyunluk Kaggle A/B** için
+`codex/ab-100` dalındaki `notebooks/kaggle_ab_100.ipynb` dosyasını içe alın ve
+Run All çalıştırın. Eski kaynak `db058b3`, yeni kaynak `4068a04` olarak sabittir.
+50 açılış renk değiştirilerek oynanır; iki motora 100 ms/hamle, Hash 16 MB,
+Threads 1 ve OwnBook=false uygulanır. 10 oyunluk bölümler GitHub'a gönderilir;
+tamamlanan bölümler tekrar oynatılmaz. Skor yeni sürüm açısından okunur.
+Bu notebook ek Stockfish maçı, benchmark veya tam test paketi başlatmaz.
+Bkz. [docs/AB_100.md](docs/AB_100.md).
+
 ```powershell
 # SF1320, 250 ms, 150 oyun
 python -m tools.match --games 150 --movetime-ms 250 --uci-elo 1320 --openings openings/acemi-64.txt

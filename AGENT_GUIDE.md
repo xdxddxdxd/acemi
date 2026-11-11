@@ -88,6 +88,19 @@ are never rewritten to add these fields.
 - `engine.log.gz`: captured engine output/log.
 - `data/positions/*.jsonl.gz`: position aggregates with `zobrist_hash`, `fen`, `occurrences`, W/D/L `results`, move counts, and `average_eval_cp`.
 
+### Paired old/new A/B experiment
+
+`notebooks/kaggle_ab_100.ipynb` on `codex/ab-100` compares pinned pre-eight-step
+`db058b3` with merged `4068a04` for 100 games at 100 ms. Immutable protocols and
+per-chunk checkpoints live under `data/ab/<id>/`; raw runs remain under `data/runs/`.
+New is always `engine`, old is `opponent`. `meta.json.experiment` records both
+full commits/engine trees, protocol identity, chunk and global game offset.
+For this experiment only, `match_settings.forfeit_policy=loss_for_either_engine`
+counts either engine's timeout/illegal move/crash as a loss. Results additionally
+record opponent_timeouts/opponent_illegal_moves/opponent_engine_crashes.
+Legacy runs still exclude opponent failures. Aggregate results distinguish
+requested games, recorded attempts, counted games and aborted internal failures.
+
 ### `data/index.csv`
 
 One row per run: `run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision`.
