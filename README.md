@@ -49,6 +49,12 @@ yanıtlanır; `stop` aynı aramanın sonucunu döndürür. Doğal bitiş veya te
 `UciSession()` kullanan kodun sonlu arama çağrıları önceki gibi sonucu bekler.
 Tam protokol ve doğruluk doğrulaması Kaggle'da yapılır (`tests/test_uci_async.py`).
 
+Geliştirme adımı 3'te TT skorları aynı 50 hamle sayacı ve son piyon hamlesi/alımından
+sonraki aynı bilinen geçmişle sınırlıdır. Geçmiş farklıysa kayıt yalnızca hamle
+sıralama ipucu olabilir; null-move alt ağaçları TT skoru okumaz/yazmaz. Tekrar için
+kullanılan Zobrist anahtarı ve mevcut veri kayıtları değiştirilmez. Bu ihtiyatlı
+eşleşme önbellek isabetlerini azaltabilir; hız etkisi Kaggle ölçümünü bekler.
+
 | Seçenek | Varsayılan | Not |
 |---|---:|---|
 | `Hash` | 16 | MB; 1–4096 |
@@ -98,6 +104,10 @@ düğüm ve en iyi hamleyi kontrol eder. Varsayılan `RUN_VALIDATION_MATCHES=Fal
 self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-play, 20 SF1500
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
+
+Güncel notebook 3. adımı `step3-tt-context` etiketiyle çalıştırır. Bu doğruluk
+düzeltmesinde arama farkları incelemeye bırakılır (`REQUIRE_IDENTICAL_SEARCH=False`);
+konum/FEN/derinlik protokolünün aynı olması ve testlerin geçmesi zorunludur.
 
 ## Maç çalıştırma
 

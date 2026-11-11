@@ -21,3 +21,9 @@ must answer `isready`, accept `stop`, publish natural completion without more
 input, and avoid duplicate `bestmove` responses. Position/option/new-game/quit
 cancellation and EOF cleanup are also covered. Run the full suite in Kaggle;
 the pipe regressions are bounded and do not run matches or Stockfish.
+
+`test_tt_context.py` separates small, search-free context checks from real search
+regressions. Kaggle runs the original clock-0/clock-98 warm-table example and
+both directions of a controlled legal cycle whose descendant becomes a third
+repetition only with prior history. The oracle has TT disabled, and null-move/LMR
+are disabled in these comparisons to isolate cache correctness.

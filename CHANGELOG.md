@@ -1,5 +1,18 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 3: beraberlik bağlamına duyarlı TT
+
+- Zobrist tekrar anahtarı korunarak TT skorlarına yarım hamle sayacı ve bilinen
+  geri alınabilir konum geçmişi eklendi. Alt dalda bulunan bir tekrar beraberliği
+  de farklı geçmişe taşınmaz. Eşleşmeyen kayıt yalnızca hamle sıralamasına yardımcı olur.
+- Null-move alt ağaçlarında TT skoru okuma/yazma kapatıldı. Nonzero Contempt için
+  kök tarafı bağlama dahil edildi; farklı bağlamdaki daha derin kayıt yenisini engellemez.
+- Geçmiş anlık görüntüleri ihtiyatlıdır; TT isabetleri ve düğüm sayısı değişebilir.
+  Notebook `step3-tt-context` etiketiyle protokolü doğrular, arama farklarını saklar
+  ve inceleme gerektiriyorsa işaretler. Önceki ham kayıtlar değiştirilmez.
+- Aramasız 8 bağlam testi geçti. 50 hamle sınırı ve alt daldan gelen tekrar
+  beraberliği regresyonları, tam paket ve benchmark Kaggle doğrulamasını bekliyor.
+
 ## Geliştirme — Adım 2: UCI durdurma akışı
 
 - CLI'da tüm aramalar ortak worker/stop-event yaşam döngüsüyle çalışır. Süreli,
@@ -12,6 +25,9 @@
 - Worker yaşam döngüsü ve gerçek UCI pipe regresyonları eklendi; Kaggle
   notebook'u `step2-uci-stop` etiketiyle yeni kayıt toplar. Tam test paketi ve
   benchmark Kaggle doğrulamasını bekliyor; yerelde uzun kontroller başlatılmadı.
+- Kaggle doğrulaması tamamlandı (`20261111T095720Z_22a03d90`): 302 test geçti,
+  13 yeni UCI kontrolü başarılı; 10 konumda skor/hamle/derinlik/düğüm eşleşti
+  (iki tarafta 150018 düğüm). Ham kayıtlar değiştirilmedi.
 
 ## 0.8.2 — Geniş açılış kitabı (90 hat, 18 ply)
 

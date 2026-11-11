@@ -6,11 +6,17 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step2-uci-stop"` ile
-2. adımı doğrular. İlk adımın GitHub'a gönderilmiş kayıtları değiştirilmez.
-Yeni UCI regresyonları güncel test paketine dahildir; testler ve benchmark
-Kaggle'da çalışır. Maçlar varsayılan olarak kapalı kalır. Arama algoritması
-değişmediği için sabit derinlik sonuçlarında yine eşitlik beklenir.
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step3-tt-context"` ile
+3. adımı doğrular. İlk iki adımın GitHub'a gönderilmiş kayıtları değiştirilmez.
+UCI ve TT bağlamı regresyonları güncel test paketine dahildir; gerçek aramalar,
+tam paket ve benchmark Kaggle'da çalışır. Maçlar varsayılan olarak kapalı kalır.
+
+TT geçerliliği düzeltmesi önbellek isabetlerini, düğüm sayılarını ve kimi konumlarda
+skor/hamleyi değiştirebilir. Bu yüzden `REQUIRE_IDENTICAL_SEARCH=False` varsayılandır:
+testler yine geçmeli, benchmark protokolü (derinlik, konum kümesi ve FEN) aynı olmalı;
+arama farkları kaydedilip `review_required=true` ile işaretlenir. Bu işaret bir güç
+veya hız kazancı kararı değildir. Farklar GitHub'a geldikten sonra incelenir.
+Sadece davranış koruyan optimizasyonlarda ayar `True` yapılarak eşitlik zorunlu tutulabilir.
 
 1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
    Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;
@@ -54,6 +60,9 @@ Her oturum `data/baselines/<UTC>_<benzersiz-ek>/` altında saklanır:
 - `current/`: notebook'un çalıştırdığı güncel kaynak için aynı kayıt.
 - `comparison.log`: iki benchmark'ın konum bazında karşılaştırması.
 - `session.json`: sabit referans commit'i, güncel kod commit'i, derinlik ve eşitlik sonucu.
+  Güncel kayıtlar `validation_label`, `protocol_matches`, `require_identical_search`,
+  `comparison_returncode` ve `review_required` alanlarını da içerir. Geçersiz protokol
+  veya karşılaştırma komutunun hatası, eşitlik ayarı kapalı olsa da notebook'u durdurur.
 
 Her kaynak kaydında:
 
