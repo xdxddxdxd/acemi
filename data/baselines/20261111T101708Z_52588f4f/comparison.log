@@ -1,0 +1,31 @@
+position           nodes A   nodes B    sec A    sec B time A/B  same
+start                 1702      1841     0.09     0.10    0.89x  NO
+    A: score 0 depth 4 nodes 1702 move b1c3
+    B: score 0 depth 4 nodes 1841 move b1c3
+italian               6111      6972     0.43     0.54    0.78x  NO
+    A: score 20 depth 4 nodes 6111 move b1c3
+    B: score 20 depth 4 nodes 6972 move b1c3
+kiwipete             71206     73703     4.64     4.81    0.96x  NO
+    A: score 35 depth 4 nodes 71206 move e2a6
+    B: score 35 depth 4 nodes 73703 move e2a6
+endgame_rooks         1458      1546     0.10     0.11    0.90x  NO
+    A: score 106 depth 4 nodes 1458 move b4f4
+    B: score 106 depth 4 nodes 1546 move b4f4
+promotions            8950      8997     0.56     0.57    0.99x  NO
+    A: score -483 depth 4 nodes 8950 move c4c5
+    B: score -483 depth 4 nodes 8997 move c4c5
+tactical             10061     12933     0.66     0.93    0.71x  NO
+    A: score 516 depth 4 nodes 10061 move d7c8q
+    B: score 516 depth 4 nodes 12933 move d7c8q
+open_middlegame      29055     29837     2.15     2.26    0.95x  NO
+    A: score -7 depth 4 nodes 29055 move c1g5
+    B: score -7 depth 4 nodes 29837 move c1g5
+queen_endgame           27        27     0.00     0.00    1.00x  yes
+closed               20057     22688     1.14     1.34    0.85x  NO
+    A: score 36 depth 4 nodes 20057 move d4c6
+    B: score 36 depth 4 nodes 22688 move d4c6
+minor_endgame         1391      1502     0.10     0.10    1.02x  NO
+    A: score 71 depth 4 nodes 1391 move g2f3
+    B: score 71 depth 4 nodes 1502 move g2f3
+Total: A 15205 nps (step3-tt-context-reference, CPython), B 14874 nps (step3-tt-context-current, CPython); Elapsed-time ratio A/B: 0.92x; not an isolated speedup measurement (search or environment differs/is unknown).
+Search identical (position set, FEN, score, depth, nodes, best move): NO - the two builds do not search the same way

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "validation_label": "step3-tt-context",
+  "reference_commit": "db058b344df8759810e957f11a58b4149055fe49",
+  "current_code_commit": "700b32e1db8ec3cc87570c31d6d79c3c7fe3d6dc",
+  "depth": 4,
+  "search_identical": false,
+  "protocol_matches": true,
+  "require_identical_search": false,
+  "comparison_returncode": 1,
+  "review_required": true,
+  "reference": "reference",
+  "current": "current"
+}
