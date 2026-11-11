@@ -211,6 +211,46 @@ def _pinned_squares(board: Board, color: int, king_square: int) -> set[int]:
     return pinned
 
 
+def _king_safe_after(board: Board, move: Move, color: int, king_square: int) -> bool:
+    """Test occupancy after a pseudo-legal move, restoring it before returning.
+
+    is_square_attacked reads only squares and its explicit target/attacker.
+    Do not call full-board operations while this probe is active: piece lists,
+    king_squares, hashes, clocks and history intentionally stay untouched.
+    """
+    squares = board.squares
+    source, target = move.from_square, move.to_square
+    moving, captured = squares[source], squares[target]
+    piece_type = abs(moving)
+    ep_capture = -1
+    rook_source = rook_target = -1
+    if (piece_type == PAWN and target == board.en_passant_square
+            and captured == EMPTY and (source & 7) != (target & 7)):
+        ep_capture = target + (16 if color == WHITE else -16)
+        if squares[ep_capture] != -color * PAWN:
+            raise ValueError("Invalid en-passant capture")
+    elif piece_type == KING and abs(target - source) == 2:
+        rook_source = source + (3 if target > source else -4)
+        rook_target = source + (1 if target > source else -1)
+        rook, rook_destination = squares[rook_source], squares[rook_target]
+
+    squares[source] = EMPTY
+    squares[target] = moving if move.promotion is None else color * move.promotion
+    if ep_capture >= 0:
+        squares[ep_capture] = EMPTY
+    elif rook_source >= 0:
+        squares[rook_source], squares[rook_target] = EMPTY, rook
+    try:
+        target_king = target if piece_type == KING else king_square
+        return not board.is_square_attacked(target_king, -color)
+    finally:
+        squares[source], squares[target] = moving, captured
+        if ep_capture >= 0:
+            squares[ep_capture] = -color * PAWN
+        elif rook_source >= 0:
+            squares[rook_source], squares[rook_target] = rook, rook_destination
+
+
 class LegalMoveContext:
     """One position's shared preparation for the two quiescence generators.
 
@@ -242,7 +282,7 @@ def generate_legal_moves(
     """Yield moves that do not leave the moving side's king in check.
 
     Same moves and order as ``generate_legal_moves_reference``, but a move is only
-    played to test the king when it can actually be illegal: the side is in check,
+    tested against king attacks when it can actually be illegal: the side is in check,
     the king moves (castling included), the moving piece is pinned, or the move
     may be en passant. Every other move of a side that is not in check is legal.
     ``known_in_check`` lets a caller that already knows whether the side to move
@@ -280,10 +320,7 @@ def generate_legal_moves(
         ):
             yield move
             continue
-        board.make_move(move)
-        legal = not board.is_square_attacked(board.king_squares[color], opponent)
-        board.unmake_move()
-        if legal:
+        if _king_safe_after(board, move, color, king_square):
             yield move
 
 

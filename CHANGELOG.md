@@ -1,5 +1,22 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 7 devamı: hafif şah güvenliği kontrolü
+
+- İlk deneme Kaggle'da 382 test ve arama eşitliğini sağladı; süre
+  14,438→14,424 saniye (yaklaşık %0,1) ile anlamlı hız kazanımı göstermedi.
+  Açmaz taraması çağrıları azaldı; profilli tam make/unmake sayısı 271497 kaldı.
+- Hızlı yasal hamle üretici, şah güvenliği için gereken kareleri geçici değiştirip
+  `is_square_attacked` çağırır; hash, taş listeleri, sayaçlar ve geçmiş güncellenmez.
+  Rokun kalesi, EP ile alınan piyon, terfi ve şahın yeni karesi kapsanır. Kareler
+  normal dönüşte ve istisnada geri yüklenir; geçici durum sırasında yalnızca
+  kare dizisini okuyan saldırı kontrolü çağrılır. Yavaş referans üretici ve gerçek
+  arama hamlelerinin make/unmake akışı korunur.
+- 25 kısa konum/hamle/geri yükleme/sahte terminal kontrolü geçti (0,348 saniye).
+  Yerelde gerçek arama, perft, benchmark veya profil başlatılmadı. Tam test paketi,
+  perft, arama eşitliği ve hız ölçümü Kaggle'ı bekliyor. Notebook
+  `step7b-legality-probe` ile ilk denemeye karşı birebir arama eşitliği ister;
+  maçlar kapalı, profil kayıtları açıktır. Hız artışı henüz doğrulanmadı.
+
 ## Geliştirme — Adım 7: düğüm içi hazırlık paylaşımı ve profil
 
 - Sakinleştirme aramasında pat kontrolü ve alma üretimi için açmazlar/sıralı taş

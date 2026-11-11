@@ -59,3 +59,10 @@ verifies that the legal-move probe plus capture pass prepare pins/pieces once.
 `test_profile_search.py` checks report call counts, provenance/output guards and
 fixture serialization with the benchmark mocked. Actual profiled searches belong
 to Kaggle; their instrumented seconds must not be mixed with normal benchmark times.
+
+`test_movegen_probe.py` compares each pseudo-legal move's occupancy-only king
+safety check with full make/unmake on special/benchmark positions and their
+colour mirrors. It checks legal move order and python-chess agreement, verifies
+restoration on exceptions during castling/EP/promotion/capture, and ensures the
+fast generator does not call full make/unmake. A bounded deterministic playout
+supplies more independent single-position fixtures; it does not run search or matches.

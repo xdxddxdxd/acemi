@@ -6,9 +6,9 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step7-quiescence-performance"` ile
-7. adımı doğrular. Referans, Kaggle'da doğrulanmış 6. adım commit'i
-`52e5db3a64053b80a580fa1f266d17cc5d5b80e1` olarak sabitlenmiştir. Önceki altı adımın
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step7b-legality-probe"` ile
+7. adımın ikinci denemesini doğrular. Referans ilk denemenin Kaggle'da arama
+eşitliği doğrulanmış `41e0af6523ac8f110d0847c1decfa07ab5ab4567` commit'idir. Önceki adımların
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
@@ -17,12 +17,20 @@ Pat, güvenlik sınırında mat/pat ve ufukta kale terfisi regresyonları tam pa
 dahildir; bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
 Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
-Bu adım yalnızca hesap hazırlığını paylaşır: `REQUIRE_IDENTICAL_SEARCH=True`.
-Konum/FEN/derinlik, skor/düğüm/hamleler 6. adımla aynı olmalıdır; fark çıkarsa
+Bu deneme şah güvenliğini tam hamle kaydı yerine geçici kare doluluğuyla sınar:
+`REQUIRE_IDENTICAL_SEARCH=True`. Konum/FEN/derinlik, skor/düğüm/hamleler ilk
+7. adım denemesiyle aynı olmalıdır; fark çıkarsa
 kayıtlar gönderilip notebook durur. Süre farkı arama eşitsizliği değildir.
 3. ve 6. adımlarda doğruluk düzeltmeleri nedeniyle eşitlik zorunlu değildi;
 4–5. adımlarda ve şimdi 7. adımda zorunludur. Normal, profilsiz benchmark'ın
 süre oranı tek koşunun gözlemidir; hız kazancı sonuçlar gelmeden varsayılmaz.
+
+İlk 7. adım kaydı (`20261111T142955Z_aef1069f`) 382 test ve arama eşitliğini
+doğruladı; süre 14,438→14,424 saniye ile yaklaşık %0,1 değişti. Anlamlı hız
+kazanımı gösterilmedi. Profilli çağrılarda açmaz taraması 82567→61818 azaldı,
+ancak tam `make_move`/`unmake_move` sayısı 271497 olarak kaldı. İkinci deneme,
+yasal hamle sınamasındaki bu tam durum güncellemelerini kaldırır. Aramada
+gerçekten seçilip incelenen hamleler yine normal make/unmake kullanır.
 
 `RUN_SEARCH_PROFILES=True`, normal benchmark bittikten sonra iki motor ağacı
 için `PROFILE_DEPTH=3` düzeyinde ayrı cProfile kayıtları alır. Güncel
