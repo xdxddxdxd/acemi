@@ -68,10 +68,10 @@ class CaptureGenerationTests(unittest.TestCase):
                     f"{fen}: {move.uci()}",
                 )
 
-    def test_queen_promotion_push_is_generated(self) -> None:
+    def test_all_promotion_pushes_are_generated(self) -> None:
         board = Board("4k3/P7/8/8/8/8/8/4K3 w - - 0 1")
         moves = {move.uci() for move in generate_legal_moves(board, captures_only=True)}
-        self.assertEqual(moves, {"a7a8q"})
+        self.assertEqual(moves, {"a7a8q", "a7a8r", "a7a8b", "a7a8n"})
 
     def test_movegen_leaves_the_board_unchanged(self) -> None:
         for fen in REFERENCE_FENS:

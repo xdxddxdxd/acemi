@@ -20,8 +20,9 @@ Features:
   its size follows the UCI ``Hash`` option. Scores require the same halfmove
   clock and known reversible history; a mismatched entry is only a move hint.
   Synthetic null-move subtrees neither read nor write cached scores.
-- Quiescence search at the horizon (captures, en passant, queen promotions; all
-  evasions when in check) so leaves are not scored in the middle of an exchange.
+- Quiescence search at the horizon (captures, en passant, all promotions; all
+  evasions when in check). Mate/stalemate are checked before stand-pat and the
+  recursion safety limit so terminal leaves never receive a static score.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
   does not shuffle and the same seed reproduces the same game.
 - Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
@@ -646,21 +647,25 @@ class Searcher:
         Not in check: the side to move may "stand pat" (keep the static score),
         so only captures that improve on it are searched, best captures first.
         In check: standing pat is illegal, so every legal evasion is searched and
-        no evasions means mate. Stalemate is not detected here (stand-pat is
-        used), a standard shortcut.
+        no evasions means mate. A legal move must exist before stand-pat or the
+        recursion limit is used: otherwise this is stalemate, regardless of eval.
         """
         self._count_node()
         if board.is_fifty_move_draw():
             return self._fifty_move_score(board, ply)
         if board.is_threefold_repetition() or board.is_insufficient_material():
             return self._draw_score(board)
-        if ply >= MAX_PLY:
-            return evaluate(board, self.eval_flags)
-
-        if board.in_check():
+        in_check = board.in_check()
+        if in_check:
             moves = list(generate_legal_moves(board, known_in_check=True))
             if not moves:
                 return -MATE_SCORE + ply
+        elif next(generate_legal_moves(board, known_in_check=False), None) is None:
+            return self._draw_score(board)
+        if ply >= MAX_PLY:
+            return evaluate(board, self.eval_flags)
+
+        if in_check:
             best = -MATE_SCORE + ply
         else:
             best = evaluate(board, self.eval_flags)

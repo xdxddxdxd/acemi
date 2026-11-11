@@ -41,8 +41,8 @@ def _pawn_moves(board: Board, square: int, color: int, captures_only: bool) -> I
     start_row = 6 if color == WHITE else 1
     promotion_row = 0 if color == WHITE else 7
     one_step = square + direction
-    # Quiescence-style generation only needs queen promotions.
-    promotions = (QUEEN,) if captures_only else PROMOTION_TYPES
+    # Underpromotion can avoid stalemate or give a unique check even at the horizon.
+    promotions = PROMOTION_TYPES
 
     if is_valid_square(one_step) and board.squares[one_step] == EMPTY:
         if one_step >> 4 == promotion_row:
@@ -118,7 +118,7 @@ def _castling_moves(board: Board, color: int, king_square: int) -> Iterator[Move
 def generate_pseudo_legal_moves(board: Board, captures_only: bool = False) -> Iterator[Move]:
     """Yield moves that follow piece movement rules but may leave the king checked.
 
-    With ``captures_only`` only captures, en passant and queen promotions are
+    With ``captures_only`` only captures, en passant and all four promotions are
     produced (no quiet moves, no castling); this is what quiescence search uses.
     """
     color = board.side_to_move

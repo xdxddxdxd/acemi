@@ -1,5 +1,21 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 6: ufukta oyun sonu doğruluğu
+
+- Sakinleştirme araması statik puan/beta kesmesi ve MAX_PLY sınırından önce
+  mat/patı tanır. Yasal hamlesi olmayan şah çekilmemiş konum, normal Contempt
+  politikasına göre beraberlik puanı alır; sınırdaki mat statik puana dönüşmez.
+- `captures_only` üretimi sessiz ve alarak terfilerde Q/R/B/N seçeneklerinin
+  tamamını içerir. Vezirin pat ettiği ama kalenin oyunu sürdürdüğü konumda
+  ufuk araması kale terfisini görebilir. Değerlendirme ağırlıkları/özellik
+  varsayılanları değiştirilmedi.
+- 14 kısa konum/hamle üretimi/sahte terminal akışı kontrolü geçti (0,052 saniye).
+  Gerçek aramalar çalıştırılmadı; iki renk, farklı pencereler, güvenlik sınırı ve
+  sıcak/boş/kapalı TT ile kale terfisi regresyonları Kaggle'a bırakıldı.
+- Notebook `step6-endgame-rules` etiketiyle doğrulanmış 5. adıma karşı protokolü
+  denetler; arama farkları inceleme için saklanır. Ek yasal hamle kontrolünün
+  süre maliyeti olabilir; benchmark bunu ölçecek. Maçlar varsayılan kapalıdır.
+
 ## Geliştirme — Adım 5: analiz kimliği ve kitap metadata doğruluğu
 
 - Analiz konfigürasyonu Stockfish dosyası, derinlik, Syzygy WDL içerikleri,
@@ -16,6 +32,9 @@
   yerine göreve aktarılır. Tam paket ve gerçek
   pipe/arama kontrolleri Kaggle'a bırakılır. Runner `step5-analysis-provenance`
   etiketiyle doğrulanmış 4. adıma karşı arama eşitliği ister; maçlar kapalıdır.
+- Kaggle doğrulaması tamamlandı (`20261111T105705Z_9c0ab8ca`): 357 test geçti;
+  10 konumda skor/hamle/derinlik/düğüm 4. adımla aynı (160046 düğüm).
+  Önceki ham kayıtlar değiştirilmedi.
 
 ## Geliştirme — Adım 4: ayar izolasyonu ve TT geçersizleştirme
 

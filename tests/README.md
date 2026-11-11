@@ -41,3 +41,13 @@ guards, legacy read compatibility, warm/corrupt/foreign caches, part identity an
 CLI resume using mocked evaluation only. `test_match_metadata.BookMetadataTests`
 checks advertised book defaults and case-insensitive last overrides without matches.
 The existing fake-UCI analysis pipeline test also seals tagged parts in Kaggle.
+
+`test_endgame_rules.py` separates small position/oracle and mocked terminal-flow
+checks from actual search regressions. Kaggle checks horizon stalemate under
+multiple alpha-beta windows, mate/stalemate at MAX_PLY, ordinary quiet positions,
+and rook underpromotion with cold/warm/disabled TT for both colours. In
+`8/k1P5/2K5/8/8/8/8/8 w - - 0 1`, c8=Q is stalemate while c8=R continues;
+quiescence must see the rook, and a depth-1 root search must select it.
+Tactical generation is compared with python-chess captures plus all four
+promotions, including captures, en passant and its pinned illegal case.
+No real searches or match runs are needed on the user's PC.

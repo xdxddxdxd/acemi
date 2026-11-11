@@ -6,22 +6,24 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step5-analysis-provenance"` ile
-5. adımı doğrular. Referans, Kaggle'da doğrulanmış 4. adım commit'i
-`a1326202ecef4ce0ae4811bbdd47af3a104636a2` olarak sabitlenmiştir. Önceki dört adımın
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step6-endgame-rules"` ile
+6. adımı doğrular. Referans, Kaggle'da doğrulanmış 5. adım commit'i
+`336560a3fcc9022472b85274038cd405cd348792` olarak sabitlenmiştir. Önceki beş adımın
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
 
-Analiz kimliği/önbellek ve kitap metadata regresyonları tam pakete dahildir;
-bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
+Pat, güvenlik sınırında mat/pat ve ufukta kale terfisi regresyonları tam pakete
+dahildir; bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
 Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
-Varsayılan özellik değerleri değiştirilmediği için `REQUIRE_IDENTICAL_SEARCH=True`:
-konum/FEN/derinlik protokolü ile skor, düğüm ve hamleler eşleşmelidir. Yalnızca süre
-farkı eşitliği bozmaz. Eşitlik sağlanmazsa kayıtlar gönderilip notebook durur.
-3. adımda TT geçerliliği kasıtlı değiştiği için bu ayar `False` idi ve arama farkları
-`review_required=true` ile kaydedildi. Bu işaret bir güç veya hız kazancı kararı değildir.
+Bu adımda pat kontrolü ve dört terfinin aranması davranışı kasıtlı değiştirdiği için
+`REQUIRE_IDENTICAL_SEARCH=False`. Konum/FEN/derinlik protokolü eşleşmek zorundadır;
+skor/düğüm/hamle farkları `review_required=true` ile kaydedilip incelenir.
+3. adımda da bu ayar False idi; 4–5. adımlarda eşitlik zorunluydu. Süre farkı
+tek başına arama eşitsizliği değildir. Pat kontrolü için ek yasal hamle üretimi
+CPU maliyeti getirebilir; süre ve düğüm etkisi Kaggle'da ölçülür. Bu işaretler
+ve ölçümler bir güç veya hız kazancı kararı değildir.
 
 1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
    Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;

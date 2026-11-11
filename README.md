@@ -114,9 +114,10 @@ self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
-Güncel notebook 5. adımı `step5-analysis-provenance` etiketiyle, doğrulanmış 4. adımın
-`a132620` commit'ine karşı çalıştırır. Motor araması değişmediği için arama
-eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`). Önceki kayıtlar korunur.
+Güncel notebook 6. adımı `step6-endgame-rules` etiketiyle, doğrulanmış 5. adımın
+`336560a` commit'ine karşı çalıştırır. Ufukta pat/mat ve dört terfi düzeltmeleri
+arama sonuçlarını değiştirebilir (`REQUIRE_IDENTICAL_SEARCH=False`). Protokol
+uyumu zorunludur; farklar inceleme için kaydedilir. Önceki kayıtlar korunur.
 
 ## Maç çalıştırma
 
