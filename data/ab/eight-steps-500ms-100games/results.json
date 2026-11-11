@@ -2,14 +2,16 @@
   "schema_version": 1,
   "id": "eight-steps-500ms-100games",
   "protocol_sha256": "ce72bc1ec4775a730e4833d58a0b76369c31a13d1f6e416a4ab0e419a2497ab3",
-  "status": "in_progress",
+  "status": "completed",
   "requested_games": 100,
-  "recorded_attempts": 0,
-  "completed_chunks": [],
-  "games": 0,
-  "wins": 0,
-  "draws": 0,
-  "losses": 0,
+  "recorded_attempts": 100,
+  "completed_chunks": [
+    1
+  ],
+  "games": 100,
+  "wins": 30,
+  "draws": 39,
+  "losses": 31,
   "aborted_games": 0,
   "timeouts": 0,
   "illegal_moves": 0,
@@ -18,7 +20,7 @@
   "opponent_timeouts": 0,
   "opponent_illegal_moves": 0,
   "opponent_engine_crashes": 0,
-  "score_pct": null,
+  "score_pct": 49.5,
   "score_perspective": "new engine (all eight changes)",
-  "updated_at": "2026-11-11T16:09:46.624842+00:00"
+  "updated_at": "2026-11-11T16:47:52.058551+00:00"
 }

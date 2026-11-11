@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "chunk": 1,
+  "run_name": "20261111T160948Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-500ms-100games_c01",
+  "file_sha256": {
+    "meta.json": "b71b35b7eed6b122d8ccc6a9e9fbb4605982b2c022c99181a5fba39f8aa70e19",
+    "results.json": "ef5067254ffa2013ebe7f8ab534d869860e5f573a8f8a2849688d264baac1f0e",
+    "SUMMARY.md": "4a0f384d20dc42fbf07eebee28d893af1c3279755ca24ec77ad76486b421348a",
+    "games.pgn.gz": "95e4164239b1d5759b71afa4f1aef801e2038713f2b05cf63840c094431d30f0",
+    "moves.jsonl.gz": "cb85c4500ee9d9819a9764434154c803e06a12b58e29ee50b1fc9e2d740074e7",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "finished_at": "2026-11-11T16:47:52.052102+00:00"
+}
