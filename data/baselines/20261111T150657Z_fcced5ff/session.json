@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "validation_label": "step8-tool-modules",
+  "reference_commit": "c7160732606b50648c539f74d37601c329cd8560",
+  "current_code_commit": "2c3312b3b45dcb8cf354940fc1f6b52c788fb970",
+  "depth": 4,
+  "search_identical": true,
+  "protocol_matches": true,
+  "engine_tree_matches": true,
+  "require_identical_engine_tree": true,
+  "require_identical_search": true,
+  "comparison_returncode": 0,
+  "review_required": false,
+  "reference": "reference",
+  "current": "current"
+}

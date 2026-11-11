@@ -1,0 +1,13 @@
+position           nodes A   nodes B    sec A    sec B time A/B  same
+start                 1841      1841     0.12     0.12    1.01x  yes
+italian               7002      7002     0.50     0.50    1.00x  yes
+kiwipete             82630     82630     5.21     5.27    0.99x  yes
+endgame_rooks         1546      1546     0.10     0.10    1.02x  yes
+promotions           10762     10762     0.66     0.66    1.00x  yes
+tactical             15882     15882     1.01     1.02    1.00x  yes
+open_middlegame      29837     29837     2.09     2.06    1.02x  yes
+queen_endgame           27        27     0.00     0.00    1.00x  yes
+closed               22700     22700     1.41     1.42    0.99x  yes
+minor_endgame         1502      1502     0.09     0.09    1.00x  yes
+Total: A 15527 nps (step8-tool-modules-reference, CPython), B 15474 nps (step8-tool-modules-current, CPython); Elapsed-time ratio A/B: 1.00x (same reported environment; single run).
+Search identical (position set, FEN, score, depth, nodes, best move): YES
