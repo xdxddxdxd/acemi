@@ -1,0 +1,12 @@
+start            depth 4 score      0 nodes     1841 move b1c3 0.12s
+italian          depth 4 score     20 nodes     7002 move b1c3 0.61s
+kiwipete         depth 4 score     35 nodes    82630 move e2a6 7.00s
+endgame_rooks    depth 4 score    106 nodes     1546 move b4f4 0.13s
+promotions       depth 4 score   -483 nodes    10762 move c4c5 0.84s
+tactical         depth 4 score    516 nodes    15882 move d7c8q 1.23s
+open_middlegame  depth 4 score     -7 nodes    29837 move c1g5 2.71s
+queen_endgame    depth 1 score  99999 nodes       27 move d1d8 0.00s
+closed           depth 4 score     36 nodes    22700 move d4c6 1.68s
+minor_endgame    depth 4 score     71 nodes     1502 move g2f3 0.11s
+Total: 173729 nodes in 14.44s = 12033 nps (CPython 3.13.15, engine 0.8.2)
+Wrote /kaggle/working/acemi/data/baselines/20261111T142955Z_aef1069f/reference/bench.json
