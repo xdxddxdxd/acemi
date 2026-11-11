@@ -135,6 +135,10 @@ tamamlanan bölümler tekrar oynatılmaz. Skor yeni sürüm açısından okunur.
 Bu notebook ek Stockfish maçı, benchmark veya tam test paketi başlatmaz.
 Bkz. [docs/AB_100.md](docs/AB_100.md).
 
+İkinci deney için aynı daldaki `notebooks/kaggle_ab_100_500ms.ipynb` dosyasını
+kullanın: **500 ms/hamle, tek toplu koşuda 100 oyun**. İlk deneyden ayrı kaydedilir;
+10'ar oyunluk bölümler kullanılmaz.
+
 ```powershell
 # SF1320, 250 ms, 150 oyun
 python -m tools.match --games 150 --movetime-ms 250 --uci-elo 1320 --openings openings/acemi-64.txt

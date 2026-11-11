@@ -85,6 +85,18 @@ class ExperimentTests(unittest.TestCase):
             self.assertEqual(args.opponent_option, ["OwnBook=false"])
             self.assertFalse(args.sprt)
 
+    def test_500ms_bulk_plan_runs_all_100_games_in_one_match(self):
+        plan = self.plan(name="ab-500ms", chunk_games=100, movetime_ms=500)
+        self.assertEqual(len(plan["chunks"]), 1)
+        chunk = plan["chunks"][0]
+        args = match._parse_args(ab.match_arguments(plan, chunk))
+        self.assertEqual((args.games, args.movetime_ms), (100, 500))
+        self.assertEqual(chunk["global_game_start"], 1)
+        rows = (Path(plan["session_dir"]) / chunk["openings"]).read_text().splitlines()
+        self.assertEqual((len(rows), len(set(rows))), (50, 50))
+        self.assertFalse(args.sprt)
+        self.assertEqual(plan["id"], "ab-500ms")
+
     def test_completed_chunk_is_not_replayed_and_scores_are_new_perspective(self):
         plan = self.plan(games=4, chunk_games=2)
         def runner(argv, *, experiment):
