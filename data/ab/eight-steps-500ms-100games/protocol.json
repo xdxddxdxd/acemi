@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "eight-steps-500ms-100games",
+  "created_at": "2026-11-11T16:09:46.620665+00:00",
+  "session_dir": "/kaggle/working/acemi/data/ab/eight-steps-500ms-100games",
+  "repo_root": "/kaggle/working/acemi",
+  "sources": {
+    "new": {
+      "path": "/kaggle/working/acemi-ab-new",
+      "commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+      "engine_tree": "bcc3eb39e95f400308c3383c1f8f98fd255a8657"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-ab-old",
+      "commit": "db058b344df8759810e957f11a58b4149055fe49",
+      "engine_tree": "e291b9179fd2a0017cde955909d297743b5ae40a"
+    }
+  },
+  "runner_sources": {
+    "ab_compare.py": "821975f4a9b78b05de6ba4aa6b128bec93485db3f46291514b0dfbe3bf8a8cec",
+    "match.py": "2c516628a9bdf723701e87ec1e653f4c2368b92405d09c68b20f42c688a90779",
+    "match_game.py": "ebc5f3135e1270b3a0daea5bd5e065dab60bb29492a5118ce0b9ae69439e1600",
+    "match_config.py": "19e4e230103c386b0217a30e8c3db3b43f0d2a48a80a517f488fab4015be3d15",
+    "match_openings.py": "3e3632a37a28cec4ea34f2c2d82111563fa4b87e32f3164a687682a072500219",
+    "uci_client.py": "f708a82905247ccccd731c7aa46febe88687d2c163d35936b6c8342597cc2069",
+    "record.py": "368a8be35d2da588086b46849e9041110c488c85d08b507a4f335bcda194dfe3",
+    "pairing.py": "3105b630489a0d1d9325ffad88814877169e595af52b0edd81cb7587fb66520a",
+    "elo.py": "5095f077dc7f7b75b42e012c5202345ce4ce74f510eea879e7f69fdfb46d98e8",
+    "summarize.py": "afb19c2be48c864faee881879e53521ae1f4ce4e4001693d1e3aae49500a27ec"
+  },
+  "collector_commit": "3f174821e5001d0539b6c41d2aafd863f2574ca5",
+  "games": 100,
+  "chunk_games": 100,
+  "movetime_ms": 500,
+  "hash_mb": 16,
+  "max_plies": 400,
+  "concurrency": 2,
+  "threads_per_engine": 1,
+  "opening_book": false,
+  "sprt_enabled": false,
+  "timeout_grace_ms": 1000,
+  "forfeit_policy": "loss_for_either_engine",
+  "opening_source_sha256": "d9ee9e5700382bea856867017ed5f2b880bfa81479e95f58c1aa2df81facbc66",
+  "selection_seed": 1,
+  "chunks": [
+    {
+      "number": 1,
+      "games": 100,
+      "global_game_start": 1,
+      "seed": 1,
+      "openings": "openings/chunk_01.txt",
+      "sha256": "e23ccc8314eb31ef8d764f75c65279b8b082513c5e285fb33165c090d948a32f"
+    }
+  ],
+  "runtime": "CPython",
+  "runtime_version": "3.13.15",
+  "protocol_sha256": "ce72bc1ec4775a730e4833d58a0b76369c31a13d1f6e416a4ab0e419a2497ab3"
+}
