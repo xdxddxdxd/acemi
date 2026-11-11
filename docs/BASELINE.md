@@ -6,9 +6,11 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-1. Güncel `notebooks/kaggle_runner.ipynb` dosyasını Kaggle'a alın. PR'ı birleşmeden
-   deniyorsanız ilk hücrede `GITHUB_BRANCH` değerini PR dalı olarak ayarlayın.
-   Sonuçlar bu dala gönderilir. Birleşmiş kod için `main` kullanılır.
+1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
+   Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;
+   sonuçlar bu dala gönderilir. `main` ile geliştirme tamamlanınca birleştirilecek.
+   Kurulum hücresi eski Kaggle checkout'unu seçilen dala geçirir ve referans
+   aracının varlığını testlerden önce denetler.
 2. Internet'i açın ve `GITHUB_TOKEN` Kaggle Secret'ını tanımlayın. Token yalnızca
    GitHub yazma yetkili çalışma ortamında kullanılır; sonuç dosyalarına yazılmaz.
 3. Hücreleri sırayla çalıştırın. `BASELINE_DEPTH=4`, `RUN_VALIDATION_MATCHES=False`
@@ -26,6 +28,17 @@ toplam 50 oyun. Sayılar ilk ayar hücresinden değiştirilebilir; renk değişi
 çiftler için pozitif çift sayılar kullanın. Varsayılan ayarda hiç maç oynanmaz.
 Bu küçük örnekler hata yakalamak içindir; Elo artışını kanıtlamaz. Maç sonuçları
 daha önceki gibi `data/runs/` altına yazılır.
+
+### `No module named tools.baseline` hatası
+
+Bu hata test başlamadan, Kaggle checkout'unda yeni aracın bulunmadığını gösterir.
+GitHub içe aktarma ekranında dal seçmek, notebook içindeki eski `GITHUB_BRANCH`
+ayarını değiştirmez. Güncel notebook'u geliştirme dalından yeniden içe aktarın;
+ayarlar ve depo kurulumundan başlayarak hücreleri sırayla çalıştırın. Kurulum
+çıktısında `codex/kaggle-baseline; tools/baseline.py found` görülmeli.
+
+Maçlar, benchmark ve tam test paketi Kaggle'da çalıştırılır; yerel bilgisayarda
+bu uzun kontrolleri başlatmak gerekmez.
 
 ## Dosyalar
 
