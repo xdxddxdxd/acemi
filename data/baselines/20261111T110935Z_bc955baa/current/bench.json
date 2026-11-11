@@ -1,0 +1,107 @@
+{
+  "label": "step6-endgame-rules-current",
+  "date": "20261111T111351Z",
+  "engine_version": "0.8.2",
+  "depth": 4,
+  "runtime": "CPython",
+  "runtime_version": "3.13.15",
+  "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+  "total_nodes": 173729,
+  "total_seconds": 13.664,
+  "nodes_per_second": 12714,
+  "positions": [
+    {
+      "name": "start",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "score": 0,
+      "depth": 4,
+      "nodes": 1841,
+      "best_move": "b1c3",
+      "seconds": 0.1172
+    },
+    {
+      "name": "italian",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "score": 20,
+      "depth": 4,
+      "nodes": 7002,
+      "best_move": "b1c3",
+      "seconds": 0.5819
+    },
+    {
+      "name": "kiwipete",
+      "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      "score": 35,
+      "depth": 4,
+      "nodes": 82630,
+      "best_move": "e2a6",
+      "seconds": 6.5647
+    },
+    {
+      "name": "endgame_rooks",
+      "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+      "score": 106,
+      "depth": 4,
+      "nodes": 1546,
+      "best_move": "b4f4",
+      "seconds": 0.1219
+    },
+    {
+      "name": "promotions",
+      "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      "score": -483,
+      "depth": 4,
+      "nodes": 10762,
+      "best_move": "c4c5",
+      "seconds": 0.8123
+    },
+    {
+      "name": "tactical",
+      "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+      "score": 516,
+      "depth": 4,
+      "nodes": 15882,
+      "best_move": "d7c8q",
+      "seconds": 1.2148
+    },
+    {
+      "name": "open_middlegame",
+      "fen": "r2q1rk1/ppp2ppp/2np1n2/2b1p3/2B1P1b1/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8",
+      "score": -7,
+      "depth": 4,
+      "nodes": 29837,
+      "best_move": "c1g5",
+      "seconds": 2.5941
+    },
+    {
+      "name": "queen_endgame",
+      "fen": "6k1/5ppp/8/8/8/8/5PPP/3Q2K1 w - - 0 1",
+      "score": 99999,
+      "depth": 1,
+      "nodes": 27,
+      "best_move": "d1d8",
+      "seconds": 0.0011
+    },
+    {
+      "name": "closed",
+      "fen": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 9",
+      "score": 36,
+      "depth": 4,
+      "nodes": 22700,
+      "best_move": "d4c6",
+      "seconds": 1.5472
+    },
+    {
+      "name": "minor_endgame",
+      "fen": "8/5pk1/6p1/3n4/3B4/6P1/5PK1/8 w - - 0 1",
+      "score": 71,
+      "depth": 4,
+      "nodes": 1502,
+      "best_move": "g2f3",
+      "seconds": 0.109
+    }
+  ],
+  "schema_version": 1,
+  "git_commit": "70f624a8f0688583802e6cd8af64da4ac5c540cb",
+  "engine_tree": "42cac97478ca45a1a499602492b066d6ea12c064"
+}
