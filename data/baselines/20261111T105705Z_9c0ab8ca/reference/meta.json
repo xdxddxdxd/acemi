@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "correctness_and_fixed_depth_reference",
+  "label": "step5-analysis-provenance-reference",
+  "started_at": "2026-11-11T10:57:05.822843Z",
+  "source": {
+    "git_commit": "a1326202ecef4ce0ae4811bbdd47af3a104636a2",
+    "git_tree": "661063d1501b0b4151f6ba11bbf8a9d920f10de8",
+    "engine_tree": "d32978d7845dc1a6592b9b7cbf5f17c632f7a60c",
+    "git_dirty": false
+  },
+  "collector": {
+    "git_commit": "336560a3fcc9022472b85274038cd405cd348792",
+    "git_dirty": false
+  },
+  "environment": {
+    "runtime": "CPython",
+    "runtime_version": "3.13.15",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu_count": 4,
+    "dependencies": {
+      "python-chess": "1.999",
+      "chess": "1.11.2",
+      "numpy": "1.26.4"
+    }
+  },
+  "protocol": {
+    "depth": 4,
+    "time_limit": null,
+    "options": "source defaults; fresh Searcher per position; opening book bypassed",
+    "test_command": [
+      "/usr/bin/python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "benchmark_command": [
+      "/usr/bin/python3",
+      "-m",
+      "tools.bench",
+      "--depth",
+      "4",
+      "--label",
+      "step5-analysis-provenance-reference",
+      "--out",
+      "/kaggle/working/acemi/data/baselines/20261111T105705Z_9c0ab8ca/reference/bench.json"
+    ]
+  }
+}
