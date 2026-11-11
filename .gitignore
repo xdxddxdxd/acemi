@@ -22,5 +22,7 @@ htmlcov/
 
 # Analysis intermediates (per-game caches stay in the Kaggle session)
 data/analysis/cache/
+data/analysis/**/cache/
+data/analysis/*_smoke/
 data/analysis_smoke/
 data/analysis_test*/

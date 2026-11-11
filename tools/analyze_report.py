@@ -10,6 +10,8 @@ import statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from tools.analyze_games import valid_parts
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DIR = ROOT / "data" / "analysis"
 PHASES = ("opening", "middlegame", "endgame")
@@ -27,7 +29,10 @@ def read_positions(out: Path) -> list[dict]:
     manifest = out / "parts.json"
     paths: list[Path] = []
     if manifest.exists():
-        for part in json.loads(manifest.read_text(encoding="utf-8")).get("parts", []):
+        parts, problems = valid_parts(out)
+        if problems:
+            raise ValueError("Analysis parts are damaged; aggregate/reanalyse before reporting: " + "; ".join(problems))
+        for part in parts:
             path = out / part["files"]["positions"]["path"]
             if path.exists():
                 paths.append(path)
@@ -170,6 +175,7 @@ def main(argv: list[str] | None = None) -> int:
     add("# Acemi — mevcut oyun kayıtlarının Stockfish analizi")
     add("")
     add(f"- Stockfish: **{config.get('stockfish_version', 'ölçülemedi')}**, sabit derinlik **{config.get('depth', '?')}**, tek iş parçacığı.")
+    add(f"- Analiz kimliği: `{config.get('analysis_fingerprint', 'eski kayıt; doğrulanmış kimlik yok')}`.")
     add(f"- Kullanılan oyun: **{len(games)}** (benzersiz), bunların **{len(result_games)}** tanesi sonuç örnekleminde sayıldı; A/B **{len(by_type.get('AB', []))}**, Stockfish **{len(by_type.get('SF', []))}**.")
     add(f"- Tekilleştirme: manifestte **{manifest.get('duplicates', 0)}** yinelenen oyun atıldı; demo/AcemiRandom dışlandı.")
     add(f"- Pozisyon satırı: **{len(positions)}**; Acemi hamlesi: **{len(acemi_positions)}**; blunder (>150 cp): **{len(blunders)}**.")

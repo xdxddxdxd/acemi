@@ -145,6 +145,22 @@ def _start_engine(engine: UciEngine, options: list[list]) -> None:
         raise EngineSetupError(f"{engine.label} failed during startup: {error}") from error
 
 
+def book_settings(engine: UciEngine, options: list[list]) -> dict:
+    """Record configured OwnBook/BookFile, using advertised defaults and the last override.
+
+    This describes the setting, not whether a particular game had a book hit.
+    None means that the engine did not advertise the option.
+    """
+    effective = {name.lower(): option.default for name, option in engine.options.items()}
+    for name, value, _ in options:
+        if name.lower() in effective:
+            effective[name.lower()] = value
+    raw = effective.get("ownbook")
+    enabled = {"true": True, "false": False}.get(str(raw).lower())
+    book_file = effective.get("bookfile")
+    return {"opening_book": enabled, "book_file": None if book_file is None else str(book_file)}
+
+
 def _mirror_move(
     acemi_board: AcemiBoard | None, board: chess.Board, move: chess.Move, log: list[str]
 ) -> tuple[AcemiBoard | None, bool]:
@@ -537,6 +553,7 @@ def main(argv: list[str] | None = None) -> int:
     # Preflight: start both engines once to read their names and validate options.
     log_lines: list[str] = []
     names: dict[str, str] = {}
+    books: dict[str, dict] = {}
     for label, command, cwd, options in (
         ("engine", engine_cmd, engine_cwd, base_engine_options),
         ("opponent", opponent_cmd, args.opponent_cwd, base_opponent_options),
@@ -545,6 +562,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             _start_engine(probe, options)
             names[label] = probe.name
+            books[label] = book_settings(probe, options)
         except EngineSetupError as error:
             print(f"Setup failed: {error}", file=sys.stderr)
             return 2
@@ -726,13 +744,14 @@ def main(argv: list[str] | None = None) -> int:
             "move_time_ms": args.movetime_ms,
             "hash_mb": args.hash_mb,
             "random_seed": args.seed,
-            "opening_book": False,
+            **books["engine"],
             "extra_options": {name: value for name, value, _ in extra_engine_options},
         },
         "opponent": {
             "name": opponent_name,
             "version": opponent_version,
             "uci_elo": uci_elo,
+            **books["opponent"],
             "extra_options": {name: value for name, value, _ in extra_opponent_options},
         },
         "opening_set": opening_set,

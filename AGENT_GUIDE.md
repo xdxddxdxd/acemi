@@ -55,6 +55,18 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
   references; their logs are still published. `session.json` and `comparison.log`
   describe the fixed-depth comparison, not a strength decision or Elo estimate.
 
+### Analysis identity (Step 5)
+
+New `data/analysis/<output>/config.json` records `analysis_configuration` and
+`analysis_fingerprint` (identity version 1). Per-game scratch caches, the part
+manifest and every part carry that fingerprint; part ids include it. Resuming
+with a different/missing identity requires a new output directory. Historical
+untagged analyses remain readable; they are not retroactively verified.
+See `docs/ANALYSIS.md`. New match metadata adds `book_file` and derives
+`opening_book` from advertised defaults plus overrides on both sides (`null`
+if unsupported); this records configuration, not a book hit. Existing raw records
+are never rewritten to add these fields.
+
 ### Compressed artifacts
 
 - `games.pgn.gz`: PGN games with run metadata and outcomes.

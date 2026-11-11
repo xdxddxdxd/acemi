@@ -114,8 +114,8 @@ self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
-Güncel notebook 4. adımı `step4-configuration` etiketiyle, doğrulanmış 3. adımın
-`700b32e` commit'ine karşı çalıştırır. Varsayılan ayarlar değişmediği için arama
+Güncel notebook 5. adımı `step5-analysis-provenance` etiketiyle, doğrulanmış 4. adımın
+`a132620` commit'ine karşı çalıştırır. Motor araması değişmediği için arama
 eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`). Önceki kayıtlar korunur.
 
 ## Maç çalıştırma
@@ -156,6 +156,10 @@ python -m tools.match --games 150 --movetime-ms 500 `
 ## Veri ve analiz
 
 [AGENT_GUIDE.md](AGENT_GUIDE.md). Her veri dosyası `schema_version` taşır. Gerçek sonuçlar ile sentetik demo kayıtlarını karıştırmayın.
+
+Analiz önbelleği ve parçalar doğrulanmış ayar kimliğiyle devam eder; farklı
+Stockfish/derinlik/Syzygy veya analiz kodu için yeni çıktı klasörü gerekir.
+Eski sonuçları değiştirmeden devam etme kuralları: [docs/ANALYSIS.md](docs/ANALYSIS.md).
 
 ## Lisans
 

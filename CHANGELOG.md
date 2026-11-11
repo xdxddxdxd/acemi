@@ -1,5 +1,22 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 5: analiz kimliği ve kitap metadata doğruluğu
+
+- Analiz konfigürasyonu Stockfish dosyası, derinlik, Syzygy WDL içerikleri,
+  python-chess ve analiz kaynaklarından kimlik alır. Cache/parça adları ve
+  manifestler bu kimliği taşır; uyumsuz veya eski ayarlarla aynı klasöre devam
+  edilmez. Eski kayıtlar okunabilir ve değiştirilmez; cache atomik yazılır.
+- Rapor parça kimliği/bütünlüğünü denetler. Yapılandırılmış Syzygy açılamazsa
+  worker sessizce Stockfish-only analize dönmez. Yeni analiz notebook'u geliştirme
+  dalını ve ayrı `data/analysis/step5` klasörünü kullanır.
+- Maç metadata'sı iki tarafın OwnBook/BookFile varsayılanları ve son seçeneklerini
+  kaydeder; desteklenmeyen alanlar null'dır. Bu bilgi kitap isabeti ölçümü değildir.
+- 29 kısa sahte-veri/ayar kontrolü geçti; yerelde gerçek motor araması veya maç
+  başlatılmadı. Worker başlatma hataları sonsuz süreç yeniden başlatma döngüsü
+  yerine göreve aktarılır. Tam paket ve gerçek
+  pipe/arama kontrolleri Kaggle'a bırakılır. Runner `step5-analysis-provenance`
+  etiketiyle doğrulanmış 4. adıma karşı arama eşitliği ister; maçlar kapalıdır.
+
 ## Geliştirme — Adım 4: ayar izolasyonu ve TT geçersizleştirme
 
 - UCI oturumlarının `EvalFlags` nesneleri ayrıldı. Açık değerlendirme ayarı evaluator
@@ -9,9 +26,9 @@
   önbelleği temizlemez. Seed ve süre bütçesi değişimleri TT'yi gereksiz sıfırlamaz.
 - Hash/Threads/Seed ve diğer sayısal seçenekler UCI'de ilan edilen sınırları
   uygular. Aynı Seed yeniden verildiğinde RNG sıfırlama davranışı korunur.
-- 38 kısa ayar/bağlam/sahte-worker kontrolü geçti. Gerçek aramalar, tam paket
-  ve benchmark Kaggle doğrulamasını bekliyor. Notebook `step4-configuration`
-  etiketi ve doğrulanmış 3. adım referansıyla varsayılan arama eşitliğini zorunlu tutar.
+- 38 kısa ayar/bağlam/sahte-worker kontrolü geçti. Kaggle doğrulaması tamamlandı
+  (`20261111T103841Z_da6b3d57`): 335 test geçti; 10 konumda skor/hamle/derinlik/düğüm
+  doğrulanmış 3. adımla aynı (160046 düğüm). Ham kayıtlar değiştirilmedi.
 
 ## Geliştirme — Adım 3: beraberlik bağlamına duyarlı TT
 

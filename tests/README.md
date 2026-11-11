@@ -35,3 +35,9 @@ regression class belongs to Kaggle. Real regressions compare toggled passed-pawn
 and bishop-pair scores with clean sessions, and explicit/legacy flag changes with
 a TT-disabled oracle. A mocked worker test also checks that an Eval option is not
 mutated until the previous worker has stopped.
+
+`test_analysis_configuration.py` checks content-based identities, immutable config
+guards, legacy read compatibility, warm/corrupt/foreign caches, part identity and
+CLI resume using mocked evaluation only. `test_match_metadata.BookMetadataTests`
+checks advertised book defaults and case-insensitive last overrides without matches.
+The existing fake-UCI analysis pipeline test also seals tagged parts in Kaggle.

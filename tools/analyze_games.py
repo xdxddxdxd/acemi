@@ -43,6 +43,8 @@ import chess.engine
 import chess.pgn
 import chess.syzygy as chess_syzygy
 
+from tools.analysis_config import active_fingerprint, analysis_configuration, prepare_output
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUNS = ROOT / "data" / "runs"
 DEFAULT_OUT = ROOT / "data" / "analysis"
@@ -74,11 +76,13 @@ BLUNDER_FIELDS = POSITION_FIELDS + ["category"]
 _engine = None
 _depth = 10
 _tablebase = None
+_worker_error: str | None = None
 _fen_cache: "OrderedDict[tuple, tuple[int, str | None]]" = OrderedDict()
 
 
 def _init_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
-    global _engine, _depth, _tablebase
+    global _engine, _depth, _tablebase, _worker_error
+    _worker_error = None
     _engine = chess.engine.SimpleEngine.popen_uci(stockfish)
     _engine.configure({"Threads": 1, "Hash": 64})
     _depth = depth
@@ -87,9 +91,9 @@ def _init_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
     if syzygy:
         try:
             _tablebase = chess_syzygy.open_tablebase(syzygy)
-        except Exception as error:  # Missing directory or unreadable tables: fall back to Stockfish labels.
-            print(f"Syzygy unavailable ({error}); labelling with Stockfish only.", file=sys.stderr)
-            _tablebase = None
+        except Exception:
+            _close_worker()
+            raise  # A configured tablebase must not silently become a different analysis.
 
 
 def _close_worker() -> None:
@@ -533,22 +537,54 @@ def analyze_game(game: dict, depth: int) -> dict:
 
 
 def cache_path(out_dir: Path, game: dict) -> Path:
-    digest = hashlib.sha1(f"{game['run_name']}#{game['game_no']}".encode()).hexdigest()[:12]
+    identity = active_fingerprint(out_dir)
+    digest = hashlib.sha256(f"{identity}:{game['run_name']}#{game['game_no']}".encode()).hexdigest()[:20]
     return out_dir / "cache" / f"{game['run_type']}_{game['run_name'][:40]}_{game['game_no']}_{digest}.json"
 
 
+def cached_game_exists(out_dir: Path, game: dict) -> bool:
+    path = cache_path(out_dir, game)
+    try:
+        data = read_json(path)
+        return (data.get("game_id") == f"{game['run_name']}#{game['game_no']}"
+                and data.get("analysis_fingerprint") == active_fingerprint(out_dir)
+                and isinstance(data.get("plies"), list) and isinstance(data.get("game_stats"), dict))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def _analyze_task(game: dict, out_dir: str, depth: int) -> str:
+    if active_fingerprint(Path(out_dir)) is not None:
+        configured = read_json(Path(out_dir) / "config.json")["analysis_configuration"]["depth"]
+        if configured != depth:
+            raise ValueError("Task depth differs from the output analysis configuration")
     path = cache_path(Path(out_dir), game)
-    if path.exists():
+    if cached_game_exists(Path(out_dir), game):
         return str(path)
     result = analyze_game(game, depth)
+    result["analysis_fingerprint"] = active_fingerprint(Path(out_dir))
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    _atomic_write(path, lambda temporary: temporary.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8"))
     return str(path)
 
 
 def _task_wrapper(args: tuple[dict, str, int]) -> str:
+    if _worker_error is not None:
+        raise RuntimeError(f"Analysis worker startup failed: {_worker_error}")
     return _analyze_task(*args)
+
+
+def _init_pool_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
+    """Deliver startup failures through a task, avoiding Pool's endless respawn loop."""
+    global _worker_error
+    try:
+        _init_worker(stockfish, depth, syzygy)
+    except Exception as error:
+        _worker_error = f"{type(error).__name__}: {error}"
+        try:
+            _close_worker()
+        except Exception:
+            pass  # Preserve the startup failure even if a broken engine cannot quit.
 
 
 def _sha256(path: Path) -> str:
@@ -567,9 +603,12 @@ def _atomic_write(path: Path, write) -> None:
     os.replace(temporary, path)
 
 
-def part_id(game_ids) -> str:
+def part_id(game_ids, identity: str | None = None) -> str:
     """Content-based id: the same set of games always gives the same part."""
-    return hashlib.sha256("\n".join(sorted(game_ids)).encode("utf-8")).hexdigest()[:10]
+    content = "\n".join(sorted(game_ids))
+    if identity is not None:
+        content = identity + "\n" + content
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:10]
 
 
 def _part_files(part: str) -> dict[str, str]:
@@ -596,7 +635,13 @@ def valid_parts(out_dir: Path) -> tuple[list[dict], list[str]]:
     good: list[dict] = []
     problems: list[str] = []
     seen: set[str] = set()
-    for part in read_parts_manifest(out_dir)["parts"]:
+    identity = active_fingerprint(out_dir)
+    manifest = read_parts_manifest(out_dir)
+    if (out_dir / PARTS_MANIFEST).exists() and manifest.get("analysis_fingerprint") != identity:
+        raise ValueError("Part manifest has a different analysis identity; use a new --out directory")
+    for part in manifest["parts"]:
+        if part.get("analysis_fingerprint") != identity:
+            raise ValueError("Part has a different or missing analysis identity; use a new --out directory")
         files = part.get("files", {})
         ids = part.get("game_ids", [])
         broken = [name for name in ("positions", "games", "blunders") if name not in files]
@@ -604,7 +649,7 @@ def valid_parts(out_dir: Path) -> tuple[list[dict], list[str]]:
             path = out_dir / info.get("path", "")
             if not path.exists() or _sha256(path) != info.get("sha256"):
                 broken.append(name)
-        if broken or part.get("id") != part_id(ids) or seen.intersection(ids):
+        if broken or part.get("id") != part_id(ids, identity) or seen.intersection(ids):
             problems.append(f"part {part.get('id')} dropped ({', '.join(sorted(set(broken))) or 'bad id or duplicate games'})")
             continue
         seen.update(ids)
@@ -629,6 +674,7 @@ def _blunder_category(row: dict) -> str:
 def seal_part(out_dir: Path) -> dict | None:
     """Turn every cached game that is not yet in a part into one immutable part."""
     cache_dir = out_dir / "cache"
+    identity = active_fingerprint(out_dir)
     done = processed_game_ids(out_dir)
     cached: dict[str, dict] = {}
     cache_paths: dict[str, Path] = {}
@@ -638,6 +684,12 @@ def seal_part(out_dir: Path) -> dict | None:
         except (OSError, ValueError):
             path.unlink(missing_ok=True)  # Half-written cache entry: the game is analysed again.
             continue
+        if (not isinstance(data, dict) or not isinstance(data.get("game_id"), str)
+                or not isinstance(data.get("plies"), list) or not isinstance(data.get("game_stats"), dict)):
+            path.unlink(missing_ok=True)
+            continue
+        if data.get("analysis_fingerprint") != identity:
+            raise ValueError(f"Cache {path.name} has a different or missing analysis identity")
         if data["game_id"] in done:
             path.unlink(missing_ok=True)
             continue
@@ -646,7 +698,7 @@ def seal_part(out_dir: Path) -> dict | None:
     if not cached:
         return None
     ids = sorted(cached)
-    part = part_id(ids)
+    part = part_id(ids, identity)
     files = _part_files(part)
 
     positions = [row for game_id in ids for row in cached[game_id]["plies"]]
@@ -676,12 +728,14 @@ def seal_part(out_dir: Path) -> dict | None:
     _atomic_write(out_dir / files["blunders"], csv_writer(BLUNDER_FIELDS, blunders))
     entry = {
         "id": part,
+        "analysis_fingerprint": identity,
         "game_ids": ids,
         "rows": {"positions": len(positions), "games": len(games), "blunders": len(blunders)},
         "files": {name: {"path": path, "sha256": _sha256(out_dir / path)} for name, path in files.items()},
         "sealed_utc": datetime.now(timezone.utc).isoformat(),
     }
-    manifest = {"parts": [item for item in valid_parts(out_dir)[0] if item["id"] != part] + [entry]}
+    manifest = {"analysis_fingerprint": identity,
+                "parts": [item for item in valid_parts(out_dir)[0] if item["id"] != part] + [entry]}
     # The manifest is written last: until then the new files are unreferenced and harmless.
     _atomic_write(
         out_dir / PARTS_MANIFEST,
@@ -913,13 +967,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not args.aggregate_only:
         games, stats = build_manifest(args.runs, {item.strip() for item in args.types.split(",")}, args.max_games)
-        (args.out / "manifest.json").write_text(json.dumps(stats, indent=1, ensure_ascii=False), encoding="utf-8")
         print(json.dumps(stats, indent=1)[:4000])
         if args.smoke:
             games = games[:1]
         stockfish = args.stockfish or os.environ.get("STOCKFISH_PATH") or "/usr/games/stockfish"
         if not Path(stockfish).exists():
             print(f"Stockfish not found at {stockfish}; pass --stockfish or set STOCKFISH_PATH", file=sys.stderr)
+            return 1
+        try:
+            identity_config = analysis_configuration(Path(stockfish), args.depth,
+                                                     Path(args.syzygy) if args.syzygy else None)
+        except (OSError, ValueError) as error:
+            print(f"Invalid analysis configuration: {error}", file=sys.stderr)
             return 1
         try:
             probe = subprocess.run([stockfish, "--version"], capture_output=True, text=True, timeout=10)
@@ -938,14 +997,19 @@ def main(argv: list[str] | None = None) -> int:
             ),
             "generated_utc": datetime.now(timezone.utc).isoformat(),
         }
-        (args.out / "config.json").write_text(json.dumps(config, indent=1), encoding="utf-8")
-        parts, problems = valid_parts(args.out)
+        try:
+            prepare_output(args.out, identity_config, **config)
+            parts, problems = valid_parts(args.out)
+        except ValueError as error:
+            print(str(error), file=sys.stderr)
+            return 1
+        (args.out / "manifest.json").write_text(json.dumps(stats, indent=1, ensure_ascii=False), encoding="utf-8")
         for problem in problems:
             print(f"WARNING: {problem}; its games will be analysed again")
         processed = {game_id for part in parts for game_id in part["game_ids"]}
         pending = [
             game for game in games
-            if not cache_path(args.out, game).exists()
+            if not cached_game_exists(args.out, game)
             and f"{game['run_name']}#{game['game_no']}" not in processed
         ]
         if args.max_new_games is not None:
@@ -953,7 +1017,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"games in manifest: {len(games)}, pending: {len(pending)}")
         workers = args.workers or max(1, (os.cpu_count() or 2) - 1)
         tasks = [(game, str(args.out), args.depth) for game in pending]
-        if workers == 1:
+        if workers == 1 and tasks:
             _init_worker(stockfish, args.depth, args.syzygy)
             try:
                 for task in tasks:
@@ -961,7 +1025,7 @@ def main(argv: list[str] | None = None) -> int:
             finally:
                 _close_worker()
         elif tasks:
-            with mp.Pool(workers, initializer=_init_worker, initargs=(stockfish, args.depth, args.syzygy)) as pool:
+            with mp.Pool(workers, initializer=_init_pool_worker, initargs=(stockfish, args.depth, args.syzygy)) as pool:
                 for _ in pool.imap_unordered(_task_wrapper, tasks):
                     pass
         elif not pending:

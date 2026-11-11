@@ -6,12 +6,16 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step4-configuration"` ile
-4. adımı doğrular. Referans, Kaggle'da doğrulanmış 3. adım commit'i
-`700b32e1db8ec3cc87570c31d6d79c3c7fe3d6dc` olarak sabitlenmiştir. Önceki üç adımın
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step5-analysis-provenance"` ile
+5. adımı doğrular. Referans, Kaggle'da doğrulanmış 4. adım commit'i
+`a1326202ecef4ce0ae4811bbdd47af3a104636a2` olarak sabitlenmiştir. Önceki dört adımın
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
+
+Analiz kimliği/önbellek ve kitap metadata regresyonları tam pakete dahildir;
+bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
+Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
 Varsayılan özellik değerleri değiştirilmediği için `REQUIRE_IDENTICAL_SEARCH=True`:
 konum/FEN/derinlik protokolü ile skor, düğüm ve hamleler eşleşmelidir. Yalnızca süre
