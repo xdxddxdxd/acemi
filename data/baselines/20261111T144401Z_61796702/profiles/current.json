@@ -1,0 +1,780 @@
+{
+  "schema_version": 1,
+  "kind": "instrumented_search_profile",
+  "source_commit": "c9ca67ac3cc5ec43ed09dbb6591515ac75a14bc8",
+  "engine_tree": "bcc3eb39e95f400308c3383c1f8f98fd255a8657",
+  "collector_commit": "c9ca67ac3cc5ec43ed09dbb6591515ac75a14bc8",
+  "note": "cProfile adds overhead; use the separate uninstrumented benchmark for speed comparisons",
+  "benchmark": {
+    "label": "step7b-legality-probe-current-profile",
+    "date": "20261111T144854Z",
+    "engine_version": "0.8.2",
+    "depth": 3,
+    "runtime": "CPython",
+    "runtime_version": "3.13.15",
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "total_nodes": 66798,
+    "total_seconds": 9.13,
+    "nodes_per_second": 7316,
+    "positions": [
+      {
+        "name": "start",
+        "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "score": 50,
+        "depth": 3,
+        "nodes": 661,
+        "best_move": "b1c3",
+        "seconds": 0.0817
+      },
+      {
+        "name": "italian",
+        "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+        "score": 40,
+        "depth": 3,
+        "nodes": 1780,
+        "best_move": "b1c3",
+        "seconds": 0.2495
+      },
+      {
+        "name": "kiwipete",
+        "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+        "score": 35,
+        "depth": 3,
+        "nodes": 39047,
+        "best_move": "e2a6",
+        "seconds": 5.3891
+      },
+      {
+        "name": "endgame_rooks",
+        "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+        "score": 116,
+        "depth": 3,
+        "nodes": 528,
+        "best_move": "b4f4",
+        "seconds": 0.0634
+      },
+      {
+        "name": "promotions",
+        "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+        "score": -483,
+        "depth": 3,
+        "nodes": 5620,
+        "best_move": "c4c5",
+        "seconds": 0.746
+      },
+      {
+        "name": "tactical",
+        "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+        "score": 560,
+        "depth": 3,
+        "nodes": 2909,
+        "best_move": "d7c8q",
+        "seconds": 0.3548
+      },
+      {
+        "name": "open_middlegame",
+        "fen": "r2q1rk1/ppp2ppp/2np1n2/2b1p3/2B1P1b1/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8",
+        "score": -5,
+        "depth": 3,
+        "nodes": 12664,
+        "best_move": "h2h3",
+        "seconds": 1.8291
+      },
+      {
+        "name": "queen_endgame",
+        "fen": "6k1/5ppp/8/8/8/8/5PPP/3Q2K1 w - - 0 1",
+        "score": 99999,
+        "depth": 1,
+        "nodes": 27,
+        "best_move": "d1d8",
+        "seconds": 0.0025
+      },
+      {
+        "name": "closed",
+        "fen": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 9",
+        "score": 62,
+        "depth": 3,
+        "nodes": 3092,
+        "best_move": "d4c6",
+        "seconds": 0.3628
+      },
+      {
+        "name": "minor_endgame",
+        "fen": "8/5pk1/6p1/3n4/3B4/6P1/5PK1/8 w - - 0 1",
+        "score": 56,
+        "depth": 3,
+        "nodes": 470,
+        "best_move": "g2f3",
+        "seconds": 0.0513
+      }
+    ]
+  },
+  "functions": [
+    {
+      "file": "engine/search.py",
+      "line": 331,
+      "function": "search",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 0.000379625,
+      "cumulative_seconds": 9.130216317
+    },
+    {
+      "file": "engine/search.py",
+      "line": 410,
+      "function": "_search_root",
+      "primitive_calls": 28,
+      "total_calls": 28,
+      "self_seconds": 0.0035947080000000003,
+      "cumulative_seconds": 9.126889573
+    },
+    {
+      "file": "engine/search.py",
+      "line": 470,
+      "function": "_negamax",
+      "primitive_calls": 801,
+      "total_calls": 11799,
+      "self_seconds": 0.076515042,
+      "cumulative_seconds": 9.101211313
+    },
+    {
+      "file": "engine/search.py",
+      "line": 644,
+      "function": "_quiesce",
+      "primitive_calls": 10575,
+      "total_calls": 65574,
+      "self_seconds": 0.6604429430000001,
+      "cumulative_seconds": 8.357040284
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 278,
+      "function": "generate_legal_moves",
+      "primitive_calls": 288569,
+      "total_calls": 288569,
+      "self_seconds": 0.48785890000000004,
+      "cumulative_seconds": 3.2059215190000003
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 123,
+      "function": "generate_pseudo_legal_moves",
+      "primitive_calls": 468844,
+      "total_calls": 468844,
+      "self_seconds": 0.6925035380000001,
+      "cumulative_seconds": 1.8138412860000002
+    },
+    {
+      "file": "engine/board.py",
+      "line": 317,
+      "function": "make_move",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.7909886300000001,
+      "cumulative_seconds": 1.5436431890000002
+    },
+    {
+      "file": "engine/eval/base.py",
+      "line": 15,
+      "function": "evaluate",
+      "primitive_calls": 60637,
+      "total_calls": 60637,
+      "self_seconds": 0.046294419,
+      "cumulative_seconds": 1.2554336640000001
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 424,
+      "function": "evaluate_classic",
+      "primitive_calls": 60637,
+      "total_calls": 60637,
+      "self_seconds": 0.967634517,
+      "cumulative_seconds": 1.209139245
+    },
+    {
+      "file": "engine/board.py",
+      "line": 469,
+      "function": "is_square_attacked",
+      "primitive_calls": 275223,
+      "total_calls": 275223,
+      "self_seconds": 0.828982863,
+      "cumulative_seconds": 0.891177651
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 39,
+      "function": "_pawn_moves",
+      "primitive_calls": 391505,
+      "total_calls": 391505,
+      "self_seconds": 0.573211335,
+      "cumulative_seconds": 0.855263199
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 214,
+      "function": "_king_safe_after",
+      "primitive_calls": 204699,
+      "total_calls": 204699,
+      "self_seconds": 0.24927515900000002,
+      "cumulative_seconds": 0.8418607180000001
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 263,
+      "function": "__init__",
+      "primitive_calls": 60637,
+      "total_calls": 60637,
+      "self_seconds": 0.10241396000000001,
+      "cumulative_seconds": 0.7912013950000001
+    },
+    {
+      "file": "engine/board.py",
+      "line": 437,
+      "function": "unmake_move",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.191610376,
+      "cumulative_seconds": 0.55328513
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 118,
+      "function": "_ordered_pieces",
+      "primitive_calls": 66807,
+      "total_calls": 66807,
+      "self_seconds": 0.24555193200000003,
+      "cumulative_seconds": 0.432277307
+    },
+    {
+      "file": "engine/search.py",
+      "line": 169,
+      "function": "order_moves",
+      "primitive_calls": 26878,
+      "total_calls": 26878,
+      "self_seconds": 0.029123446,
+      "cumulative_seconds": 0.40273996500000003
+    },
+    {
+      "file": "engine/board.py",
+      "line": 523,
+      "function": "in_check",
+      "primitive_calls": 66797,
+      "total_calls": 66797,
+      "self_seconds": 0.057799169000000004,
+      "cumulative_seconds": 0.380250005
+    },
+    {
+      "file": "engine/board.py",
+      "line": 257,
+      "function": "_put_piece",
+      "primitive_calls": 185711,
+      "total_calls": 185711,
+      "self_seconds": 0.230525008,
+      "cumulative_seconds": 0.35141210700000003
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 191,
+      "function": "_pinned_squares",
+      "primitive_calls": 61818,
+      "total_calls": 61818,
+      "self_seconds": 0.282736009,
+      "cumulative_seconds": 0.302898173
+    },
+    {
+      "file": "engine/search.py",
+      "line": 181,
+      "function": "<lambda>",
+      "primitive_calls": 140376,
+      "total_calls": 140376,
+      "self_seconds": 0.07486446100000001,
+      "cumulative_seconds": 0.302460278
+    },
+    {
+      "file": "engine/board.py",
+      "line": 51,
+      "function": "is_valid_square",
+      "primitive_calls": 1232133,
+      "total_calls": 1232133,
+      "self_seconds": 0.27326416600000003,
+      "cumulative_seconds": 0.27326416600000003
+    },
+    {
+      "file": "engine/board.py",
+      "line": 267,
+      "function": "_remove_piece",
+      "primitive_calls": 185711,
+      "total_calls": 185711,
+      "self_seconds": 0.167646703,
+      "cumulative_seconds": 0.24900812000000003
+    },
+    {
+      "file": "engine/search.py",
+      "line": 125,
+      "function": "_move_score",
+      "primitive_calls": 140376,
+      "total_calls": 140376,
+      "self_seconds": 0.160540617,
+      "cumulative_seconds": 0.227595817
+    },
+    {
+      "file": "engine/board.py",
+      "line": 314,
+      "function": "_toggle_piece_hash",
+      "primitive_calls": 185711,
+      "total_calls": 185711,
+      "self_seconds": 0.125423625,
+      "cumulative_seconds": 0.17304132600000002
+    },
+    {
+      "file": "engine/board.py",
+      "line": 528,
+      "function": "is_threefold_repetition",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.09255603100000001,
+      "cumulative_seconds": 0.12822049400000002
+    },
+    {
+      "file": "engine/board.py",
+      "line": 434,
+      "function": "_clear_rook_right",
+      "primitive_calls": 118653,
+      "total_calls": 118653,
+      "self_seconds": 0.069853014,
+      "cumulative_seconds": 0.104523846
+    },
+    {
+      "file": "engine/board.py",
+      "line": 112,
+      "function": "_piece_key_index",
+      "primitive_calls": 185955,
+      "total_calls": 185955,
+      "self_seconds": 0.04767342,
+      "cumulative_seconds": 0.04767342
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 272,
+      "function": "validate",
+      "primitive_calls": 81386,
+      "total_calls": 81386,
+      "self_seconds": 0.033881753,
+      "cumulative_seconds": 0.033881753
+    },
+    {
+      "file": "engine/board.py",
+      "line": 276,
+      "function": "_has_legal_en_passant_capture",
+      "primitive_calls": 133606,
+      "total_calls": 133606,
+      "self_seconds": 0.032251614000000005,
+      "cumulative_seconds": 0.033510595000000004
+    },
+    {
+      "file": "engine/search.py",
+      "line": 462,
+      "function": "_count_node",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.030653255,
+      "cumulative_seconds": 0.030907475
+    },
+    {
+      "file": "engine/board.py",
+      "line": 542,
+      "function": "is_insufficient_material",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.022095922,
+      "cumulative_seconds": 0.022095922
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 74,
+      "function": "_castling_moves",
+      "primitive_calls": 6716,
+      "total_calls": 6716,
+      "self_seconds": 0.0058102480000000005,
+      "cumulative_seconds": 0.017260259
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 169,
+      "function": "pst_delta",
+      "primitive_calls": 54099,
+      "total_calls": 54099,
+      "self_seconds": 0.015644769,
+      "cumulative_seconds": 0.015644769
+    },
+    {
+      "file": "engine/board.py",
+      "line": 539,
+      "function": "is_fifty_move_draw",
+      "primitive_calls": 66798,
+      "total_calls": 66798,
+      "self_seconds": 0.014200776,
+      "cumulative_seconds": 0.014200776
+    },
+    {
+      "file": "engine/search.py",
+      "line": 316,
+      "function": "_store",
+      "primitive_calls": 1251,
+      "total_calls": 1251,
+      "self_seconds": 0.004446452,
+      "cumulative_seconds": 0.011428936
+    },
+    {
+      "file": "engine/search.py",
+      "line": 456,
+      "function": "_check_stopped",
+      "primitive_calls": 28708,
+      "total_calls": 28708,
+      "self_seconds": 0.00764433,
+      "cumulative_seconds": 0.00764433
+    },
+    {
+      "file": "engine/search.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 4.7645e-05,
+      "cumulative_seconds": 0.004928293
+    },
+    {
+      "file": "engine/board.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 7.2558e-05,
+      "cumulative_seconds": 0.004488888
+    },
+    {
+      "file": "engine/search.py",
+      "line": 292,
+      "function": "_tt_context",
+      "primitive_calls": 1510,
+      "total_calls": 1510,
+      "self_seconds": 0.0029983360000000003,
+      "cumulative_seconds": 0.0037050980000000004
+    },
+    {
+      "file": "engine/search.py",
+      "line": 306,
+      "function": "_probe",
+      "primitive_calls": 1224,
+      "total_calls": 1224,
+      "self_seconds": 0.001126496,
+      "cumulative_seconds": 0.002057695
+    },
+    {
+      "file": "engine/board.py",
+      "line": 119,
+      "function": "__init__",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 0.000142012,
+      "cumulative_seconds": 0.0017048830000000001
+    },
+    {
+      "file": "engine/board.py",
+      "line": 139,
+      "function": "set_fen",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 0.0008106350000000001,
+      "cumulative_seconds": 0.0015628710000000002
+    },
+    {
+      "file": "engine/search.py",
+      "line": 633,
+      "function": "_record_cutoff",
+      "primitive_calls": 241,
+      "total_calls": 241,
+      "self_seconds": 0.0007424360000000001,
+      "cumulative_seconds": 0.0010332590000000001
+    },
+    {
+      "file": "engine/board.py",
+      "line": 101,
+      "function": "__init__",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 0.00046788900000000003,
+      "cumulative_seconds": 0.00099404
+    },
+    {
+      "file": "engine/search.py",
+      "line": 193,
+      "function": "to_tt_score",
+      "primitive_calls": 1251,
+      "total_calls": 1251,
+      "self_seconds": 0.000521403,
+      "cumulative_seconds": 0.000521403
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.8175e-05,
+      "cumulative_seconds": 0.00037383100000000003
+    },
+    {
+      "file": "engine/board.py",
+      "line": 300,
+      "function": "compute_zobrist_hash",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 0.000266672,
+      "cumulative_seconds": 0.00032548500000000003
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 148,
+      "function": "_build_square_values",
+      "primitive_calls": 2,
+      "total_calls": 2,
+      "self_seconds": 0.000317475,
+      "cumulative_seconds": 0.000318502
+    },
+    {
+      "file": "engine/search.py",
+      "line": 221,
+      "function": "__init__",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 5.0893e-05,
+      "cumulative_seconds": 0.00020978900000000002
+    },
+    {
+      "file": "engine/search.py",
+      "line": 267,
+      "function": "_configuration_key",
+      "primitive_calls": 20,
+      "total_calls": 20,
+      "self_seconds": 2.8996e-05,
+      "cumulative_seconds": 0.00019295800000000002
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 194,
+      "function": "signature",
+      "primitive_calls": 20,
+      "total_calls": 20,
+      "self_seconds": 6.9237e-05,
+      "cumulative_seconds": 0.000163962
+    },
+    {
+      "file": "engine/search.py",
+      "line": 438,
+      "function": "_result",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 9.9314e-05,
+      "cumulative_seconds": 0.000125956
+    },
+    {
+      "file": "engine/board.py",
+      "line": 77,
+      "function": "uci",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 2.3071e-05,
+      "cumulative_seconds": 0.00011306200000000001
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 196,
+      "function": "<genexpr>",
+      "primitive_calls": 120,
+      "total_calls": 120,
+      "self_seconds": 6.3259e-05,
+      "cumulative_seconds": 9.472500000000001e-05
+    },
+    {
+      "file": "engine/board.py",
+      "line": 55,
+      "function": "square_name",
+      "primitive_calls": 20,
+      "total_calls": 20,
+      "self_seconds": 7.0392e-05,
+      "cumulative_seconds": 8.9991e-05
+    },
+    {
+      "file": "engine/search.py",
+      "line": 272,
+      "function": "sync_configuration",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 1.0558000000000001e-05,
+      "cumulative_seconds": 7.569300000000001e-05
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.4743000000000001e-05,
+      "cumulative_seconds": 3.8354e-05
+    },
+    {
+      "file": "engine/search.py",
+      "line": 259,
+      "function": "resize_tt",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 2.165e-05,
+      "cumulative_seconds": 3.1073e-05
+    },
+    {
+      "file": "engine/board.py",
+      "line": 116,
+      "function": "Board",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.1506e-05,
+      "cumulative_seconds": 2.1506e-05
+    },
+    {
+      "file": "engine/search.py",
+      "line": 217,
+      "function": "Searcher",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.2699000000000002e-05,
+      "cumulative_seconds": 1.2699000000000002e-05
+    },
+    {
+      "file": "engine/search.py",
+      "line": 732,
+      "function": "_mate_distance",
+      "primitive_calls": 10,
+      "total_calls": 10,
+      "self_seconds": 7.988e-06,
+      "cumulative_seconds": 7.988e-06
+    },
+    {
+      "file": "engine/board.py",
+      "line": 195,
+      "function": "<genexpr>",
+      "primitive_calls": 24,
+      "total_calls": 24,
+      "self_seconds": 7.277000000000001e-06,
+      "cumulative_seconds": 7.277000000000001e-06
+    },
+    {
+      "file": "engine/eval/base.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 4.542e-06,
+      "cumulative_seconds": 4.542e-06
+    },
+    {
+      "file": "engine/board.py",
+      "line": 84,
+      "function": "UndoState",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 3.151e-06,
+      "cumulative_seconds": 3.151e-06
+    },
+    {
+      "file": "engine/search.py",
+      "line": 95,
+      "function": "SearchResult",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.6150000000000004e-06,
+      "cumulative_seconds": 2.6150000000000004e-06
+    },
+    {
+      "file": "engine/board.py",
+      "line": 69,
+      "function": "Move",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.432e-06,
+      "cumulative_seconds": 2.432e-06
+    },
+    {
+      "file": "engine/search.py",
+      "line": 109,
+      "function": "_TTEntry",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.154e-06,
+      "cumulative_seconds": 2.154e-06
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 178,
+      "function": "EvalFlags",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.7550000000000001e-06,
+      "cumulative_seconds": 1.7550000000000001e-06
+    },
+    {
+      "file": "engine/board.py",
+      "line": 98,
+      "function": "ZobristKeys",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.6540000000000002e-06,
+      "cumulative_seconds": 1.6540000000000002e-06
+    },
+    {
+      "file": "engine/movegen.py",
+      "line": 254,
+      "function": "LegalMoveContext",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.599e-06,
+      "cumulative_seconds": 1.599e-06
+    },
+    {
+      "file": "engine/eval/classic.py",
+      "line": 187,
+      "function": "__init__",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 1.4280000000000001e-06,
+      "cumulative_seconds": 1.4280000000000001e-06
+    },
+    {
+      "file": "engine/search.py",
+      "line": 118,
+      "function": "_SearchStopped",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 7.830000000000001e-07,
+      "cumulative_seconds": 7.830000000000001e-07
+    },
+    {
+      "file": "engine/search.py",
+      "line": 202,
+      "function": "from_tt_score",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 7.550000000000001e-07,
+      "cumulative_seconds": 7.550000000000001e-07
+    },
+    {
+      "file": "engine/eval/__init__.py",
+      "line": 1,
+      "function": "<module>",
+      "primitive_calls": 1,
+      "total_calls": 1,
+      "self_seconds": 2.9300000000000004e-07,
+      "cumulative_seconds": 2.9300000000000004e-07
+    }
+  ]
+}
