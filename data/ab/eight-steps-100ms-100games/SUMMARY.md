@@ -2,10 +2,10 @@
 
 - New: `4068a0459f8119274014cd466270a2ffd3cd30c3`
 - Old: `db058b344df8759810e957f11a58b4149055fe49`
-- Status: in_progress; chunks 2/10
-- Requested games: 100; recorded attempts: 20; counted: 20
-- New W/D/L: 6/8/6
-- New score (%): 50.0
+- Status: in_progress; chunks 3/10
+- Requested games: 100; recorded attempts: 30; counted: 30
+- New W/D/L: 10/14/6
+- New score (%): 56.666666666666664
 - Move time: 100 ms; Hash: 16 MB; Threads: 1; OwnBook: false; SPRT: off
 - Aborted: 0; new timeouts/illegal/crashes: 0/0/0
 - Old timeouts/illegal/crashes: 0/0/0
