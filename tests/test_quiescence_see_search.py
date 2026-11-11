@@ -33,4 +33,3 @@ class QuiescenceSeeSearchTests(unittest.TestCase):
         self.assertEqual(len([m for m in legal if m.promotion is not None]), 8)
         result = Searcher(quiescence_see=True).search(board, depth=2)
         self.assertIn(result.best_move, legal)
-

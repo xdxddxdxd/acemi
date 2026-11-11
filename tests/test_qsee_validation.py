@@ -50,4 +50,3 @@ class ValidationGateTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'artifact changed'):
                     qv.validate(plan, reference)
                 self.assertEqual(run.call_count, 4)
-

@@ -74,4 +74,3 @@ class ExchangeTests(unittest.TestCase):
         self.assertEqual(session.searcher.tt_size, 0)
         self.assertTrue(session.handle_line('setoption name QuiescenceSEE value maybe'))
         self.assertTrue(session.searcher.use_quiescence_see)
-
