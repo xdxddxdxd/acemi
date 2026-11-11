@@ -55,6 +55,15 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
   references; their logs are still published. `session.json` and `comparison.log`
   describe the fixed-depth comparison, not a strength decision or Elo estimate.
 
+### Search profiling (Step 7)
+
+`data/baselines/<session>/profiles/` adds diagnostic schema-v1 profiles for the
+reference/current engine trees. Each includes a profiled benchmark and engine
+function call counts/self/cumulative time, plus source/collector commits.
+Profiled searches must match; their instrumented times are never used as speed
+measurements. Use the separate normal `reference/bench.json` / `current/bench.json`
+for elapsed-time comparisons. Logs are retained and published on failure too.
+
 ### Analysis identity (Step 5)
 
 New `data/analysis/<output>/config.json` records `analysis_configuration` and

@@ -51,3 +51,11 @@ quiescence must see the rook, and a depth-1 root search must select it.
 Tactical generation is compared with python-chess captures plus all four
 promotions, including captures, en passant and its pinned illegal case.
 No real searches or match runs are needed on the user's PC.
+
+`test_movegen_context.py` compares shared preparation against the reference move
+generator on special/benchmark positions, including exact order and full board
+restoration. It rejects stale/foreign boards and contradictory check hints, and
+verifies that the legal-move probe plus capture pass prepare pins/pieces once.
+`test_profile_search.py` checks report call counts, provenance/output guards and
+fixture serialization with the benchmark mocked. Actual profiled searches belong
+to Kaggle; their instrumented seconds must not be mixed with normal benchmark times.

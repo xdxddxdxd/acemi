@@ -137,7 +137,7 @@ class TTDrawRegressionTests(unittest.TestCase):
             forced[board.zobrist_hash] = move
             board.make_move(move)
 
-        def moves(position, captures_only=False, known_in_check=None):
+        def moves(position, captures_only=False, known_in_check=None, *, context=None):
             return iter(()) if captures_only else iter((forced[position.zobrist_hash],))
 
         return patch("engine.search.generate_legal_moves", side_effect=moves)

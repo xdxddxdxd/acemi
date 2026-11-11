@@ -6,9 +6,9 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step6-endgame-rules"` ile
-6. adımı doğrular. Referans, Kaggle'da doğrulanmış 5. adım commit'i
-`336560a3fcc9022472b85274038cd405cd348792` olarak sabitlenmiştir. Önceki beş adımın
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step7-quiescence-performance"` ile
+7. adımı doğrular. Referans, Kaggle'da doğrulanmış 6. adım commit'i
+`52e5db3a64053b80a580fa1f266d17cc5d5b80e1` olarak sabitlenmiştir. Önceki altı adımın
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
@@ -17,13 +17,24 @@ Pat, güvenlik sınırında mat/pat ve ufukta kale terfisi regresyonları tam pa
 dahildir; bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
 Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
-Bu adımda pat kontrolü ve dört terfinin aranması davranışı kasıtlı değiştirdiği için
-`REQUIRE_IDENTICAL_SEARCH=False`. Konum/FEN/derinlik protokolü eşleşmek zorundadır;
-skor/düğüm/hamle farkları `review_required=true` ile kaydedilip incelenir.
-3. adımda da bu ayar False idi; 4–5. adımlarda eşitlik zorunluydu. Süre farkı
-tek başına arama eşitsizliği değildir. Pat kontrolü için ek yasal hamle üretimi
-CPU maliyeti getirebilir; süre ve düğüm etkisi Kaggle'da ölçülür. Bu işaretler
-ve ölçümler bir güç veya hız kazancı kararı değildir.
+Bu adım yalnızca hesap hazırlığını paylaşır: `REQUIRE_IDENTICAL_SEARCH=True`.
+Konum/FEN/derinlik, skor/düğüm/hamleler 6. adımla aynı olmalıdır; fark çıkarsa
+kayıtlar gönderilip notebook durur. Süre farkı arama eşitsizliği değildir.
+3. ve 6. adımlarda doğruluk düzeltmeleri nedeniyle eşitlik zorunlu değildi;
+4–5. adımlarda ve şimdi 7. adımda zorunludur. Normal, profilsiz benchmark'ın
+süre oranı tek koşunun gözlemidir; hız kazancı sonuçlar gelmeden varsayılmaz.
+
+`RUN_SEARCH_PROFILES=True`, normal benchmark bittikten sonra iki motor ağacı
+için `PROFILE_DEPTH=3` düzeyinde ayrı cProfile kayıtları alır. Güncel
+`tools.profile_search` aracı eski checkout'un motorunu ayrı Python sürecinde
+yükler ve motor ağacını toplanan benchmark'a karşı doğrular. Çıktılar aynı
+oturumun `profiles/reference.json`, `current.json`, günlükleri ve `comparison.log`
+dosyalarıdır. Motor fonksiyonlarının primitive/toplam çağrıları, kendi/kümülatif
+süreleri ve kaynak kimliği kaydedilir. Derinlik 3 profilli aramaların da skor,
+düğüm ve hamleleri aynı olmak zorundadır. Profil süreleri enstrümantasyon yükü
+içerir; hız oranı olarak kullanılmaz. Profil hücresi tekrarında üzerine yazılmaz;
+yeni kayıt için toplama hücresiyle yeni oturum oluşturun. İstenirse bu ek teşhis
+ilk ayar hücresinden kapatılabilir. Gerçek arama/profil yerel bilgisayarda başlatılmaz.
 
 1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
    Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;

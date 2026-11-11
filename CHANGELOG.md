@@ -1,5 +1,19 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 7: düğüm içi hazırlık paylaşımı ve profil
+
+- Sakinleştirme aramasında pat kontrolü ve alma üretimi için açmazlar/sıralı taş
+  listesi aynı düğüm içindeki `LegalMoveContext` ile bir kez hazırlanır. Normal
+  üretici arayüzü korunur; bağlam farklı/değişmiş tahtada reddedilir. Mat/pat,
+  terfiler, değerlendirme ve arama sırası değiştirilmez.
+- 26 kısa konum/hamle üretimi/sahte akış/profil raporu kontrolü geçti (0,082 saniye).
+  Gerçek aramalar, benchmark veya profil yerelde başlatılmadı. Hız kazanımı
+  Kaggle ölçümünü bekliyor; skor/hamle/derinlik/düğüm eşitliği zorunlu.
+- `tools.profile_search`, iki kaynak motor ağacı için ayrı cProfile JSON kayıtları
+  üretir. Notebook `step7-quiescence-performance` etiketiyle 6. adımı referans
+  alır; normal benchmark sonrası derinlik 3 profilini ve çağrı karşılaştırmasını
+  yayımlar. Profil süreleri hız oranı değildir. Maçlar kapalıdır.
+
 ## Geliştirme — Adım 6: ufukta oyun sonu doğruluğu
 
 - Sakinleştirme araması statik puan/beta kesmesi ve MAX_PLY sınırından önce
@@ -15,6 +29,10 @@
 - Notebook `step6-endgame-rules` etiketiyle doğrulanmış 5. adıma karşı protokolü
   denetler; arama farkları inceleme için saklanır. Ek yasal hamle kontrolünün
   süre maliyeti olabilir; benchmark bunu ölçecek. Maçlar varsayılan kapalıdır.
+- Kaggle doğrulaması tamamlandı (`20261111T110935Z_bc955baa`): 370 test geçti;
+  pat, sınırda mat ve kale terfisi gerçek arama regresyonları başarılı. 10 konumda
+  skor/hamle/derinlik aynı; düğüm 160046→173729 (+%8,5), tek koşuda süre
+  10,838→13,664 saniye (+%26,1). Bu ölçüm bir Elo artışı kararı değildir.
 
 ## Geliştirme — Adım 5: analiz kimliği ve kitap metadata doğruluğu
 

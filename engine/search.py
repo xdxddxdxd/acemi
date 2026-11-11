@@ -50,7 +50,7 @@ from engine.board import BISHOP, DATACLASS_SLOTS, KNIGHT, PAWN, QUEEN, ROOK, Boa
 from engine.eval import classic as classic_eval
 from engine.eval.base import evaluate
 from engine.eval.classic import EvalFlags, pst_delta
-from engine.movegen import generate_legal_moves
+from engine.movegen import LegalMoveContext, generate_legal_moves
 
 MATE_SCORE = 100_000
 DRAW_SCORE = 0
@@ -660,8 +660,12 @@ class Searcher:
             moves = list(generate_legal_moves(board, known_in_check=True))
             if not moves:
                 return -MATE_SCORE + ply
-        elif next(generate_legal_moves(board, known_in_check=False), None) is None:
-            return self._draw_score(board)
+        else:
+            # The existence probe and tactical generator inspect the same board.
+            # Prepare pins / ordered pieces once, local to this call.
+            move_context = LegalMoveContext(board, known_in_check=False)
+            if next(generate_legal_moves(board, known_in_check=False, context=move_context), None) is None:
+                return self._draw_score(board)
         if ply >= MAX_PLY:
             return evaluate(board, self.eval_flags)
 
@@ -673,7 +677,9 @@ class Searcher:
                 return best
             if best > alpha:
                 alpha = best
-            moves = list(generate_legal_moves(board, captures_only=True, known_in_check=False))
+            moves = list(generate_legal_moves(
+                board, captures_only=True, known_in_check=False, context=move_context
+            ))
 
         self._check_stopped()
         order_moves(board, moves)

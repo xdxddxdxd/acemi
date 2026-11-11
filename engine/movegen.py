@@ -115,7 +115,14 @@ def _castling_moves(board: Board, color: int, king_square: int) -> Iterator[Move
             yield Move(king_square, destination)
 
 
-def generate_pseudo_legal_moves(board: Board, captures_only: bool = False) -> Iterator[Move]:
+def _ordered_pieces(board: Board, color: int) -> list[tuple[int, int]]:
+    return [(piece_type, square) for piece_type in PIECE_ORDER
+            for square in sorted(board.piece_squares[color * piece_type])]
+
+
+def generate_pseudo_legal_moves(
+    board: Board, captures_only: bool = False, *, _pieces: list[tuple[int, int]] | None = None
+) -> Iterator[Move]:
     """Yield moves that follow piece movement rules but may leave the king checked.
 
     With ``captures_only`` only captures, en passant and all four promotions are
@@ -123,15 +130,10 @@ def generate_pseudo_legal_moves(board: Board, captures_only: bool = False) -> It
     """
     color = board.side_to_move
     squares = board.squares
-    piece_squares = board.piece_squares
     # Snapshot the piece list first: callers make/unmake moves between yields,
     # which mutates the sets. Sorting keeps the move order independent of the
     # make/unmake history.
-    own_pieces = [
-        (piece_type, square)
-        for piece_type in PIECE_ORDER
-        for square in sorted(piece_squares[color * piece_type])
-    ]
+    own_pieces = _ordered_pieces(board, color) if _pieces is None else _pieces
 
     for piece_type, square in own_pieces:
         if piece_type == PAWN:
@@ -209,8 +211,33 @@ def _pinned_squares(board: Board, color: int, king_square: int) -> set[int]:
     return pinned
 
 
+class LegalMoveContext:
+    """One position's shared preparation for the two quiescence generators.
+
+    Local to a single node; never cached globally or in the TT. A caller can
+    make/unmake moves between uses, but must restore the exact position first.
+    """
+
+    __slots__ = ("board", "position", "in_check", "pinned", "pieces")
+
+    def __init__(self, board: Board, known_in_check: bool | None = None) -> None:
+        self.board = board
+        self.position = (board.zobrist_hash, board.side_to_move, board.en_passant_square)
+        color = board.side_to_move
+        king_square = board.king_squares[color]
+        self.in_check = board.in_check() if known_in_check is None else known_in_check
+        self.pinned = set() if self.in_check else _pinned_squares(board, color, king_square)
+        self.pieces = _ordered_pieces(board, color)
+
+    def validate(self, board: Board) -> None:
+        if (board is not self.board
+                or self.position != (board.zobrist_hash, board.side_to_move, board.en_passant_square)):
+            raise ValueError("LegalMoveContext requires the same restored board position")
+
+
 def generate_legal_moves(
-    board: Board, captures_only: bool = False, known_in_check: bool | None = None
+    board: Board, captures_only: bool = False, known_in_check: bool | None = None,
+    *, context: LegalMoveContext | None = None,
 ) -> Iterator[Move]:
     """Yield moves that do not leave the moving side's king in check.
 
@@ -220,19 +247,30 @@ def generate_legal_moves(
     may be en passant. Every other move of a side that is not in check is legal.
     ``known_in_check`` lets a caller that already knows whether the side to move
     is in check skip recomputing it.
+    ``context`` shares pins and the sorted piece snapshot between calls for the
+    same position; it does not cache legal moves or change their order.
     """
     color = board.side_to_move
     opponent = -color
     squares = board.squares
     king_square = board.king_squares[color]
-    if known_in_check is None:
+    if context is not None:
+        context.validate(board)
+        if known_in_check is not None and known_in_check != context.in_check:
+            raise ValueError("known_in_check conflicts with LegalMoveContext")
+        in_check = context.in_check
+        pinned = context.pinned
+    elif known_in_check is None:
         in_check = board.is_square_attacked(king_square, opponent)
+        pinned = set() if in_check else _pinned_squares(board, color, king_square)
     else:
         in_check = known_in_check
-    pinned = set() if in_check else _pinned_squares(board, color, king_square)
+        pinned = set() if in_check else _pinned_squares(board, color, king_square)
     ep_square = board.en_passant_square
 
-    for move in generate_pseudo_legal_moves(board, captures_only):
+    for move in generate_pseudo_legal_moves(
+        board, captures_only, _pieces=None if context is None else context.pieces
+    ):
         from_square = move.from_square
         if (
             not in_check

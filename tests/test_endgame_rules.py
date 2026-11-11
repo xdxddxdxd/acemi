@@ -78,6 +78,9 @@ class QuiescenceTerminalFlowTests(unittest.TestCase):
     """Mocked terminal flow; no real board, move generation or recursive search."""
 
     def board(self, in_check=False):
+        context = patch("engine.search.LegalMoveContext")
+        context.start()
+        self.addCleanup(context.stop)
         return Mock(**{"is_fifty_move_draw.return_value": False,
                        "is_threefold_repetition.return_value": False,
                        "is_insufficient_material.return_value": False,
