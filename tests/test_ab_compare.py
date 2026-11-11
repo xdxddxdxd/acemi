@@ -103,11 +103,11 @@ class ExperimentTests(unittest.TestCase):
                 "path": str(Path(p).resolve()), "commit": sha, "engine_tree": "tree-new"}):
             plan = self.plan(name="qsee-fixture", new_commit=commit, old_commit=commit,
                              new_options={"QuiescenceSEE": True}, old_options={"QuiescenceSEE": False},
-                             games=100, chunk_games=100, movetime_ms=500)
+                             games=100, chunk_games=100, movetime_ms=100)
             loaded = ab.load_plan(Path(plan["session_dir"]))
         args = match._parse_args(ab.match_arguments(loaded, loaded["chunks"][0]))
         self.assertEqual(args.git_commit, commit)
-        self.assertEqual((args.games, args.movetime_ms), (100, 500))
+        self.assertEqual((args.games, args.movetime_ms), (100, 100))
         self.assertEqual(args.engine_option, ["OwnBook=false", "QuiescenceSEE=true"])
         self.assertEqual(args.opponent_option, ["OwnBook=false", "QuiescenceSEE=false"])
 

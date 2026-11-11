@@ -29,7 +29,7 @@ Algoritma arka planı: [Static Exchange Evaluation in Chess](https://www.chesspr
 1. İlk çalıştırmada dalın tam commit'i kaydedilir; SEE açık ve kapalı taraflar
    aynı commit'in iki ayrı detached checkout'undan başlatılır. Sonraki veri
    push'ları kaynak kimliğini değiştirmez. Devam ederken kayıtlı commit kullanılır.
-2. Yeni kimlik: `quiescence-see-500ms-100games-v1`. Protokol GitHub'a gönderilir.
+2. Yeni kimlik: `quiescence-see-100ms-100games-v1`. Protokol GitHub'a gönderilir.
 3. Tüm doğruluk testleri Kaggle'da çalışır. SEE'nin kendi pozisyonları,
    pat/mat, terfi ve tahta restorasyonu denetlenir. Ardından sabit depth-3,
    10 pozisyonluk üç teşhis ölçümü kaydedilir: eski `4068a04`, yeni SEE kapalı,
@@ -37,7 +37,7 @@ Algoritma arka planı: [Static Exchange Evaluation in Chess](https://www.chesspr
    ile aynı değilse deney durur. Açık sürümün düğümleri/hamlesi değişebilir;
    seçici aramada skor farkı ayrıca rapordan incelenir. Teşhis süreleri tek
    geçiştir; tek başına hız veya Elo kararı sayılmaz.
-4. Kontroller geçerse **tek çağrıda 100 maç**, iki tarafa **500 ms/hamle**.
+4. Kontroller geçerse **tek çağrıda 100 maç**, iki tarafa **100 ms/hamle**.
    50 farklı açılış dizisi, renk değişimli çiftler, Seed 1, Hash 16 MB,
    Threads 1, concurrency 2, kitap ve SPRT kapalı, 400 ply sınırı.
    SEE açık taraf yeni/engine; kapalı taraf eski/opponent rolündedir.
