@@ -1,5 +1,25 @@
 # Sonraki önerilen deney
 
+## Güncel: Quiescence SEE v1 sonucu
+
+[SEE v1 raporu](20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01.md).
+
+422 Kaggle testi geçti; SEE kapalı, `4068a04` referansıyla eşdeğer.
+100 ms / tek 100 maç: SEE açık 34/36/30 (%52), güç kazancı belirsiz.
+Sabit depth-3 teşhisinde düğüm %20,3 azaldı fakat tek geçişte süre %14,6 uzadı.
+Bu haliyle SEE varsayılan kapalı kalmalı; main'e iyileştirme diye alınmamalı.
+
+Sonraki öneri: yalnız Kaggle'da aynı oturumda dönüşümlü, tekrarlı sabit görev
+ölçümü ve ayrı açık/kapalı profil. Özellikle SEE saldırgan listesi/sıralama,
+şah güvenliği ve terfi maliyetlerini ayır. Profil desteklerse daha ucuz veya
+daha seyrek SEE hesaplayan ikinci sıralama adayı; ardından yeni kimlikle
+100 ms / tek 100 maç. Bu aşamada eleme/delta pruning ekleme.
+Maliyet düzelmiyorsa SEE'yi kapalı tutup süre veya beraberlik politikasına geç.
+Mevcut `claim_draw=True` politikasını SEE deneyiyle birlikte değiştirme.
+Bu incelemede yeni arama/maç başlatılmadı; motor, notebook ve main değiştirilmedi.
+
+## Önceki genel yol haritası
+
 11 Kasım 2026 incelemesi:
 [100 ms / 500 ms karşılaştırması](20261111T160948Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-500ms-100games_c01.md).
 
