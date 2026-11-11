@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "id": "eight-steps-100ms-100games",
+  "created_at": "2026-11-11T15:47:51.555505+00:00",
+  "session_dir": "/kaggle/working/acemi/data/ab/eight-steps-100ms-100games",
+  "repo_root": "/kaggle/working/acemi",
+  "sources": {
+    "new": {
+      "path": "/kaggle/working/acemi-ab-new",
+      "commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+      "engine_tree": "bcc3eb39e95f400308c3383c1f8f98fd255a8657"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-ab-old",
+      "commit": "db058b344df8759810e957f11a58b4149055fe49",
+      "engine_tree": "e291b9179fd2a0017cde955909d297743b5ae40a"
+    }
+  },
+  "runner_sources": {
+    "ab_compare.py": "821975f4a9b78b05de6ba4aa6b128bec93485db3f46291514b0dfbe3bf8a8cec",
+    "match.py": "2c516628a9bdf723701e87ec1e653f4c2368b92405d09c68b20f42c688a90779",
+    "match_game.py": "ebc5f3135e1270b3a0daea5bd5e065dab60bb29492a5118ce0b9ae69439e1600",
+    "match_config.py": "19e4e230103c386b0217a30e8c3db3b43f0d2a48a80a517f488fab4015be3d15",
+    "match_openings.py": "3e3632a37a28cec4ea34f2c2d82111563fa4b87e32f3164a687682a072500219",
+    "uci_client.py": "f708a82905247ccccd731c7aa46febe88687d2c163d35936b6c8342597cc2069",
+    "record.py": "368a8be35d2da588086b46849e9041110c488c85d08b507a4f335bcda194dfe3",
+    "pairing.py": "3105b630489a0d1d9325ffad88814877169e595af52b0edd81cb7587fb66520a",
+    "elo.py": "5095f077dc7f7b75b42e012c5202345ce4ce74f510eea879e7f69fdfb46d98e8",
+    "summarize.py": "afb19c2be48c864faee881879e53521ae1f4ce4e4001693d1e3aae49500a27ec"
+  },
+  "collector_commit": "b3dac0422ba4c6c57fba9e40a6656d5f1de9f6f8",
+  "games": 100,
+  "chunk_games": 10,
+  "movetime_ms": 100,
+  "hash_mb": 16,
+  "max_plies": 400,
+  "concurrency": 2,
+  "threads_per_engine": 1,
+  "opening_book": false,
+  "sprt_enabled": false,
+  "timeout_grace_ms": 1000,
+  "forfeit_policy": "loss_for_either_engine",
+  "opening_source_sha256": "d9ee9e5700382bea856867017ed5f2b880bfa81479e95f58c1aa2df81facbc66",
+  "selection_seed": 1,
+  "chunks": [
+    {
+      "number": 1,
+      "games": 10,
+      "global_game_start": 1,
+      "seed": 1,
+      "openings": "openings/chunk_01.txt",
+      "sha256": "d12d5bf2abff7df0e5918681be5d85c0fb7398b5435f4234866a5c4d31137e15"
+    },
+    {
+      "number": 2,
+      "games": 10,
+      "global_game_start": 11,
+      "seed": 11,
+      "openings": "openings/chunk_02.txt",
+      "sha256": "6f4644444d9f5e46268b7fd77df3bdbe8dec7c068c753b2908c472b3e7b88f1e"
+    },
+    {
+      "number": 3,
+      "games": 10,
+      "global_game_start": 21,
+      "seed": 21,
+      "openings": "openings/chunk_03.txt",
+      "sha256": "a04c9620a61bb597e7c7d4fe8521a4ed950bb92120e92228ea28007b17f98279"
+    },
+    {
+      "number": 4,
+      "games": 10,
+      "global_game_start": 31,
+      "seed": 31,
+      "openings": "openings/chunk_04.txt",
+      "sha256": "4a3ca7a283fadb20c97558758b52a2c0d57449146c56003a020306b7638dc5a9"
+    },
+    {
+      "number": 5,
+      "games": 10,
+      "global_game_start": 41,
+      "seed": 41,
+      "openings": "openings/chunk_05.txt",
+      "sha256": "199f815e2f0602b1bf6368606eb03401a68845b012ebf210c34798d49aeb8e45"
+    },
+    {
+      "number": 6,
+      "games": 10,
+      "global_game_start": 51,
+      "seed": 51,
+      "openings": "openings/chunk_06.txt",
+      "sha256": "7a598e4bbd50dc70e4c7bd95dddb329efcb685cbfac4f4a9bbc0031b71c4021a"
+    },
+    {
+      "number": 7,
+      "games": 10,
+      "global_game_start": 61,
+      "seed": 61,
+      "openings": "openings/chunk_07.txt",
+      "sha256": "b12fe705187f63f6486780bdebff1b90359f3e82a5952e03b6f999b2b61ff634"
+    },
+    {
+      "number": 8,
+      "games": 10,
+      "global_game_start": 71,
+      "seed": 71,
+      "openings": "openings/chunk_08.txt",
+      "sha256": "531a91c228f14dd8dc5e8bd6c1342a97e7a4f09718b23ad3fbe7f32cc54df877"
+    },
+    {
+      "number": 9,
+      "games": 10,
+      "global_game_start": 81,
+      "seed": 81,
+      "openings": "openings/chunk_09.txt",
+      "sha256": "16dead100c998db5f2ac8536d46c13f8d192877eadb51b9d004f9ed7bfa04fea"
+    },
+    {
+      "number": 10,
+      "games": 10,
+      "global_game_start": 91,
+      "seed": 91,
+      "openings": "openings/chunk_10.txt",
+      "sha256": "242a0b81397b428aabef3bb1a15e1726945c88a2073e14113eb71682d0f9a914"
+    }
+  ],
+  "runtime": "CPython",
+  "runtime_version": "3.13.15",
+  "protocol_sha256": "2139cebb1ec76435f4ea7a3045ff673437862cd2816940c548aa623d3d2c2f3b"
+}
