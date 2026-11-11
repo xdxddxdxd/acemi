@@ -47,6 +47,14 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
 
 - `data/bench/<label>.json`: output of `python -m tools.bench` (fixed-depth search of 10 positions: per position `score`, `depth`, `nodes`, `best_move`, `seconds`; totals and `nodes_per_second`; runtime and CPU). Two builds that search identically must have equal scores, depths, nodes and best moves; only seconds differ. Compare with `python -m tools.bench --compare A.json B.json`.
 
+- `data/baselines/<session>/`: Step 1 reference collection (see `docs/BASELINE.md`).
+  `reference/` and `current/` each contain schema-v1 `meta.json`, `tests.json`,
+  `results.json`, `bench.json` when tests/benchmark succeed, logs and `SUMMARY.md`.
+  Metadata distinguishes the source commit/engine tree from the collector commit.
+  Existing records are never overwritten. Failed/zero-test runs are not passing
+  references; their logs are still published. `session.json` and `comparison.log`
+  describe the fixed-depth comparison, not a strength decision or Elo estimate.
+
 ### Compressed artifacts
 
 - `games.pgn.gz`: PGN games with run metadata and outcomes.
