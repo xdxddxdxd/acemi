@@ -43,42 +43,38 @@ import chess.engine
 import chess.pgn
 import chess.syzygy as chess_syzygy
 
+from tools.analysis_config import active_fingerprint, analysis_configuration, prepare_output
+# Compatibility exports: existing notebooks/imports keep their original names.
+from tools.analysis_schema import POSITION_FIELDS, GAME_FIELDS, BLUNDER_FIELDS
+from tools.analysis_inputs import (
+    MAX_OPENING_PLIES, classify, read_json, load_moves, load_pgn, opening_plies_from,
+    game_signature, acemi_colors, load_run, build_manifest,
+)
+from tools.analysis_artifacts import (
+    PARTS_DIR, PARTS_MANIFEST, _sha256, _atomic_write, part_id, _part_files,
+    read_parts_manifest, valid_parts, processed_game_ids, _blunder_category,
+    seal_part, _read_csv_rows, aggregate,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUNS = ROOT / "data" / "runs"
 DEFAULT_OUT = ROOT / "data" / "analysis"
 PIECE_VALUE = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}
 NON_PAWN = (chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN)
 
-PARTS_DIR = "parts"
-PARTS_MANIFEST = "parts.json"
 FEN_CACHE_LIMIT = 50_000  # Per worker; opening positions repeat across games.
-MAX_OPENING_PLIES = 20
 RECHECK_SEED = 20261031
-POSITION_FIELDS = [
-    "run_name", "run_type", "game_no", "game_id", "ply", "side", "player", "is_acemi",
-    "fen", "move", "acemi_eval_cp", "acemi_depth", "sf_cp", "sf_best_move", "cp_loss",
-    "piece_count", "white_pieces", "black_pieces", "phase", "material_balance", "opening",
-    "game_result", "tb_wdl", "label_source",
-]
-GAME_FIELDS = [
-    "game_id", "run_name", "run_type", "game_no", "result", "result_acemi", "termination", "opening",
-    "focus_color", "plies", "opening_plies", "in_result_sample", "result_sample_proxy", "duplicate_count",
-    "acemi_max_sf", "acemi_min_sf", "first_decision_ply", "critical_errors",
-    "first_le5_ply", "first_le5_sf", "first_le5_source", "first_le6_ply", "first_le6_sf",
-    "first_le6_source", "first_le7_ply", "first_le7_sf", "first_le7_source",
-    "final_piece_count", "end_phase", "final_sf_cp",
-    "engine_options", "opponent_options", "uci_elo", "move_time_ms", "opening_set",
-]
-BLUNDER_FIELDS = POSITION_FIELDS + ["category"]
 
 _engine = None
 _depth = 10
 _tablebase = None
+_worker_error: str | None = None
 _fen_cache: "OrderedDict[tuple, tuple[int, str | None]]" = OrderedDict()
 
 
 def _init_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
-    global _engine, _depth, _tablebase
+    global _engine, _depth, _tablebase, _worker_error
+    _worker_error = None
     _engine = chess.engine.SimpleEngine.popen_uci(stockfish)
     _engine.configure({"Threads": 1, "Hash": 64})
     _depth = depth
@@ -87,9 +83,9 @@ def _init_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
     if syzygy:
         try:
             _tablebase = chess_syzygy.open_tablebase(syzygy)
-        except Exception as error:  # Missing directory or unreadable tables: fall back to Stockfish labels.
-            print(f"Syzygy unavailable ({error}); labelling with Stockfish only.", file=sys.stderr)
-            _tablebase = None
+        except Exception:
+            _close_worker()
+            raise  # A configured tablebase must not silently become a different analysis.
 
 
 def _close_worker() -> None:
@@ -100,184 +96,6 @@ def _close_worker() -> None:
     if _tablebase is not None:
         _tablebase.close()
         _tablebase = None
-
-
-def classify(meta: dict) -> str:
-    if meta.get("is_demo"):
-        return "demo"
-    opponent = str(meta.get("opponent", {}).get("name", ""))
-    if "Stockfish" in opponent:
-        return "SF"
-    if opponent == "Acemi":
-        return "AB"
-    return "other"
-
-
-def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def load_moves(run: Path) -> dict[int, list[dict]]:
-    grouped: dict[int, list[dict]] = {}
-    path = run / "moves.jsonl.gz"
-    if not path.exists():
-        return grouped
-    with gzip.open(path, "rt", encoding="utf-8") as stream:
-        for line in stream:
-            record = json.loads(line)
-            grouped.setdefault(record["game_no"], []).append(record)
-    for records in grouped.values():
-        records.sort(key=lambda item: item["ply"])
-    return grouped
-
-
-def load_pgn(run: Path) -> dict[int, tuple[dict, list[str]]]:
-    games: dict[int, tuple[dict, list[str]]] = {}
-    path = run / "games.pgn.gz"
-    if not path.exists():
-        return games
-    with gzip.open(path, "rt", encoding="utf-8") as stream:
-        while True:
-            game = chess.pgn.read_game(stream)
-            if game is None:
-                break
-            try:
-                game_no = int(game.headers.get("Round", "0"))
-            except ValueError:
-                continue
-            games[game_no] = (dict(game.headers), [move.uci() for move in game.mainline_moves()])
-    return games
-
-
-def opening_plies_from(records_by_ply: dict, headers: dict) -> tuple[int, str]:
-    """Forced opening plies and where the number came from.
-
-    The first recorded move is the first one a player chose, so everything before it
-    was the opening line. Capped at ``MAX_OPENING_PLIES``. Without records the older
-    ``Opening: moves`` header form is used when present.
-    """
-    if records_by_ply:
-        return max(0, min(min(records_by_ply) - 1, MAX_OPENING_PLIES)), "first_record"
-    text = str(headers.get("Opening", ""))
-    if ":" in text:
-        return min(len(text.split(":")[-1].split()), MAX_OPENING_PLIES), "header"
-    return 0, "none"
-
-
-def game_signature(game: dict) -> tuple:
-    return (tuple(game.get("pgn_moves", [])), game.get("result", ""))
-
-
-def acemi_colors(run_type: str, headers: dict, records: list[dict]) -> tuple[list[str], str | None]:
-    if run_type == "SF":
-        white = str(headers.get("White", ""))
-        black = str(headers.get("Black", ""))
-        if white.startswith("Acemi"):
-            return ["white"], "white"
-        if black.startswith("Acemi"):
-            return ["black"], "black"
-        return [], None
-    colors = {record.get("side") for record in records if record.get("player") == "engine"}
-    return ["white", "black"], (next(iter(colors)) if len(colors) == 1 else None)
-
-
-def load_run(run: Path) -> tuple[dict, list[dict]]:
-    meta = read_json(run / "meta.json")
-    results = read_json(run / "results.json")
-    run_type = classify(meta)
-    if run_type not in ("AB", "SF"):
-        return {"meta": meta, "results": results, "run_type": run_type, "path": run, "games": []}, []
-    moves_by_game = load_moves(run)
-    pgn_by_game = load_pgn(run)
-    pgn_count = len(pgn_by_game)
-    counted = int(results.get("games", 0))
-    # Records do not identify post-decision games individually. Use the recorded
-    # count as a proxy: exclude the last (pgn_count - counted) games by game_no.
-    excluded_tail = max(0, pgn_count - counted)
-    game_numbers = sorted(pgn_by_game)
-    excluded = set(game_numbers[-excluded_tail:]) if excluded_tail else set()
-    games: list[dict] = []
-    for game_no in game_numbers:
-        headers, pgn_moves = pgn_by_game[game_no]
-        if not pgn_moves:
-            continue
-        records_by_ply = {record["ply"]: record for record in moves_by_game.get(game_no, [])}
-        result = str(headers.get("Result", "*"))
-        acemi_sides, focus = acemi_colors(run_type, headers, list(records_by_ply.values()))
-        opening_plies, opening_plies_source = opening_plies_from(records_by_ply, headers)
-        if not acemi_sides:
-            continue
-        games.append(
-            {
-                "run_name": run.name,
-                "run_type": run_type,
-                "game_no": game_no,
-                "result": result,
-                "termination_header": headers.get("Termination", ""),
-                "opening": headers.get("Opening", ""),
-                "white": headers.get("White", ""),
-                "black": headers.get("Black", ""),
-                "move_time_ms": headers.get("MoveTimeMs", ""),
-                "acemi_sides": acemi_sides,
-                "focus_color": focus,
-                "in_result_sample": game_no not in excluded,
-                "result_sample_proxy": excluded_tail > 0,
-                "pgn_moves": pgn_moves,
-                "records_by_ply": records_by_ply,
-                "opening_plies": opening_plies,
-                "opening_plies_source": opening_plies_source,
-                "meta": {
-                    "engine_version": meta.get("engine_version"),
-                    "opponent": meta.get("opponent", {}),
-                    "engine_settings": meta.get("engine_settings", {}),
-                    "opening_set": meta.get("opening_set"),
-                    "hardware": meta.get("hardware", {}),
-                },
-            }
-        )
-    return {"meta": meta, "results": results, "run_type": run_type, "path": run, "games": games}, games
-
-
-def build_manifest(runs_dir: Path, types: set[str], max_games: int | None = None) -> tuple[list[dict], dict]:
-    runs = sorted(path for path in runs_dir.iterdir() if (path / "meta.json").exists())
-    all_games: list[dict] = []
-    stats = {"runs_total": len(runs), "runs_used": 0, "games_total": 0, "games_used": 0,
-             "excluded_demo_other": 0, "excluded_missing_moves": 0, "duplicates": 0,
-             "by_type": {}, "runs": []}
-    for run in runs:
-        info, games = load_run(run)
-        if info["run_type"] not in types:
-            stats["excluded_demo_other"] += len(games)
-            continue
-        stats["runs_used"] += 1
-        stats["games_total"] += len(games)
-        stats["by_type"].setdefault(info["run_type"], 0)
-        stats["by_type"][info["run_type"]] += len(games)
-        stats["runs"].append({"name": run.name, "type": info["run_type"], "games": len(games),
-                              "counted": info["results"].get("games"),
-                              "post_decision": info["results"].get("post_decision_games_excluded", 0)})
-        all_games.extend(games)
-
-    # Deduplicate within each run type. Prefer a game that belongs to the counted
-    # result sample, then the earliest run name.
-    all_games.sort(key=lambda game: (game["run_type"], not game["in_result_sample"], game["run_name"], game["game_no"]))
-    unique: dict[tuple, dict] = {}
-    duplicates: dict[tuple, list[str]] = {}
-    for game in all_games:
-        key = (game["run_type"], game_signature(game))
-        if key in unique:
-            stats["duplicates"] += 1
-            duplicates.setdefault(key, []).append(f"{game['run_name']}#{game['game_no']}")
-            continue
-        unique[key] = game
-    for key, game in unique.items():
-        game["duplicate_games"] = duplicates.get(key, [])
-    chosen = list(unique.values())
-    chosen.sort(key=lambda game: (game["run_type"], game["run_name"], game["game_no"]))
-    if max_games is not None:
-        chosen = chosen[:max_games]
-    stats["games_used"] = len(chosen)
-    return chosen, stats
 
 
 def _sf_eval(board: chess.Board) -> tuple[int, str | None]:
@@ -533,196 +351,54 @@ def analyze_game(game: dict, depth: int) -> dict:
 
 
 def cache_path(out_dir: Path, game: dict) -> Path:
-    digest = hashlib.sha1(f"{game['run_name']}#{game['game_no']}".encode()).hexdigest()[:12]
+    identity = active_fingerprint(out_dir)
+    digest = hashlib.sha256(f"{identity}:{game['run_name']}#{game['game_no']}".encode()).hexdigest()[:20]
     return out_dir / "cache" / f"{game['run_type']}_{game['run_name'][:40]}_{game['game_no']}_{digest}.json"
 
 
+def cached_game_exists(out_dir: Path, game: dict) -> bool:
+    path = cache_path(out_dir, game)
+    try:
+        data = read_json(path)
+        return (data.get("game_id") == f"{game['run_name']}#{game['game_no']}"
+                and data.get("analysis_fingerprint") == active_fingerprint(out_dir)
+                and isinstance(data.get("plies"), list) and isinstance(data.get("game_stats"), dict))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def _analyze_task(game: dict, out_dir: str, depth: int) -> str:
+    if active_fingerprint(Path(out_dir)) is not None:
+        configured = read_json(Path(out_dir) / "config.json")["analysis_configuration"]["depth"]
+        if configured != depth:
+            raise ValueError("Task depth differs from the output analysis configuration")
     path = cache_path(Path(out_dir), game)
-    if path.exists():
+    if cached_game_exists(Path(out_dir), game):
         return str(path)
     result = analyze_game(game, depth)
+    result["analysis_fingerprint"] = active_fingerprint(Path(out_dir))
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    _atomic_write(path, lambda temporary: temporary.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8"))
     return str(path)
 
 
 def _task_wrapper(args: tuple[dict, str, int]) -> str:
+    if _worker_error is not None:
+        raise RuntimeError(f"Analysis worker startup failed: {_worker_error}")
     return _analyze_task(*args)
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def _atomic_write(path: Path, write) -> None:
-    """Write through a temporary file, then rename: readers never see half a file."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    write(temporary)
-    os.replace(temporary, path)
-
-
-def part_id(game_ids) -> str:
-    """Content-based id: the same set of games always gives the same part."""
-    return hashlib.sha256("\n".join(sorted(game_ids)).encode("utf-8")).hexdigest()[:10]
-
-
-def _part_files(part: str) -> dict[str, str]:
-    return {
-        "positions": f"{PARTS_DIR}/positions_part_{part}.csv.gz",
-        "games": f"{PARTS_DIR}/games_part_{part}.csv",
-        "blunders": f"{PARTS_DIR}/blunders_part_{part}.csv",
-    }
-
-
-def read_parts_manifest(out_dir: Path) -> dict:
-    path = out_dir / PARTS_MANIFEST
-    if not path.exists():
-        return {"parts": []}
+def _init_pool_worker(stockfish: str, depth: int, syzygy: str | None = None) -> None:
+    """Deliver startup failures through a task, avoiding Pool's endless respawn loop."""
+    global _worker_error
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {"parts": []}
-    return data if isinstance(data.get("parts"), list) else {"parts": []}
-
-
-def valid_parts(out_dir: Path) -> tuple[list[dict], list[str]]:
-    """Manifest parts whose files exist with the recorded checksums, plus a list of problems."""
-    good: list[dict] = []
-    problems: list[str] = []
-    seen: set[str] = set()
-    for part in read_parts_manifest(out_dir)["parts"]:
-        files = part.get("files", {})
-        ids = part.get("game_ids", [])
-        broken = [name for name in ("positions", "games", "blunders") if name not in files]
-        for name, info in files.items():
-            path = out_dir / info.get("path", "")
-            if not path.exists() or _sha256(path) != info.get("sha256"):
-                broken.append(name)
-        if broken or part.get("id") != part_id(ids) or seen.intersection(ids):
-            problems.append(f"part {part.get('id')} dropped ({', '.join(sorted(set(broken))) or 'bad id or duplicate games'})")
-            continue
-        seen.update(ids)
-        good.append(part)
-    return good, problems
-
-
-def processed_game_ids(out_dir: Path) -> set[str]:
-    ids: set[str] = set()
-    for part in valid_parts(out_dir)[0]:
-        ids.update(part["game_ids"])
-    return ids
-
-
-def _blunder_category(row: dict) -> str:
-    board = chess.Board(row["fen"])
-    move = chess.Move.from_uci(row["move"]) if row.get("move") else None
-    tactical = bool(move and (board.is_capture(move) or board.gives_check(move) or move.promotion))
-    return "tactical" if tactical else "positional"
-
-
-def seal_part(out_dir: Path) -> dict | None:
-    """Turn every cached game that is not yet in a part into one immutable part."""
-    cache_dir = out_dir / "cache"
-    done = processed_game_ids(out_dir)
-    cached: dict[str, dict] = {}
-    cache_paths: dict[str, Path] = {}
-    for path in sorted(cache_dir.glob("*.json")) if cache_dir.exists() else []:
+        _init_worker(stockfish, depth, syzygy)
+    except Exception as error:
+        _worker_error = f"{type(error).__name__}: {error}"
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            path.unlink(missing_ok=True)  # Half-written cache entry: the game is analysed again.
-            continue
-        if data["game_id"] in done:
-            path.unlink(missing_ok=True)
-            continue
-        cached[data["game_id"]] = data
-        cache_paths[data["game_id"]] = path
-    if not cached:
-        return None
-    ids = sorted(cached)
-    part = part_id(ids)
-    files = _part_files(part)
-
-    positions = [row for game_id in ids for row in cached[game_id]["plies"]]
-    games = [cached[game_id]["game_stats"] for game_id in ids]
-    blunders = []
-    for row in positions:
-        if row["is_acemi"] and row["cp_loss"] is not None and row["cp_loss"] > 150:
-            blunders.append({**row, "category": _blunder_category(row)})
-
-    def write_positions(path: Path) -> None:
-        with gzip.open(path, "wt", encoding="utf-8", newline="") as stream:
-            writer = csv.DictWriter(stream, fieldnames=POSITION_FIELDS, extrasaction="ignore")
-            writer.writeheader()
-            writer.writerows(positions)
-
-    def csv_writer(fields: list[str], rows: list[dict]):
-        def write(path: Path) -> None:
-            with path.open("w", encoding="utf-8", newline="") as stream:
-                writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
-                writer.writeheader()
-                writer.writerows(rows)
-
-        return write
-
-    _atomic_write(out_dir / files["positions"], write_positions)
-    _atomic_write(out_dir / files["games"], csv_writer(GAME_FIELDS, games))
-    _atomic_write(out_dir / files["blunders"], csv_writer(BLUNDER_FIELDS, blunders))
-    entry = {
-        "id": part,
-        "game_ids": ids,
-        "rows": {"positions": len(positions), "games": len(games), "blunders": len(blunders)},
-        "files": {name: {"path": path, "sha256": _sha256(out_dir / path)} for name, path in files.items()},
-        "sealed_utc": datetime.now(timezone.utc).isoformat(),
-    }
-    manifest = {"parts": [item for item in valid_parts(out_dir)[0] if item["id"] != part] + [entry]}
-    # The manifest is written last: until then the new files are unreferenced and harmless.
-    _atomic_write(
-        out_dir / PARTS_MANIFEST,
-        lambda path: path.write_text(json.dumps(manifest, indent=1), encoding="utf-8"),
-    )
-    for path in cache_paths.values():
-        path.unlink(missing_ok=True)  # The sealed part is now the source of truth.
-    return entry
-
-
-def _read_csv_rows(path: Path) -> list[dict]:
-    with path.open(encoding="utf-8", newline="") as stream:
-        return list(csv.DictReader(stream))
-
-
-def aggregate(out_dir: Path) -> dict:
-    """Rebuild the small merged files (games.csv, blunders.csv) from the sealed parts.
-
-    Positions are never merged: the report reads the part files directly.
-    """
-    parts, problems = valid_parts(out_dir)
-    games: list[dict] = []
-    blunders: list[dict] = []
-    positions = 0
-    for part in parts:
-        games.extend(_read_csv_rows(out_dir / part["files"]["games"]["path"]))
-        blunders.extend(_read_csv_rows(out_dir / part["files"]["blunders"]["path"]))
-        positions += part["rows"]["positions"]
-    out_dir.mkdir(parents=True, exist_ok=True)
-    for name, fields, rows in (("games.csv", GAME_FIELDS, games), ("blunders.csv", BLUNDER_FIELDS, blunders)):
-        def write(path: Path, fields=fields, rows=rows) -> None:
-            with path.open("w", encoding="utf-8", newline="") as stream:
-                writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
-                writer.writeheader()
-                writer.writerows(rows)
-
-        _atomic_write(out_dir / name, write)
-    ids = sorted(game["game_id"] for game in games)
-    (out_dir / "processed_games.txt").write_text("\n".join(ids) + ("\n" if ids else ""), encoding="utf-8")
-    return {"parts": len(parts), "games": len(games), "positions": positions, "blunders": len(blunders),
-            "problems": problems}
+            _close_worker()
+        except Exception:
+            pass  # Preserve the startup failure even if a broken engine cannot quit.
 
 
 def select_recheck_rows(rows: list[dict], limit: int = 50, per_game: int = 2, seed: int = RECHECK_SEED) -> list[dict]:
@@ -913,13 +589,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if not args.aggregate_only:
         games, stats = build_manifest(args.runs, {item.strip() for item in args.types.split(",")}, args.max_games)
-        (args.out / "manifest.json").write_text(json.dumps(stats, indent=1, ensure_ascii=False), encoding="utf-8")
         print(json.dumps(stats, indent=1)[:4000])
         if args.smoke:
             games = games[:1]
         stockfish = args.stockfish or os.environ.get("STOCKFISH_PATH") or "/usr/games/stockfish"
         if not Path(stockfish).exists():
             print(f"Stockfish not found at {stockfish}; pass --stockfish or set STOCKFISH_PATH", file=sys.stderr)
+            return 1
+        try:
+            identity_config = analysis_configuration(Path(stockfish), args.depth,
+                                                     Path(args.syzygy) if args.syzygy else None)
+        except (OSError, ValueError) as error:
+            print(f"Invalid analysis configuration: {error}", file=sys.stderr)
             return 1
         try:
             probe = subprocess.run([stockfish, "--version"], capture_output=True, text=True, timeout=10)
@@ -938,14 +619,19 @@ def main(argv: list[str] | None = None) -> int:
             ),
             "generated_utc": datetime.now(timezone.utc).isoformat(),
         }
-        (args.out / "config.json").write_text(json.dumps(config, indent=1), encoding="utf-8")
-        parts, problems = valid_parts(args.out)
+        try:
+            prepare_output(args.out, identity_config, **config)
+            parts, problems = valid_parts(args.out)
+        except ValueError as error:
+            print(str(error), file=sys.stderr)
+            return 1
+        (args.out / "manifest.json").write_text(json.dumps(stats, indent=1, ensure_ascii=False), encoding="utf-8")
         for problem in problems:
             print(f"WARNING: {problem}; its games will be analysed again")
         processed = {game_id for part in parts for game_id in part["game_ids"]}
         pending = [
             game for game in games
-            if not cache_path(args.out, game).exists()
+            if not cached_game_exists(args.out, game)
             and f"{game['run_name']}#{game['game_no']}" not in processed
         ]
         if args.max_new_games is not None:
@@ -953,7 +639,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"games in manifest: {len(games)}, pending: {len(pending)}")
         workers = args.workers or max(1, (os.cpu_count() or 2) - 1)
         tasks = [(game, str(args.out), args.depth) for game in pending]
-        if workers == 1:
+        if workers == 1 and tasks:
             _init_worker(stockfish, args.depth, args.syzygy)
             try:
                 for task in tasks:
@@ -961,7 +647,7 @@ def main(argv: list[str] | None = None) -> int:
             finally:
                 _close_worker()
         elif tasks:
-            with mp.Pool(workers, initializer=_init_worker, initargs=(stockfish, args.depth, args.syzygy)) as pool:
+            with mp.Pool(workers, initializer=_init_pool_worker, initargs=(stockfish, args.depth, args.syzygy)) as pool:
                 for _ in pool.imap_unordered(_task_wrapper, tasks):
                     pass
         elif not pending:

@@ -17,9 +17,12 @@ Features:
 - Transposition table (Python dict keyed by the Zobrist hash) with exact, lower
   and upper bounds, depth-preferred replacement and mate-distance correction.
   The table survives between searches of one game (a persistent ``Searcher``);
-  its size follows the UCI ``Hash`` option.
-- Quiescence search at the horizon (captures, en passant, queen promotions; all
-  evasions when in check) so leaves are not scored in the middle of an exchange.
+  its size follows the UCI ``Hash`` option. Scores require the same halfmove
+  clock and known reversible history; a mismatched entry is only a move hint.
+  Synthetic null-move subtrees neither read nor write cached scores.
+- Quiescence search at the horizon (captures, en passant, all promotions; all
+  evasions when in check). Mate/stalemate are checked before stand-pat and the
+  recursion safety limit so terminal leaves never receive a static score.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
   does not shuffle and the same seed reproduces the same game.
 - Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
@@ -44,9 +47,10 @@ from dataclasses import dataclass
 from threading import Event
 
 from engine.board import BISHOP, DATACLASS_SLOTS, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
+from engine.eval import classic as classic_eval
 from engine.eval.base import evaluate
-from engine.eval.classic import pst_delta
-from engine.movegen import generate_legal_moves
+from engine.eval.classic import EvalFlags, pst_delta
+from engine.movegen import LegalMoveContext, generate_legal_moves
 
 MATE_SCORE = 100_000
 DRAW_SCORE = 0
@@ -100,6 +104,15 @@ class SearchResult:
     # its best root move so far can be the one played). Equals ``depth`` when the
     # last iteration finished.
     attempted_depth: int = 0
+
+
+@dataclass(frozen=True, **DATACLASS_SLOTS)
+class _TTEntry:
+    depth: int
+    flag: int
+    score: int
+    move: Move | None
+    context: tuple[int, tuple[int, ...], int, int | None]
 
 
 class _SearchStopped(Exception):
@@ -217,7 +230,9 @@ class Searcher:
         lmp: bool = False,
         contempt: int = 0,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
+        eval_flags: EvalFlags | None = None,
     ) -> None:
+        self.eval_flags = eval_flags
         self.use_pvs = pvs
         self.contempt = contempt
         self._root_color: int | None = None
@@ -234,9 +249,10 @@ class Searcher:
         self._nodes_limit: int | None = None
         self._stop_event: Event | None = None
         self._partial: tuple[Move, int] | None = None
-        self._tt: dict[int, tuple[int, int, int, Move | None]] = {}
+        self._tt: dict[int, _TTEntry] = {}
         self._tt_max = 0
         self.resize_tt(hash_mb)
+        self._tt_configuration = self._configuration_key()
 
     # -- table management ---------------------------------------------------
 
@@ -248,6 +264,23 @@ class Searcher:
     def clear_tt(self) -> None:
         self._tt.clear()
 
+    def _configuration_key(self) -> tuple:
+        flags = classic_eval.FLAGS if self.eval_flags is None else self.eval_flags
+        return (flags.signature(), self.use_null_move, self.use_lmr, self.use_killers,
+                self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt)
+
+    def sync_configuration(self) -> None:
+        """Discard old scores after an evaluator/search policy change.
+
+        Called once before each public search, and by UCI after a validated
+        change while no worker is active. Time budgets, seeds and book settings
+        do not change a node's score and need not invalidate the table.
+        """
+        configuration = self._configuration_key()
+        if configuration != self._tt_configuration:
+            self.clear_tt()
+            self._tt_configuration = configuration
+
     @property
     def tt_size(self) -> int:
         return len(self._tt)
@@ -256,16 +289,42 @@ class Searcher:
     def tt_capacity(self) -> int:
         return self._tt_max
 
-    def _store(self, key: int, depth: int, flag: int, score: int, move: Move | None) -> None:
-        if self._tt_max <= 0:
+    def _tt_context(self, board: Board) -> tuple[int, tuple[int, ...], int, int | None]:
+        """Draw-sensitive context, separate from the repetition position hash.
+
+        A pawn move/capture resets the halfmove clock, so earlier positions
+        cannot recur. Keep the exact known history from that boundary onward:
+        even a score whose *descendant* was a repetition depends on this history.
+        Exact ordered snapshots are deliberately conservative about reuse.
+        Nonzero contempt additionally depends on the current search's root side.
+        """
+        earliest = max(0, len(board.position_hashes) - 1 - board.halfmove_clock)
+        history = tuple(board.position_hashes[earliest:])
+        return (board.halfmove_clock, history, self.contempt,
+                self._root_color if self.contempt else None)
+
+    def _probe(self, board: Board) -> tuple[_TTEntry | None, Move | None]:
+        entry = self._tt.get(board.zobrist_hash)
+        if entry is None:
+            return None, None
+        # A board-only hint is still useful, but cannot prove a score under a
+        # different game history or a fictional pass in a null-move subtree.
+        if board.null_stack or entry.context != self._tt_context(board):
+            return None, entry.move
+        return entry, entry.move
+
+    def _store(self, board: Board, depth: int, flag: int, score: int, move: Move | None) -> None:
+        if self._tt_max <= 0 or board.null_stack:
             return
+        key = board.zobrist_hash
+        context = self._tt_context(board)
         old = self._tt.get(key)
         if old is not None:
-            if old[0] > depth:
-                return  # Keep the deeper result for this position.
+            if old.context == context and old.depth > depth:
+                return  # Prefer depth only when the old score has the same meaning.
         elif len(self._tt) >= self._tt_max:
             self._tt.clear()  # Full: start over (simple and cheap).
-        self._tt[key] = (depth, flag, score, move)
+        self._tt[key] = _TTEntry(depth, flag, score, move, context)
 
     # -- search -------------------------------------------------------------
 
@@ -291,6 +350,7 @@ class Searcher:
         if nodes_limit is not None and nodes_limit < 0:
             raise ValueError("nodes limit cannot be negative")
 
+        self.sync_configuration()
         self.nodes = 0
         self._root_color = board.side_to_move
         started = time.monotonic()
@@ -307,11 +367,11 @@ class Searcher:
             return self._result(None, score, 0, started)
 
         root_entry = self._tt.get(board.zobrist_hash)
-        order_moves(board, moves, None if root_entry is None else root_entry[3])
+        order_moves(board, moves, None if root_entry is None else root_entry.move)
 
         if depth == 0:
             self.nodes = 1
-            return self._result(moves[0], evaluate(board), 0, started)
+            return self._result(moves[0], evaluate(board, self.eval_flags), 0, started)
 
         # Fallback if not even depth 1 completes: the best-ordered legal move,
         # no score claim.
@@ -333,7 +393,7 @@ class Searcher:
                     best_move, best_score = self._partial
                 break
             best_move, best_score, completed_depth = move, score, iteration
-            self._store(board.zobrist_hash, iteration, TT_EXACT, to_tt_score(score, 0), move)
+            self._store(board, iteration, TT_EXACT, to_tt_score(score, 0), move)
             # Search the previous best move first next time: better pruning.
             moves.remove(move)
             moves.insert(0, move)
@@ -426,17 +486,14 @@ class Searcher:
         if board.is_threefold_repetition() or board.is_insufficient_material():
             return self._draw_score(board)
 
-        key = board.zobrist_hash
-        tt_move: Move | None = None
-        entry = self._tt.get(key)
+        entry, tt_move = self._probe(board)
         if entry is not None:
-            entry_depth, flag, entry_score, tt_move = entry
-            if entry_depth >= depth:
-                score = from_tt_score(entry_score, ply)
+            if entry.depth >= depth:
+                score = from_tt_score(entry.score, ply)
                 if (
-                    flag == TT_EXACT
-                    or (flag == TT_LOWER and score >= beta)
-                    or (flag == TT_UPPER and score <= alpha)
+                    entry.flag == TT_EXACT
+                    or (entry.flag == TT_LOWER and score >= beta)
+                    or (entry.flag == TT_UPPER and score <= alpha)
                 ):
                     return score
 
@@ -570,7 +627,7 @@ class Searcher:
             flag = TT_LOWER
         else:
             flag = TT_EXACT
-        self._store(key, depth, flag, to_tt_score(best, ply), best_move)
+        self._store(board, depth, flag, to_tt_score(best, ply), best_move)
         return best
 
     def _record_cutoff(self, move: Move, moving_piece: int, depth: int, ply: int) -> None:
@@ -590,29 +647,39 @@ class Searcher:
         Not in check: the side to move may "stand pat" (keep the static score),
         so only captures that improve on it are searched, best captures first.
         In check: standing pat is illegal, so every legal evasion is searched and
-        no evasions means mate. Stalemate is not detected here (stand-pat is
-        used), a standard shortcut.
+        no evasions means mate. A legal move must exist before stand-pat or the
+        recursion limit is used: otherwise this is stalemate, regardless of eval.
         """
         self._count_node()
         if board.is_fifty_move_draw():
             return self._fifty_move_score(board, ply)
         if board.is_threefold_repetition() or board.is_insufficient_material():
             return self._draw_score(board)
-        if ply >= MAX_PLY:
-            return evaluate(board)
-
-        if board.in_check():
+        in_check = board.in_check()
+        if in_check:
             moves = list(generate_legal_moves(board, known_in_check=True))
             if not moves:
                 return -MATE_SCORE + ply
+        else:
+            # The existence probe and tactical generator inspect the same board.
+            # Prepare pins / ordered pieces once, local to this call.
+            move_context = LegalMoveContext(board, known_in_check=False)
+            if next(generate_legal_moves(board, known_in_check=False, context=move_context), None) is None:
+                return self._draw_score(board)
+        if ply >= MAX_PLY:
+            return evaluate(board, self.eval_flags)
+
+        if in_check:
             best = -MATE_SCORE + ply
         else:
-            best = evaluate(board)
+            best = evaluate(board, self.eval_flags)
             if best >= beta:
                 return best
             if best > alpha:
                 alpha = best
-            moves = list(generate_legal_moves(board, captures_only=True, known_in_check=False))
+            moves = list(generate_legal_moves(
+                board, captures_only=True, known_in_check=False, context=move_context
+            ))
 
         self._check_stopped()
         order_moves(board, moves)
@@ -638,7 +705,7 @@ class Searcher:
         """
         if self.contempt == 0 or self._root_color is None:
             return DRAW_SCORE
-        side_value = evaluate(board)
+        side_value = evaluate(board, self.eval_flags)
         root_value = side_value if board.side_to_move == self._root_color else -side_value
         if root_value <= 150:
             return DRAW_SCORE

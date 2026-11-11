@@ -1,12 +1,74 @@
 # Tests
 
-Run the complete Stage 1 correctness suite from the repository root:
+Install the tools dependencies, then run the complete correctness suite from the repository root:
 
 ```powershell
-python -m unittest discover -v
+python -m pip install -r requirements-tools.txt
+python -m unittest discover -s tests -v
 ```
 
 `test_uci.py` covers the UCI session and `test_stats.py` the Elo/SPRT helpers.
 `test_perft.py` checks the reference move-tree counts. `test_board.py` covers FEN,
-hashing, reversible moves, special moves, repetition, and draw rules. No external
-Python package is needed.
+hashing, reversible moves, special moves, repetition, and draw rules. The engine
+core uses only the standard library; the full suite also exercises tools that
+use python-chess and NumPy. `test_baseline.py` checks reference provenance,
+failure retention, immutability and benchmark comparison boundaries.
+
+Kaggle reference collection and result publishing: [docs/BASELINE.md](../docs/BASELINE.md).
+
+`test_uci_async.py` covers worker cancellation and real CLI pipes: finite searches
+must answer `isready`, accept `stop`, publish natural completion without more
+input, and avoid duplicate `bestmove` responses. Position/option/new-game/quit
+cancellation and EOF cleanup are also covered. Run the full suite in Kaggle;
+the pipe regressions are bounded and do not run matches or Stockfish.
+
+`test_tt_context.py` separates small, search-free context checks from real search
+regressions. Kaggle runs the original clock-0/clock-98 warm-table example and
+both directions of a controlled legal cycle whose descendant becomes a third
+repetition only with prior history. The oracle has TT disabled, and null-move/LMR
+are disabled in these comparisons to isolate cache correctness.
+
+`test_uci_configuration.py` checks per-session evaluation settings, immediate TT
+invalidation, rejected spin values, same-value reuse and legacy evaluator compatibility.
+Its short configuration tests stub the root where needed; the separate search
+regression class belongs to Kaggle. Real regressions compare toggled passed-pawn
+and bishop-pair scores with clean sessions, and explicit/legacy flag changes with
+a TT-disabled oracle. A mocked worker test also checks that an Eval option is not
+mutated until the previous worker has stopped.
+
+`test_analysis_configuration.py` checks content-based identities, immutable config
+guards, legacy read compatibility, warm/corrupt/foreign caches, part identity and
+CLI resume using mocked evaluation only. `test_match_metadata.BookMetadataTests`
+checks advertised book defaults and case-insensitive last overrides without matches.
+The existing fake-UCI analysis pipeline test also seals tagged parts in Kaggle.
+
+`test_endgame_rules.py` separates small position/oracle and mocked terminal-flow
+checks from actual search regressions. Kaggle checks horizon stalemate under
+multiple alpha-beta windows, mate/stalemate at MAX_PLY, ordinary quiet positions,
+and rook underpromotion with cold/warm/disabled TT for both colours. In
+`8/k1P5/2K5/8/8/8/8/8 w - - 0 1`, c8=Q is stalemate while c8=R continues;
+quiescence must see the rook, and a depth-1 root search must select it.
+Tactical generation is compared with python-chess captures plus all four
+promotions, including captures, en passant and its pinned illegal case.
+No real searches or match runs are needed on the user's PC.
+
+`test_movegen_context.py` compares shared preparation against the reference move
+generator on special/benchmark positions, including exact order and full board
+restoration. It rejects stale/foreign boards and contradictory check hints, and
+verifies that the legal-move probe plus capture pass prepare pins/pieces once.
+`test_profile_search.py` checks report call counts, provenance/output guards and
+fixture serialization with the benchmark mocked. Actual profiled searches belong
+to Kaggle; their instrumented seconds must not be mixed with normal benchmark times.
+
+`test_movegen_probe.py` compares each pseudo-legal move's occupancy-only king
+safety check with full make/unmake on special/benchmark positions and their
+colour mirrors. It checks legal move order and python-chess agreement, verifies
+restoration on exceptions during castling/EP/promotion/capture, and ensures the
+fast generator does not call full make/unmake. A bounded deterministic playout
+supplies more independent single-position fixtures; it does not run search or matches.
+
+`test_tools_modules.py` checks preserved imports/CLI values, worker/Opening pickle
+compatibility, mocked worker cleanup, opening validation, aggregate-only routing,
+AB/SF deduplication and source fingerprints for every extracted analysis module.
+The full existing fake-UCI analysis pipeline remains in the Kaggle suite; no real
+matches are needed for the module refactor.

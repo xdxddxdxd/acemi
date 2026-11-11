@@ -4,6 +4,9 @@
 
 - `engine/`: chess engine. The engine core is standard-library-only; do not use `python-chess` here.
 - `tools/`: match, recording, Stockfish/UCI integration, and analysis utilities. `python-chess` is allowed only here.
+  CLI entry points remain unchanged; module responsibilities and compatibility exports
+  are documented in `docs/TOOLS.md`. Extracted analysis modules are included in the
+  source fingerprint. Historical raw run/analysis artifacts are not migrated or rewritten.
 - `tests/`: correctness tests and tactical positions.
 - `notebooks/kaggle_runner.ipynb`: run tests, save raw results, and push them. It must not make analysis or strength decisions.
 - `data/`: machine-readable run results. `data/runs/<run_name>/` holds immutable run artifacts; `data/index.csv` is the run index.
@@ -46,6 +49,37 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
 - Acemi's `eval_cp`, `depth` and `nodes` are null until search exists (not measured, not zero).
 
 - `data/bench/<label>.json`: output of `python -m tools.bench` (fixed-depth search of 10 positions: per position `score`, `depth`, `nodes`, `best_move`, `seconds`; totals and `nodes_per_second`; runtime and CPU). Two builds that search identically must have equal scores, depths, nodes and best moves; only seconds differ. Compare with `python -m tools.bench --compare A.json B.json`.
+
+- `data/baselines/<session>/`: Step 1 reference collection (see `docs/BASELINE.md`).
+  `reference/` and `current/` each contain schema-v1 `meta.json`, `tests.json`,
+  `results.json`, `bench.json` when tests/benchmark succeed, logs and `SUMMARY.md`.
+  Metadata distinguishes the source commit/engine tree from the collector commit.
+  Existing records are never overwritten. Failed/zero-test runs are not passing
+  references; their logs are still published. `session.json` and `comparison.log`
+  describe the fixed-depth comparison, not a strength decision or Elo estimate.
+  Step 8 additionally records `engine_tree_matches` / `require_identical_engine_tree`
+  and requires unchanged engine files for the tools-only refactor.
+
+### Search profiling (Step 7)
+
+`data/baselines/<session>/profiles/` adds diagnostic schema-v1 profiles for the
+reference/current engine trees. Each includes a profiled benchmark and engine
+function call counts/self/cumulative time, plus source/collector commits.
+Profiled searches must match; their instrumented times are never used as speed
+measurements. Use the separate normal `reference/bench.json` / `current/bench.json`
+for elapsed-time comparisons. Logs are retained and published on failure too.
+
+### Analysis identity (Step 5)
+
+New `data/analysis/<output>/config.json` records `analysis_configuration` and
+`analysis_fingerprint` (identity version 1). Per-game scratch caches, the part
+manifest and every part carry that fingerprint; part ids include it. Resuming
+with a different/missing identity requires a new output directory. Historical
+untagged analyses remain readable; they are not retroactively verified.
+See `docs/ANALYSIS.md`. New match metadata adds `book_file` and derives
+`opening_book` from advertised defaults plus overrides on both sides (`null`
+if unsupported); this records configuration, not a book hit. Existing raw records
+are never rewritten to add these fields.
 
 ### Compressed artifacts
 

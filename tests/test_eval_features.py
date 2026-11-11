@@ -204,9 +204,10 @@ class UciSwitchTests(FlagTestCase):
         session = UciSession()
         self.assertIn("option name EvalPassedPawns type check default false", "\n".join(session.handle_line("uci")))
         self.assertEqual(session.handle_line("setoption name EvalPassedPawns value true"), [])
-        self.assertTrue(FLAGS.passed_pawns)
-        session.handle_line("setoption name EvalPassedPawns value false")
+        self.assertTrue(session.eval_flags.passed_pawns)
         self.assertFalse(FLAGS.passed_pawns)
+        session.handle_line("setoption name EvalPassedPawns value false")
+        self.assertFalse(session.eval_flags.passed_pawns)
 
     def test_bad_value_is_ignored(self) -> None:
         reply = UciSession().handle_line("setoption name EvalPassedPawns value maybe")
@@ -223,9 +224,10 @@ class UciSwitchTests(FlagTestCase):
         ):
             self.assertIn(f"option name {name} type check default false", options)
             self.assertEqual(session.handle_line(f"setoption name {name} value true"), [])
-            self.assertTrue(getattr(FLAGS, flag))
-            session.handle_line(f"setoption name {name} value false")
+            self.assertTrue(getattr(session.eval_flags, flag))
             self.assertFalse(getattr(FLAGS, flag))
+            session.handle_line(f"setoption name {name} value false")
+            self.assertFalse(getattr(session.eval_flags, flag))
 
 
 if __name__ == "__main__":

@@ -41,6 +41,29 @@ setoption name BookFile value openings/book.bin
 
 ## UCI seçenekleri
 
+Geliştirme dalındaki UCI düzeltmesi: süreli, derinlikli ve düğüm sınırlı aramalar
+protokol döngüsünü bloke etmeden worker'da çalışır. `isready` arama sürerken
+yanıtlanır; `stop` aynı aramanın sonucunu döndürür. Doğal bitiş veya tekrarlanan
+`stop` ikinci bir `bestmove` üretmez. `position`, `setoption`, `ucinewgame`,
+`quit` ve girişin kapanması önce eski worker'ı durdurur. Doğrudan Python'da
+`UciSession()` kullanan kodun sonlu arama çağrıları önceki gibi sonucu bekler.
+Tam protokol ve doğruluk doğrulaması Kaggle'da yapılır (`tests/test_uci_async.py`).
+
+Geliştirme adımı 3'te TT skorları aynı 50 hamle sayacı ve son piyon hamlesi/alımından
+sonraki aynı bilinen geçmişle sınırlıdır. Geçmiş farklıysa kayıt yalnızca hamle
+sıralama ipucu olabilir; null-move alt ağaçları TT skoru okumaz/yazmaz. Tekrar için
+kullanılan Zobrist anahtarı ve mevcut veri kayıtları değiştirilmez. Bu ihtiyatlı
+eşleşme önbellek isabetlerini azaltabilir; hız etkisi Kaggle ölçümünü bekler.
+
+Geliştirme adımı 4'te her UCI oturumu kendi değerlendirme ayarlarını taşır.
+`Eval*`, arama sezgiselleri veya `Contempt` değişince eski TT skorları temizlenir;
+aynı değer ve hatalı değerler geçerli önbelleği bozmaz. `Hash`, `Threads`, `Seed`,
+`NextIterationPct` ve `Contempt` ilan edilen sınırlarla doğrulanır. Seed yeniden
+verildiğinde rastgele akış önceki gibi sıfırlanır; Seed/süre politikası değişimi
+tek başına TT'yi temizlemez. Doğrudan `evaluate(board)` ve `Searcher()` eski global
+varsayılanı korur; açık ayar için `evaluate(board, flags)` ve `Searcher(eval_flags=flags)`
+kullanılabilir. `Searcher.search()` çağrılar arasında değişen yapılandırmayı denetler.
+
 | Seçenek | Varsayılan | Not |
 |---|---:|---|
 | `Hash` | 16 | MB; 1–4096 |
@@ -76,6 +99,30 @@ python -m tools.bench --depth 3
 ```
 
 GitHub Actions her push/PR'da Ubuntu ve Windows üzerinde tam test paketini ve bench duman testini çalıştırır: `.github/workflows/ci.yml`.
+
+### Kaggle'da sabit referans (geliştirme adımı 1)
+
+`notebooks/kaggle_runner.ipynb` sabit referans ve güncel kaynak için kayıt toplar.
+İlk referans `db058b3` idi; güncel aşamanın sabit commit'i aşağıda belirtilir.
+İki kaynak için test paketi ile aynı derinlikte benchmark ayrı ayrı çalışır.
+Test özeti/günlükleri, benchmark, commit, motor ağacı ve ortam bilgisi yeni
+`data/baselines/<oturum>/reference` ve `current` klasörlerine kaydedilip GitHub'a gönderilir.
+Testler başarısız olduğunda da oluşan günlükler gönderilmeye çalışılır; önceki kayıtlar değiştirilmez.
+
+Bu adımda aramanın değişmemesi beklenir; karşılaştırma konum kümesi, FEN, skor, derinlik,
+düğüm ve en iyi hamleyi kontrol eder. Varsayılan `RUN_VALIDATION_MATCHES=False` ayarıyla
+self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-play, 20 SF1500
+ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
+[docs/BASELINE.md](docs/BASELINE.md).
+
+Sekiz geliştirme adımı Kaggle'da doğrulandı. Son aşamada 396 test geçti; motor
+ağacı ve 10 konumun hamle/skor/derinlik/düğüm sonuçları 7b ile aynı kaldı.
+Güncel notebook `main-validation` etiketiyle, doğrulanmış 8. adımın `2c3312b`
+commit'ine karşı çalıştırır ve sonuçları `main` dalına gönderir;
+hamle/skor/derinlik/düğüm eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`).
+Normal benchmark hız karşılaştırması içindir; ek cProfile kaydı bu adımda varsayılan
+kapalıdır. Önceki kayıtlar korunur, maçlar kapalıdır. Araçların modül yapısı ve
+korunan import yolları: [docs/TOOLS.md](docs/TOOLS.md).
 
 ## Maç çalıştırma
 
@@ -115,6 +162,10 @@ python -m tools.match --games 150 --movetime-ms 500 `
 ## Veri ve analiz
 
 [AGENT_GUIDE.md](AGENT_GUIDE.md). Her veri dosyası `schema_version` taşır. Gerçek sonuçlar ile sentetik demo kayıtlarını karıştırmayın.
+
+Analiz önbelleği ve parçalar doğrulanmış ayar kimliğiyle devam eder; farklı
+Stockfish/derinlik/Syzygy veya analiz kodu için yeni çıktı klasörü gerekir.
+Eski sonuçları değiştirmeden devam etme kuralları: [docs/ANALYSIS.md](docs/ANALYSIS.md).
 
 ## Lisans
 

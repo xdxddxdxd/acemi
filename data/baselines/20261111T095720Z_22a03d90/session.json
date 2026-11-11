@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "validation_label": "step2-uci-stop",
+  "reference_commit": "db058b344df8759810e957f11a58b4149055fe49",
+  "current_code_commit": "c128a4abbb085e2dfea805fe6ec4a8a8c4a9f659",
+  "depth": 4,
+  "search_identical": true,
+  "reference": "reference",
+  "current": "current"
+}

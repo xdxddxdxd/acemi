@@ -178,8 +178,8 @@ def pst_delta(piece: int, from_square: int, to_square: int) -> int:
 class EvalFlags:
     """Stage 7 evaluation features. Every one is off until a match proves it helps.
 
-    One engine process has one set of flags (UCI ``setoption`` changes them), so a
-    single build can play itself with a feature on and off for an A/B test.
+    Each UCI session owns its flags. The module-level FLAGS remains the default
+    for legacy direct evaluator/Searcher calls that do not supply a configuration.
     """
 
     __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety", "endgame_mate")
@@ -190,6 +190,10 @@ class EvalFlags:
         self.bishop_pair = False
         self.king_safety = False
         self.endgame_mate = False
+
+    def signature(self) -> tuple[bool, ...]:
+        """Immutable values used to invalidate cached evaluations between searches."""
+        return tuple(getattr(self, name) for name in self.__slots__)
 
 
 FLAGS = EvalFlags()
@@ -417,8 +421,9 @@ def _endgame_mate_bonus(board: Board) -> tuple[int, int]:
     return 0, eg
 
 
-def evaluate_classic(board: Board) -> int:
+def evaluate_classic(board: Board, flags: EvalFlags | None = None) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
+    active = FLAGS if flags is None else flags
     mg = 0
     eg = 0
     phase = 0
@@ -433,23 +438,23 @@ def evaluate_classic(board: Board) -> int:
             eg += sign * eg_values[square]
         phase += PHASE_WEIGHT[abs(piece)] * len(squares)
 
-    if FLAGS.passed_pawns:
+    if active.passed_pawns:
         bonus_mg, bonus_eg = _passed_pawn_bonus(board)
         mg += bonus_mg
         eg += bonus_eg
-    if FLAGS.pawn_structure:
+    if active.pawn_structure:
         bonus_mg, bonus_eg = _pawn_structure(board)
         mg += bonus_mg
         eg += bonus_eg
-    if FLAGS.bishop_pair:
+    if active.bishop_pair:
         bonus_mg, bonus_eg = _bishop_pair_bonus(board)
         mg += bonus_mg
         eg += bonus_eg
-    if FLAGS.king_safety:
+    if active.king_safety:
         bonus_mg, bonus_eg = _king_safety(board)
         mg += bonus_mg
         eg += bonus_eg
-    if FLAGS.endgame_mate:
+    if active.endgame_mate:
         bonus_mg, bonus_eg = _endgame_mate_bonus(board)
         mg += bonus_mg
         eg += bonus_eg

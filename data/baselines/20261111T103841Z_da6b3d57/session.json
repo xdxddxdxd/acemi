@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "validation_label": "step4-configuration",
+  "reference_commit": "700b32e1db8ec3cc87570c31d6d79c3c7fe3d6dc",
+  "current_code_commit": "a1326202ecef4ce0ae4811bbdd47af3a104636a2",
+  "depth": 4,
+  "search_identical": true,
+  "protocol_matches": true,
+  "require_identical_search": true,
+  "comparison_returncode": 0,
+  "review_required": false,
+  "reference": "reference",
+  "current": "current"
+}

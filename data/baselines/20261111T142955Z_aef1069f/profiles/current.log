@@ -1,0 +1,22 @@
+Profile recorded: /kaggle/working/acemi/data/baselines/20261111T142955Z_aef1069f/profiles/current.json; engine a9cf984dff877a750c2482af5767c9e13d20ba28
+Top cumulative engine functions (instrumented seconds, not speed measurements):
+engine/search.py:search: 10 calls, 14.2365s
+engine/search.py:_search_root: 28 calls, 14.2312s
+engine/search.py:_negamax: 11799 calls, 14.2051s
+engine/search.py:_quiesce: 65574 calls, 13.3337s
+engine/movegen.py:generate_legal_moves: 288569 calls, 8.2512s
+engine/board.py:make_move: 271497 calls, 5.1328s
+engine/movegen.py:generate_pseudo_legal_moves: 468844 calls, 1.9320s
+engine/board.py:unmake_move: 271497 calls, 1.8296s
+engine/eval/base.py:evaluate: 60637 calls, 1.2867s
+engine/eval/classic.py:evaluate_classic: 60637 calls, 1.2381s
+engine/board.py:_put_piece: 626207 calls, 1.1405s
+engine/board.py:is_square_attacked: 275881 calls, 0.9564s
+engine/movegen.py:_pawn_moves: 391505 calls, 0.9056s
+engine/movegen.py:__init__: 60637 calls, 0.8109s
+engine/board.py:_remove_piece: 626207 calls, 0.7940s
+engine/board.py:_toggle_piece_hash: 626207 calls, 0.5438s
+engine/board.py:is_valid_square: 2111829 calls, 0.4949s
+engine/movegen.py:_ordered_pieces: 66807 calls, 0.4451s
+engine/search.py:order_moves: 26878 calls, 0.4103s
+engine/board.py:in_check: 66797 calls, 0.3877s

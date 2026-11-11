@@ -268,13 +268,16 @@ class FullPipelineWithFakeEngineTests(unittest.TestCase):
                 "meta": {"engine_version": "x", "opponent": {}, "engine_settings": {}, "opening_set": "t", "hardware": {}},
             }
             out = root / "analysis"
+            from tools.analysis_config import analysis_configuration, prepare_output
+            identity = prepare_output(out, analysis_configuration(Path(engine_command), 10))
             try:
-                analyze_games._init_worker(engine_command, 10, str(root / "missing-syzygy"))
+                analyze_games._init_worker(engine_command, 10)
                 cache = Path(analyze_games._analyze_task(game, str(out), 10))
             finally:
                 analyze_games._close_worker()
             self.assertTrue(cache.exists())
             entry = seal_part(out)
+            self.assertEqual(entry["analysis_fingerprint"], identity)
             self.assertEqual(entry["rows"]["games"], 1)
             self.assertEqual(entry["rows"]["positions"], 4)
             with gzip.open(out / entry["files"]["positions"]["path"], "rt", encoding="utf-8", newline="") as stream:

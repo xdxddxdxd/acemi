@@ -1,0 +1,418 @@
+test_malformed_assignments_are_rejected (tests.test_ab_options.OptionAssignmentTests.test_malformed_assignments_are_rejected) ... ok
+test_none_gives_no_options (tests.test_ab_options.OptionAssignmentTests.test_none_gives_no_options) ... ok
+test_values_are_typed_and_required (tests.test_ab_options.OptionAssignmentTests.test_values_are_typed_and_required) ... ok
+test_summary_names_the_extra_options (tests.test_ab_options.SummaryOptionLineTests.test_summary_names_the_extra_options) ... ok
+test_bad_check_value_is_reported_and_ignored (tests.test_ab_options.UciFeatureOptionTests.test_bad_check_value_is_reported_and_ignored) ... ok
+test_check_options_toggle_the_searcher (tests.test_ab_options.UciFeatureOptionTests.test_check_options_toggle_the_searcher) ... ok
+test_constructor_default_factor_is_unchanged (tests.test_ab_options.UciFeatureOptionTests.test_constructor_default_factor_is_unchanged) ... ok
+test_next_iteration_pct (tests.test_ab_options.UciFeatureOptionTests.test_next_iteration_pct) ... ok
+test_options_are_declared (tests.test_ab_options.UciFeatureOptionTests.test_options_are_declared) ... ok
+test_switched_off_features_change_the_search (tests.test_ab_options.UciFeatureOptionTests.test_switched_off_features_change_the_search) ... ok
+test_content_changes_invalidate_but_relocation_does_not (tests.test_analysis_configuration.AnalysisIdentityTests.test_content_changes_invalidate_but_relocation_does_not) ... ok
+test_invalid_depth_and_missing_tables_are_rejected (tests.test_analysis_configuration.AnalysisIdentityTests.test_invalid_depth_and_missing_tables_are_rejected) ... ok
+test_syzygy_inventory_and_content_are_part_of_identity (tests.test_analysis_configuration.AnalysisIdentityTests.test_syzygy_inventory_and_content_are_part_of_identity) ... ok
+test_cache_and_part_names_depend_on_configuration (tests.test_analysis_configuration.AnalysisResumeTests.test_cache_and_part_names_depend_on_configuration) ... ok
+test_cache_is_reused_only_with_its_identity_and_valid_payload (tests.test_analysis_configuration.AnalysisResumeTests.test_cache_is_reused_only_with_its_identity_and_valid_payload) ... ok
+test_cli_mismatch_preserves_manifest_and_does_not_start_workers (tests.test_analysis_configuration.AnalysisResumeTests.test_cli_mismatch_preserves_manifest_and_does_not_start_workers) ... Analysis configuration differs or is legacy in /tmp/tmphugu0dvv; use a new --out directory
+ok
+test_cli_reuses_matching_parts_without_analysing_games_again (tests.test_analysis_configuration.AnalysisResumeTests.test_cli_reuses_matching_parts_without_analysing_games_again) ... ok
+test_configured_tablebase_failure_is_not_silently_ignored (tests.test_analysis_configuration.AnalysisResumeTests.test_configured_tablebase_failure_is_not_silently_ignored) ... ok
+test_different_identity_refuses_before_modifying_existing_files (tests.test_analysis_configuration.AnalysisResumeTests.test_different_identity_refuses_before_modifying_existing_files) ... ok
+test_foreign_or_untagged_cache_cannot_be_sealed (tests.test_analysis_configuration.AnalysisResumeTests.test_foreign_or_untagged_cache_cannot_be_sealed) ... ok
+test_foreign_or_untagged_part_cannot_be_processed (tests.test_analysis_configuration.AnalysisResumeTests.test_foreign_or_untagged_part_cannot_be_processed) ... ok
+test_legacy_config_is_not_overwritten (tests.test_analysis_configuration.AnalysisResumeTests.test_legacy_config_is_not_overwritten) ... ok
+test_legacy_output_remains_readable_but_cannot_be_resumed_as_new (tests.test_analysis_configuration.AnalysisResumeTests.test_legacy_output_remains_readable_but_cannot_be_resumed_as_new) ... ok
+test_matching_cache_seals_and_resumes_with_tagged_parts (tests.test_analysis_configuration.AnalysisResumeTests.test_matching_cache_seals_and_resumes_with_tagged_parts) ... ok
+test_pool_startup_failure_reaches_task_instead_of_restarting_workers (tests.test_analysis_configuration.AnalysisResumeTests.test_pool_startup_failure_reaches_task_instead_of_restarting_workers) ... ok
+test_same_identity_resumes_without_rewriting_config (tests.test_analysis_configuration.AnalysisResumeTests.test_same_identity_resumes_without_rewriting_config) ... ok
+test_tampered_configuration_is_detected (tests.test_analysis_configuration.AnalysisResumeTests.test_tampered_configuration_is_detected) ... ok
+test_task_depth_must_match_the_output_identity (tests.test_analysis_configuration.AnalysisResumeTests.test_task_depth_must_match_the_output_identity) ... ok
+test_material_balance_at_start_is_zero (tests.test_analyze_tools.AnalyzeHelpersTests.test_material_balance_at_start_is_zero) ... ok
+test_missed_result_filter (tests.test_analyze_tools.AnalyzeHelpersTests.test_missed_result_filter) ... ok
+test_opening_helpers (tests.test_analyze_tools.AnalyzeHelpersTests.test_opening_helpers) ... ok
+test_phase_labels (tests.test_analyze_tools.AnalyzeHelpersTests.test_phase_labels) ... ok
+test_result_for_colour (tests.test_analyze_tools.AnalyzeHelpersTests.test_result_for_colour) ... ok
+test_signature_uses_the_full_pgn_line (tests.test_analyze_tools.AnalyzeHelpersTests.test_signature_uses_the_full_pgn_line) ... ok
+test_theme_labels_for_basic_mates (tests.test_analyze_tools.AnalyzeHelpersTests.test_theme_labels_for_basic_mates) ... ok
+test_threefold_claim_is_labelled (tests.test_analyze_tools.AnalyzeHelpersTests.test_threefold_claim_is_labelled) ... ok
+test_game_is_analysed_cached_and_sealed (tests.test_analyze_tools.FullPipelineWithFakeEngineTests.test_game_is_analysed_cached_and_sealed) ... ok
+test_cursed_and_blessed_count_as_draws (tests.test_analyze_tools.LabelTests.test_cursed_and_blessed_count_as_draws) ... ok
+test_no_tablebase_means_no_probe (tests.test_analyze_tools.LabelTests.test_no_tablebase_means_no_probe) ... ok
+test_stockfish_thresholds (tests.test_analyze_tools.LabelTests.test_stockfish_thresholds) ... ok
+test_tablebase_wins_over_stockfish (tests.test_analyze_tools.LabelTests.test_tablebase_wins_over_stockfish) ... ok
+test_capped_and_header_fallback (tests.test_analyze_tools.OpeningPliesTests.test_capped_and_header_fallback) ... ok
+test_first_record_gives_the_forced_line_length (tests.test_analyze_tools.OpeningPliesTests.test_first_record_gives_the_forced_line_length) ... ok
+test_aggregate_merges_small_files_and_categorises_blunders (tests.test_analyze_tools.PartTests.test_aggregate_merges_small_files_and_categorises_blunders) ... ok
+test_damaged_part_is_dropped_so_its_games_are_redone (tests.test_analyze_tools.PartTests.test_damaged_part_is_dropped_so_its_games_are_redone) ... ok
+test_missing_manifest_means_nothing_is_processed (tests.test_analyze_tools.PartTests.test_missing_manifest_means_nothing_is_processed) ... ok
+test_part_id_ignores_order_and_changes_with_content (tests.test_analyze_tools.PartTests.test_part_id_ignores_order_and_changes_with_content) ... ok
+test_report_reads_parts_and_builds_on_synthetic_data (tests.test_analyze_tools.PartTests.test_report_reads_parts_and_builds_on_synthetic_data) ... ok
+test_seal_writes_an_immutable_part_and_clears_the_cache (tests.test_analyze_tools.PartTests.test_seal_writes_an_immutable_part_and_clears_the_cache) ... ok
+test_second_chunk_adds_a_second_part (tests.test_analyze_tools.PartTests.test_second_chunk_adds_a_second_part) ... ok
+test_scarce_type_is_topped_up_from_the_other (tests.test_analyze_tools.RecheckSampleTests.test_scarce_type_is_topped_up_from_the_other) ... ok
+test_seed_changes_the_sample (tests.test_analyze_tools.RecheckSampleTests.test_seed_changes_the_sample) ... ok
+test_stratified_capped_per_game_and_deterministic (tests.test_analyze_tools.RecheckSampleTests.test_stratified_capped_per_game_and_deterministic) ... ok
+test_every_category_generates_valid_boards (tests.test_analyze_tools.SyntheticGeneratorTests.test_every_category_generates_valid_boards) ... ok
+test_rows_survive_a_rewrite_and_resume_read (tests.test_analyze_tools.SyntheticGeneratorTests.test_rows_survive_a_rewrite_and_resume_read) ... ok
+test_two_bishops_stand_on_opposite_colours (tests.test_analyze_tools.SyntheticGeneratorTests.test_two_bishops_stand_on_opposite_colours) ... ok
+test_synthetic_main_reaches_the_engine_launch (tests.test_analyze_tools.WorkerStartupTests.test_synthetic_main_reaches_the_engine_launch) ... Syzygy unavailable ([Errno 2] No such file or directory: '/nonexistent/syzygy'); labelling with Stockfish only.
+ok
+test_worker_init_reaches_the_engine_launch (tests.test_analyze_tools.WorkerStartupTests.test_worker_init_reaches_the_engine_launch) ... ok
+test_different_hardware_does_not_claim_a_speedup (tests.test_baseline.BenchmarkComparisonTests.test_different_hardware_does_not_claim_a_speedup) ... ok
+test_empty_and_missing_positions_are_rejected (tests.test_baseline.BenchmarkComparisonTests.test_empty_and_missing_positions_are_rejected) ... ok
+test_extra_and_duplicate_positions_are_rejected (tests.test_baseline.BenchmarkComparisonTests.test_extra_and_duplicate_positions_are_rejected) ... ok
+test_same_names_do_not_hide_different_positions (tests.test_baseline.BenchmarkComparisonTests.test_same_names_do_not_hide_different_positions) ... ok
+test_clean_pinned_source_produces_complete_reference (tests.test_baseline.ReferenceRecordingTests.test_clean_pinned_source_produces_complete_reference) ... {}
+{}
+games in manifest: 1, pending: 0
+no pending games
+aggregated: {'parts': 1, 'games': 1, 'positions': 3, 'blunders': 1, 'problems': []}
+wrote /tmp/tmp1tycf5oq/REPORT.md (124 lines)
+Running tests.log; full output: /tmp/tmp1nhwa4tl/record/tests.log
+Running bench.log; full output: /tmp/tmp1nhwa4tl/record/bench.log
+Reference recorded: /tmp/tmp1nhwa4tl/record
+Reference status: passed
+ok
+test_dirty_or_wrong_source_commit_is_rejected_before_writing (tests.test_baseline.ReferenceRecordingTests.test_dirty_or_wrong_source_commit_is_rejected_before_writing) ... ok
+test_empty_test_suite_cannot_be_a_passing_reference (tests.test_baseline.ReferenceRecordingTests.test_empty_test_suite_cannot_be_a_passing_reference) ... Running tests.log; full output: /tmp/tmp6l0ddzij/empty-suite/tests.log
+Reference recorded: /tmp/tmp6l0ddzij/empty-suite
+Reference status: tests_failed
+ok
+test_existing_reference_is_never_overwritten (tests.test_baseline.ReferenceRecordingTests.test_existing_reference_is_never_overwritten) ... ok
+test_failed_benchmark_is_saved_without_passing_reference (tests.test_baseline.ReferenceRecordingTests.test_failed_benchmark_is_saved_without_passing_reference) ... Running tests.log; full output: /tmp/tmpk_cvocb4/bench-failure/tests.log
+Running bench.log; full output: /tmp/tmpk_cvocb4/bench-failure/bench.log
+Reference recorded: /tmp/tmpk_cvocb4/bench-failure
+Reference status: benchmark_failed
+ok
+test_failed_tests_are_saved_and_benchmark_is_skipped (tests.test_baseline.ReferenceRecordingTests.test_failed_tests_are_saved_and_benchmark_is_skipped) ... Running tests.log; full output: /tmp/tmpntkpnvu4/failure/tests.log
+Reference recorded: /tmp/tmpntkpnvu4/failure
+Reference status: tests_failed
+ok
+test_successful_process_with_invalid_benchmark_is_rejected (tests.test_baseline.ReferenceRecordingTests.test_successful_process_with_invalid_benchmark_is_rejected) ... Running tests.log; full output: /tmp/tmpkl9nw_7c/invalid-bench/tests.log
+Running bench.log; full output: /tmp/tmpkl9nw_7c/invalid-bench/bench.log
+Reference recorded: /tmp/tmpkl9nw_7c/invalid-bench
+Reference status: benchmark_failed
+ok
+test_all_four_promotion_choices_for_push_and_capture (tests.test_board.BoardStateTests.test_all_four_promotion_choices_for_push_and_capture) ... ok
+test_castling_and_undo (tests.test_board.BoardStateTests.test_castling_and_undo) ... ok
+test_castling_through_attacked_square_is_illegal (tests.test_board.BoardStateTests.test_castling_through_attacked_square_is_illegal) ... ok
+test_en_passant_and_undo (tests.test_board.BoardStateTests.test_en_passant_and_undo) ... ok
+test_fen_round_trip_for_reference_positions (tests.test_board.BoardStateTests.test_fen_round_trip_for_reference_positions) ... ok
+test_fifty_move_rule (tests.test_board.BoardStateTests.test_fifty_move_rule) ... ok
+test_illegal_en_passant_cannot_expose_king (tests.test_board.BoardStateTests.test_illegal_en_passant_cannot_expose_king) ... ok
+test_incremental_hash_and_unmake_for_every_start_move (tests.test_board.BoardStateTests.test_incremental_hash_and_unmake_for_every_start_move) ... ok
+test_insufficient_material (tests.test_board.BoardStateTests.test_insufficient_material) ... ok
+test_threefold_repetition (tests.test_board.BoardStateTests.test_threefold_repetition) ... ok
+test_castling_is_decoded_as_a_king_move (tests.test_book.BookLookupTests.test_castling_is_decoded_as_a_king_move) ... ok
+test_finds_a_start_position_book_move (tests.test_book.BookLookupTests.test_finds_a_start_position_book_move) ... ok
+test_missing_key_returns_none (tests.test_book.BookLookupTests.test_missing_key_returns_none) ... ok
+test_promotion_is_decoded (tests.test_book.BookLookupTests.test_promotion_is_decoded) ... ok
+test_zero_weight_entry_is_never_chosen_against_a_positive_one (tests.test_book.BookLookupTests.test_zero_weight_entry_is_never_chosen_against_a_positive_one) ... ok
+test_engine_matches_python_chess (tests.test_book.HashTests.test_engine_matches_python_chess) ... ok
+test_book_is_off_by_default (tests.test_book.UciBookTests.test_book_is_off_by_default) ... ok
+test_book_option_is_declared (tests.test_book.UciBookTests.test_book_option_is_declared) ... ok
+test_enabled_book_answers_from_the_start_position (tests.test_book.UciBookTests.test_enabled_book_answers_from_the_start_position) ... ok
+test_missing_book_file_is_reported (tests.test_book.UciBookTests.test_missing_book_file_is_reported) ... ok
+test_far_alternatives_are_dropped (tests.test_bookgen.BuildTests.test_far_alternatives_are_dropped) ... ok
+test_main_line_and_close_alternatives_are_kept (tests.test_bookgen.BuildTests.test_main_line_and_close_alternatives_are_kept) ... ok
+test_written_book_is_readable_by_the_engine (tests.test_bookgen.BuildTests.test_written_book_is_readable_by_the_engine) ... ok
+test_castling_is_encoded_as_king_to_rook (tests.test_bookgen.EncodeTests.test_castling_is_encoded_as_king_to_rook) ... ok
+test_normal_move_encoding (tests.test_bookgen.EncodeTests.test_normal_move_encoding) ... ok
+test_promotion_is_encoded (tests.test_bookgen.EncodeTests.test_promotion_is_encoded) ... ok
+test_default_is_off (tests.test_check_extension.CheckExtensionTests.test_default_is_off) ... ok
+test_extension_finds_the_mate_two_plies_deeper (tests.test_check_extension.CheckExtensionTests.test_extension_finds_the_mate_two_plies_deeper) ... ok
+test_many_checks_still_terminate (tests.test_check_extension.CheckExtensionTests.test_many_checks_still_terminate) ... ok
+test_uci_option_toggles_the_searcher (tests.test_check_extension.CheckExtensionTests.test_uci_option_toggles_the_searcher) ... ok
+test_default_is_zero (tests.test_contempt.ContemptTests.test_default_is_zero) ... ok
+test_opponent_to_move_draw_is_good_for_root (tests.test_contempt.ContemptTests.test_opponent_to_move_draw_is_good_for_root) ... ok
+test_root_ahead_penalises_draw (tests.test_contempt.ContemptTests.test_root_ahead_penalises_draw) ... ok
+test_root_behind_keeps_draw_score (tests.test_contempt.ContemptTests.test_root_behind_keeps_draw_score) ... ok
+test_search_default_benchmark_is_unchanged (tests.test_contempt.ContemptTests.test_search_default_benchmark_is_unchanged) ... ok
+test_uci_option_toggles (tests.test_contempt.ContemptTests.test_uci_option_toggles) ... ok
+test_zero_contempt_and_missing_root_are_safe (tests.test_contempt.ContemptTests.test_zero_contempt_and_missing_root_are_safe) ... ok
+test_kbbk_bonus_is_positive_and_edge_is_stronger (tests.test_endgame_mate.EndgameMateTests.test_kbbk_bonus_is_positive_and_edge_is_stronger) ... ok
+test_kbnk_bonus_is_positive (tests.test_endgame_mate.EndgameMateTests.test_kbnk_bonus_is_positive) ... ok
+test_off_by_default (tests.test_endgame_mate.EndgameMateTests.test_off_by_default) ... ok
+test_same_colour_bishops_are_not_a_mating_side (tests.test_endgame_mate.EndgameMateTests.test_same_colour_bishops_are_not_a_mating_side) ... ok
+test_simple_mates_are_not_touched (tests.test_endgame_mate.EndgameMateTests.test_simple_mates_are_not_touched) ... ok
+test_start_position_stays_zero (tests.test_endgame_mate.EndgameMateTests.test_start_position_stays_zero) ... ok
+test_symmetric_between_colours (tests.test_endgame_mate.EndgameMateTests.test_symmetric_between_colours) ... ok
+test_uci_option_toggles (tests.test_endgame_mate.EndgameMateTests.test_uci_option_toggles) ... ok
+test_bishop_pair_is_rewarded (tests.test_eval_features.BishopPairTests.test_bishop_pair_is_rewarded) ... ok
+test_off_by_default (tests.test_eval_features.BishopPairTests.test_off_by_default) ... ok
+test_single_bishop_gets_no_bonus (tests.test_eval_features.BishopPairTests.test_single_bishop_gets_no_bonus) ... ok
+test_start_position_stays_zero (tests.test_eval_features.BishopPairTests.test_start_position_stays_zero) ... ok
+test_symmetric_between_colours (tests.test_eval_features.BishopPairTests.test_symmetric_between_colours) ... ok
+test_advanced_king_is_ignored (tests.test_eval_features.KingSafetyTests.test_advanced_king_is_ignored) ... ok
+test_bare_king_is_penalised_on_all_three_files (tests.test_eval_features.KingSafetyTests.test_bare_king_is_penalised_on_all_three_files) ... ok
+test_full_shield_gets_no_penalty (tests.test_eval_features.KingSafetyTests.test_full_shield_gets_no_penalty) ... ok
+test_no_queens_means_no_king_safety (tests.test_eval_features.KingSafetyTests.test_no_queens_means_no_king_safety) ... ok
+test_off_by_default (tests.test_eval_features.KingSafetyTests.test_off_by_default) ... ok
+test_open_file_next_to_king_is_penalised (tests.test_eval_features.KingSafetyTests.test_open_file_next_to_king_is_penalised) ... ok
+test_start_position_stays_zero (tests.test_eval_features.KingSafetyTests.test_start_position_stays_zero) ... ok
+test_symmetric_between_colours (tests.test_eval_features.KingSafetyTests.test_symmetric_between_colours) ... ok
+test_blocked_pawn_gets_no_bonus (tests.test_eval_features.PassedPawnTests.test_blocked_pawn_gets_no_bonus) ... ok
+test_more_advanced_is_worth_more (tests.test_eval_features.PassedPawnTests.test_more_advanced_is_worth_more) ... ok
+test_neighbouring_file_pawn_blocks (tests.test_eval_features.PassedPawnTests.test_neighbouring_file_pawn_blocks) ... ok
+test_off_by_default (tests.test_eval_features.PassedPawnTests.test_off_by_default) ... ok
+test_passed_pawn_is_rewarded (tests.test_eval_features.PassedPawnTests.test_passed_pawn_is_rewarded) ... ok
+test_pawn_beside_does_not_block (tests.test_eval_features.PassedPawnTests.test_pawn_beside_does_not_block) ... ok
+test_start_position_stays_zero (tests.test_eval_features.PassedPawnTests.test_start_position_stays_zero) ... ok
+test_symmetric_between_colours (tests.test_eval_features.PassedPawnTests.test_symmetric_between_colours) ... ok
+test_backward_pawn_is_penalised (tests.test_eval_features.PawnStructureTests.test_backward_pawn_is_penalised) ... ok
+test_doubled_pawns_are_penalised_once_per_extra_pawn (tests.test_eval_features.PawnStructureTests.test_doubled_pawns_are_penalised_once_per_extra_pawn) ... ok
+test_isolated_is_not_also_backward (tests.test_eval_features.PawnStructureTests.test_isolated_is_not_also_backward) ... ok
+test_isolated_pawn_is_penalised (tests.test_eval_features.PawnStructureTests.test_isolated_pawn_is_penalised) ... ok
+test_off_by_default (tests.test_eval_features.PawnStructureTests.test_off_by_default) ... ok
+test_start_position_stays_zero (tests.test_eval_features.PawnStructureTests.test_start_position_stays_zero) ... ok
+test_symmetric_between_colours (tests.test_eval_features.PawnStructureTests.test_symmetric_between_colours) ... ok
+test_bad_value_is_ignored (tests.test_eval_features.UciSwitchTests.test_bad_value_is_ignored) ... ok
+test_new_options_toggle (tests.test_eval_features.UciSwitchTests.test_new_options_toggle) ... ok
+test_option_is_declared_and_toggles (tests.test_eval_features.UciSwitchTests.test_option_is_declared_and_toggles) ... ok
+test_default_is_off (tests.test_lmp.LateMovePruningTests.test_default_is_off) ... ok
+test_reduces_nodes_on_a_quiet_position (tests.test_lmp.LateMovePruningTests.test_reduces_nodes_on_a_quiet_position) ... ok
+test_still_finds_the_forced_mate (tests.test_lmp.LateMovePruningTests.test_still_finds_the_forced_mate) ... ok
+test_uci_option_toggles_the_searcher (tests.test_lmp.LateMovePruningTests.test_uci_option_toggles_the_searcher) ... ok
+test_advertised_defaults_are_recorded (tests.test_match_metadata.BookMetadataTests.test_advertised_defaults_are_recorded) ... ok
+test_disabling_keeps_the_configured_file_without_claiming_a_book_hit (tests.test_match_metadata.BookMetadataTests.test_disabling_keeps_the_configured_file_without_claiming_a_book_hit) ... ok
+test_ownbook_and_custom_file_match_the_last_case_insensitive_override (tests.test_match_metadata.BookMetadataTests.test_ownbook_and_custom_file_match_the_last_case_insensitive_override) ... ok
+test_unsupported_options_are_unknown (tests.test_match_metadata.BookMetadataTests.test_unsupported_options_are_unknown) ... ok
+test_cli_accepts_the_override (tests.test_match_metadata.GitOverrideTests.test_cli_accepts_the_override) ... ok
+test_no_override_outside_a_repository_stays_unknown (tests.test_match_metadata.GitOverrideTests.test_no_override_outside_a_repository_stays_unknown) ... ok
+test_override_replaces_the_commit_outside_a_repository (tests.test_match_metadata.GitOverrideTests.test_override_replaces_the_commit_outside_a_repository) ... ok
+test_en_passant_that_exposes_the_king_is_rejected (tests.test_movegen_equivalence.LegalMoveEquivalenceTests.test_en_passant_that_exposes_the_king_is_rejected) ... ok
+test_pinned_knight_has_no_moves (tests.test_movegen_equivalence.LegalMoveEquivalenceTests.test_pinned_knight_has_no_moves) ... ok
+test_random_playouts (tests.test_movegen_equivalence.LegalMoveEquivalenceTests.test_random_playouts) ... ok
+test_reference_trees_to_depth_two (tests.test_movegen_equivalence.LegalMoveEquivalenceTests.test_reference_trees_to_depth_two) ... ok
+test_special_positions (tests.test_movegen_equivalence.LegalMoveEquivalenceTests.test_special_positions) ... ok
+test_balanced_lines_are_accepted_and_written (tests.test_openings.BuildTests.test_balanced_lines_are_accepted_and_written) ... ok
+test_duplicate_final_lines_are_kept_once (tests.test_openings.BuildTests.test_duplicate_final_lines_are_kept_once) ... ok
+test_mate_scores_are_rejected (tests.test_openings.BuildTests.test_mate_scores_are_rejected) ... ok
+test_unbalanced_lines_are_rejected (tests.test_openings.BuildTests.test_unbalanced_lines_are_rejected) ... ok
+test_long_seed_is_truncated (tests.test_openings.CompletionTests.test_long_seed_is_truncated) ... ok
+test_short_seed_is_extended_to_the_target_length (tests.test_openings.CompletionTests.test_short_seed_is_extended_to_the_target_length) ... ok
+test_parse_seeds_rejects_an_illegal_move (tests.test_openings.SeedTests.test_parse_seeds_rejects_an_illegal_move) ... ok
+test_parse_seeds_skips_comments_and_blank_lines (tests.test_openings.SeedTests.test_parse_seeds_skips_comments_and_blank_lines) ... ok
+test_aborted_partner_breaks_the_pair (tests.test_pairing.CompletedPairsTests.test_aborted_partner_breaks_the_pair) ... ok
+test_keeps_only_complete_pairs (tests.test_pairing.CompletedPairsTests.test_keeps_only_complete_pairs) ... ok
+test_aborted_games_are_not_counted_as_excluded (tests.test_pairing.SelectSampleTests.test_aborted_games_are_not_counted_as_excluded) ... ok
+test_sample_is_frozen_at_the_decision (tests.test_pairing.SelectSampleTests.test_sample_is_frozen_at_the_decision) ... ok
+test_sprt_without_decision_uses_pairs_of_all_games (tests.test_pairing.SelectSampleTests.test_sprt_without_decision_uses_pairs_of_all_games) ... ok
+test_without_sprt_every_finished_game_counts (tests.test_pairing.SelectSampleTests.test_without_sprt_every_finished_game_counts) ... ok
+test_all_plan_reference_counts (tests.test_perft.PerftReferenceTests.test_all_plan_reference_counts) ... ok
+test_perft_stats_sum_to_leaf_count (tests.test_perft.PerftReferenceTests.test_perft_stats_sum_to_leaf_count) ... ok
+test_null_move_is_skipped_without_non_pawn_material (tests.test_pvs.PvsEnablesNullMoveTests.test_null_move_is_skipped_without_non_pawn_material) ... ok
+test_null_move_never_runs_with_null_move_off (tests.test_pvs.PvsEnablesNullMoveTests.test_null_move_never_runs_with_null_move_off) ... ok
+test_pvs_makes_null_move_run (tests.test_pvs.PvsEnablesNullMoveTests.test_pvs_makes_null_move_run) ... ok
+test_best_move_is_legal_and_mate_is_found (tests.test_pvs.PvsEquivalenceTests.test_best_move_is_legal_and_mate_is_found) ... ok
+test_board_is_restored_after_search (tests.test_pvs.PvsEquivalenceTests.test_board_is_restored_after_search) ... ok
+test_runs_with_every_feature_on (tests.test_pvs.PvsEquivalenceTests.test_runs_with_every_feature_on) ... ok
+test_same_score_as_alpha_beta (tests.test_pvs.PvsEquivalenceTests.test_same_score_as_alpha_beta) ... ok
+test_same_score_with_killers_off (tests.test_pvs.PvsEquivalenceTests.test_same_score_with_killers_off) ... ok
+test_off_by_default (tests.test_pvs.PvsOptionTests.test_off_by_default) ... ok
+test_uci_option (tests.test_pvs.PvsOptionTests.test_uci_option) ... ok
+test_side_to_move_perspective (tests.test_search.EvalTests.test_side_to_move_perspective) ... ok
+test_starting_position_is_equal (tests.test_search.EvalTests.test_starting_position_is_equal) ... ok
+test_white_up_a_queen_is_positive (tests.test_search.EvalTests.test_white_up_a_queen_is_positive) ... ok
+test_is_draw_agrees (tests.test_search.FiftyMoveVersusMateTests.test_is_draw_agrees) ... ok
+test_mate_that_lands_on_the_100th_halfmove_is_found (tests.test_search.FiftyMoveVersusMateTests.test_mate_that_lands_on_the_100th_halfmove_is_found) ... ok
+test_negamax_scores_mate_not_draw (tests.test_search.FiftyMoveVersusMateTests.test_negamax_scores_mate_not_draw) ... ok
+test_quiescence_scores_mate_not_draw (tests.test_search.FiftyMoveVersusMateTests.test_quiescence_scores_mate_not_draw) ... ok
+test_stalemate_and_quiet_positions_at_100_are_still_draws (tests.test_search.FiftyMoveVersusMateTests.test_stalemate_and_quiet_positions_at_100_are_still_draws) ... ok
+test_checkmate_position_has_no_move (tests.test_search.SearchTests.test_checkmate_position_has_no_move) ... ok
+test_external_stop_before_search_has_no_fabricated_score (tests.test_search.SearchTests.test_external_stop_before_search_has_no_fabricated_score) ... ok
+test_finds_mate_in_one (tests.test_search.SearchTests.test_finds_mate_in_one) ... ok
+test_nodes_limit_is_enforced (tests.test_search.SearchTests.test_nodes_limit_is_enforced) ... ok
+test_reported_depth_is_last_completed_iteration (tests.test_search.SearchTests.test_reported_depth_is_last_completed_iteration) ... ok
+test_rook_takes_hanging_queen (tests.test_search.SearchTests.test_rook_takes_hanging_queen) ... ok
+test_same_rng_seed_gives_same_tie_break (tests.test_search.SearchTests.test_same_rng_seed_gives_same_tie_break) ... ok
+test_search_is_deterministic (tests.test_search.SearchTests.test_search_is_deterministic) ... ok
+test_search_returns_legal_move (tests.test_search.SearchTests.test_search_returns_legal_move) ... ok
+test_stalemate_is_draw (tests.test_search.SearchTests.test_stalemate_is_draw) ... ok
+test_tie_break_never_picks_a_worse_move (tests.test_search.SearchTests.test_tie_break_never_picks_a_worse_move) ... ok
+test_ties_are_broken_by_seeded_rng (tests.test_search.SearchTests.test_ties_are_broken_by_seeded_rng) ... ok
+test_time_limit_returns_legal_move_with_honest_depth (tests.test_search.SearchTests.test_time_limit_returns_legal_move_with_honest_depth) ... ok
+test_zero_time_still_returns_a_legal_move_without_deep_search (tests.test_search.SearchTests.test_zero_time_still_returns_a_legal_move_without_deep_search) ... ok
+test_every_book_move_is_legal_and_reachable (tests.test_shipped_book.ShippedBookTests.test_every_book_move_is_legal_and_reachable) ... ok
+test_every_seed_position_up_to_book_depth_is_present (tests.test_shipped_book.ShippedBookTests.test_every_seed_position_up_to_book_depth_is_present) ... ok
+test_seed_list_keeps_the_accepted_base (tests.test_shipped_book.ShippedBookTests.test_seed_list_keeps_the_accepted_base) ... ok
+test_start_position_has_several_replies (tests.test_shipped_book.ShippedBookTests.test_start_position_has_several_replies) ... ok
+test_captures_are_a_subset_of_all_legal_moves (tests.test_stage4.CaptureGenerationTests.test_captures_are_a_subset_of_all_legal_moves) ... ok
+test_captures_only_never_makes_quiet_moves (tests.test_stage4.CaptureGenerationTests.test_captures_only_never_makes_quiet_moves) ... ok
+test_kiwipete_has_eight_captures (tests.test_stage4.CaptureGenerationTests.test_kiwipete_has_eight_captures) ... ok
+test_movegen_leaves_the_board_unchanged (tests.test_stage4.CaptureGenerationTests.test_movegen_leaves_the_board_unchanged) ... ok
+test_queen_promotion_push_is_generated (tests.test_stage4.CaptureGenerationTests.test_queen_promotion_push_is_generated) ... ok
+test_start_position_has_no_captures (tests.test_stage4.CaptureGenerationTests.test_start_position_has_no_captures) ... ok
+test_central_knight_beats_corner_knight (tests.test_stage4.PieceSquareEvalTests.test_central_knight_beats_corner_knight) ... ok
+test_cornered_enemy_king_is_better_for_us (tests.test_stage4.PieceSquareEvalTests.test_cornered_enemy_king_is_better_for_us) ... ok
+test_endgame_king_prefers_the_centre (tests.test_stage4.PieceSquareEvalTests.test_endgame_king_prefers_the_centre) ... ok
+test_score_flips_sign_with_the_side_to_move (tests.test_stage4.PieceSquareEvalTests.test_score_flips_sign_with_the_side_to_move) ... ok
+test_start_position_is_exactly_zero (tests.test_stage4.PieceSquareEvalTests.test_start_position_is_exactly_zero) ... ok
+test_does_not_grab_a_defended_pawn_with_the_queen (tests.test_stage4.QuiescenceTests.test_does_not_grab_a_defended_pawn_with_the_queen) ... ok
+test_still_takes_an_undefended_piece (tests.test_stage4.QuiescenceTests.test_still_takes_an_undefended_piece) ... ok
+test_budget_is_a_share_of_the_clock (tests.test_stage4.TimeManagementTests.test_budget_is_a_share_of_the_clock) ... ok
+test_budget_is_at_least_one_millisecond (tests.test_stage4.TimeManagementTests.test_budget_is_at_least_one_millisecond) ... ok
+test_budget_never_exceeds_half_the_clock (tests.test_stage4.TimeManagementTests.test_budget_never_exceeds_half_the_clock) ... ok
+test_budget_uses_most_of_the_increment (tests.test_stage4.TimeManagementTests.test_budget_uses_most_of_the_increment) ... ok
+test_go_depth_overrides_the_default (tests.test_stage4.TimeManagementTests.test_go_depth_overrides_the_default) ... ok
+test_go_with_clock_returns_a_legal_move (tests.test_stage4.TimeManagementTests.test_go_with_clock_returns_a_legal_move) ... ok
+test_moves_to_go_changes_the_share (tests.test_stage4.TimeManagementTests.test_moves_to_go_changes_the_share) ... ok
+test_captures_come_first_and_best_victim_leads (tests.test_stage5.OrderingTests.test_captures_come_first_and_best_victim_leads) ... ok
+test_hash_move_goes_first (tests.test_stage5.OrderingTests.test_hash_move_goes_first) ... ok
+test_lower_attacker_is_preferred_for_same_victim (tests.test_stage5.OrderingTests.test_lower_attacker_is_preferred_for_same_victim) ... ok
+test_ordering_keeps_all_moves (tests.test_stage5.OrderingTests.test_ordering_keeps_all_moves) ... ok
+test_pst_delta_is_signed_difference (tests.test_stage5.OrderingTests.test_pst_delta_is_signed_difference) ... ok
+test_fallback_prefers_free_capture (tests.test_stage5.SearcherTests.test_fallback_prefers_free_capture) ... ok
+test_finds_mate_in_one_with_table (tests.test_stage5.SearcherTests.test_finds_mate_in_one_with_table) ... ok
+test_interrupted_first_iteration_returns_legal_move (tests.test_stage5.SearcherTests.test_interrupted_first_iteration_returns_legal_move) ... ok
+test_ordering_reduces_nodes_versus_no_table_is_not_required (tests.test_stage5.SearcherTests.test_ordering_reduces_nodes_versus_no_table_is_not_required) ... ok
+test_reused_table_still_returns_legal_move (tests.test_stage5.SearcherTests.test_reused_table_still_returns_legal_move) ... ok
+test_table_fills_and_clears (tests.test_stage5.SearcherTests.test_table_fills_and_clears) ... ok
+test_table_never_exceeds_capacity (tests.test_stage5.SearcherTests.test_table_never_exceeds_capacity) ... ok
+test_zero_hash_disables_table (tests.test_stage5.SearcherTests.test_zero_hash_disables_table) ... ok
+test_mate_is_stored_relative_to_node (tests.test_stage5.TtScoreTests.test_mate_is_stored_relative_to_node) ... ok
+test_mate_score_round_trip (tests.test_stage5.TtScoreTests.test_mate_score_round_trip) ... ok
+test_hash_option_resizes_table (tests.test_stage5.UciIntegrationTests.test_hash_option_resizes_table) ... ok
+test_ucinewgame_clears_table (tests.test_stage5.UciIntegrationTests.test_ucinewgame_clears_table) ... ok
+test_all_heuristics_find_mate_in_one (tests.test_stage6.HeuristicTests.test_all_heuristics_find_mate_in_one) ... ok
+test_heuristics_can_be_disabled (tests.test_stage6.HeuristicTests.test_heuristics_can_be_disabled) ... ok
+test_history_raises_a_quiet_move (tests.test_stage6.HeuristicTests.test_history_raises_a_quiet_move) ... ok
+test_killer_move_is_ordered_before_other_quiet_moves (tests.test_stage6.HeuristicTests.test_killer_move_is_ordered_before_other_quiet_moves) ... ok
+test_kings_and_pawns_zugzwang_is_not_pruned_away (tests.test_stage6.HeuristicTests.test_kings_and_pawns_zugzwang_is_not_pruned_away) ... ok
+test_non_pawn_material_guard (tests.test_stage6.HeuristicTests.test_non_pawn_material_guard) ... ok
+test_search_leaves_board_unchanged (tests.test_stage6.HeuristicTests.test_search_leaves_board_unchanged) ... ok
+test_moves_work_after_null_move (tests.test_stage6.NullMoveBoardTests.test_moves_work_after_null_move) ... ok
+test_null_move_hash_matches_recomputation (tests.test_stage6.NullMoveBoardTests.test_null_move_hash_matches_recomputation) ... ok
+test_null_move_round_trip_restores_state (tests.test_stage6.NullMoveBoardTests.test_null_move_round_trip_restores_state) ... ok
+test_interrupted_before_any_root_move_keeps_previous_result (tests.test_stage6.PartialIterationTests.test_interrupted_before_any_root_move_keeps_previous_result) ... ok
+test_interrupted_iteration_uses_its_best_move_so_far (tests.test_stage6.PartialIterationTests.test_interrupted_iteration_uses_its_best_move_so_far) ... ok
+test_even_match_is_zero_with_interval_around_zero (tests.test_stats.EloTests.test_even_match_is_zero_with_interval_around_zero) ... ok
+test_expected_score_at_equal_strength (tests.test_stats.EloTests.test_expected_score_at_equal_strength) ... ok
+test_expected_score_for_400_elo_edge (tests.test_stats.EloTests.test_expected_score_for_400_elo_edge) ... ok
+test_no_games_has_no_estimate (tests.test_stats.EloTests.test_no_games_has_no_estimate) ... ok
+test_perfect_record_has_a_finite_lower_bound_only (tests.test_stats.EloTests.test_perfect_record_has_a_finite_lower_bound_only) ... ok
+test_perfect_score_has_no_finite_estimate (tests.test_stats.EloTests.test_perfect_score_has_no_finite_estimate) ... ok
+test_score_to_elo_is_undefined_at_extremes (tests.test_stats.EloTests.test_score_to_elo_is_undefined_at_extremes) ... ok
+test_score_to_elo_round_trip (tests.test_stats.EloTests.test_score_to_elo_round_trip) ... ok
+test_small_sample_interval_is_wider_than_the_normal_approximation (tests.test_stats.EloTests.test_small_sample_interval_is_wider_than_the_normal_approximation) ... ok
+test_wilson_interval_reference_values (tests.test_stats.EloTests.test_wilson_interval_reference_values) ... ok
+test_a_perfect_short_record_is_not_accepted (tests.test_stats.SprtTests.test_a_perfect_short_record_is_not_accepted) ... ok
+test_all_draws_favour_h0 (tests.test_stats.SprtTests.test_all_draws_favour_h0) ... ok
+test_decisions (tests.test_stats.SprtTests.test_decisions) ... ok
+test_larger_elo1_accepts_a_big_gain (tests.test_stats.SprtTests.test_larger_elo1_accepts_a_big_gain) ... ok
+test_llr_matches_brute_force_maximum_likelihood (tests.test_stats.SprtTests.test_llr_matches_brute_force_maximum_likelihood) ... ok
+test_log_bounds_for_five_percent_errors (tests.test_stats.SprtTests.test_log_bounds_for_five_percent_errors) ... ok
+test_losing_record_gives_negative_llr (tests.test_stats.SprtTests.test_losing_record_gives_negative_llr) ... ok
+test_no_games_gives_zero_llr (tests.test_stats.SprtTests.test_no_games_gives_zero_llr) ... ok
+test_reference_values (tests.test_stats.SprtTests.test_reference_values) ... ok
+test_swapping_sides_and_hypotheses_keeps_the_llr (tests.test_stats.SprtTests.test_swapping_sides_and_hypotheses_keeps_the_llr) ... ok
+test_winning_record_gives_positive_llr (tests.test_stats.SprtTests.test_winning_record_gives_positive_llr) ... ok
+test_without_draws_it_is_the_bernoulli_ratio (tests.test_stats.SprtTests.test_without_draws_it_is_the_bernoulli_ratio) ... ok
+test_cut_search_reports_the_unfinished_iteration (tests.test_telemetry.AttemptedDepthTests.test_cut_search_reports_the_unfinished_iteration) ... ok
+test_finished_search_attempted_equals_completed (tests.test_telemetry.AttemptedDepthTests.test_finished_search_attempted_equals_completed) ... ok
+test_scoreless_fallback_still_reports_depth_zero_and_nodes (tests.test_telemetry.AttemptedDepthTests.test_scoreless_fallback_still_reports_depth_zero_and_nodes) ... ok
+test_uci_reports_attempted_depth_before_bestmove (tests.test_telemetry.AttemptedDepthTests.test_uci_reports_attempted_depth_before_bestmove) ... ok
+test_attempted_depth_line (tests.test_telemetry.ParseInfoLineTests.test_attempted_depth_line) ... ok
+test_mate_score (tests.test_telemetry.ParseInfoLineTests.test_mate_score) ... ok
+test_progress_bound_and_string_lines_are_ignored (tests.test_telemetry.ParseInfoLineTests.test_progress_bound_and_string_lines_are_ignored) ... ok
+test_scored_line_keeps_depth_nodes_time_and_score (tests.test_telemetry.ParseInfoLineTests.test_scored_line_keeps_depth_nodes_time_and_score) ... ok
+test_scoreless_line_with_depth_and_nodes_is_recorded (tests.test_telemetry.ParseInfoLineTests.test_scoreless_line_with_depth_and_nodes_is_recorded) ... ok
+test_lines_for_new_fields (tests.test_telemetry.SummaryTelemetryTests.test_lines_for_new_fields) ... ok
+test_old_results_without_the_fields_add_nothing (tests.test_telemetry.SummaryTelemetryTests.test_old_results_without_the_fields_add_nothing) ... ok
+test_clock_mismatch_keeps_only_the_move_hint (tests.test_tt_context.TTContextTests.test_clock_mismatch_keeps_only_the_move_hint) ... ok
+test_depth_preference_is_retained_for_the_same_context (tests.test_tt_context.TTContextTests.test_depth_preference_is_retained_for_the_same_context) ... ok
+test_history_snapshot_survives_make_and_unmake (tests.test_tt_context.TTContextTests.test_history_snapshot_survives_make_and_unmake) ... ok
+test_new_context_can_replace_a_deeper_old_context (tests.test_tt_context.TTContextTests.test_new_context_can_replace_a_deeper_old_context) ... ok
+test_nonzero_contempt_separates_root_perspectives (tests.test_tt_context.TTContextTests.test_nonzero_contempt_separates_root_perspectives) ... ok
+test_null_subtree_neither_consumes_nor_replaces_a_real_score (tests.test_tt_context.TTContextTests.test_null_subtree_neither_consumes_nor_replaces_a_real_score) ... ok
+test_pawn_move_drops_irrelevant_prior_history (tests.test_tt_context.TTContextTests.test_pawn_move_drops_irrelevant_prior_history) ... ok
+test_same_fen_and_clock_with_different_known_history_cannot_reuse_score (tests.test_tt_context.TTContextTests.test_same_fen_and_clock_with_different_known_history_cannot_reuse_score) ... ok
+test_descendant_repetition_is_not_reused_under_a_different_history (tests.test_tt_context.TTDrawRegressionTests.test_descendant_repetition_is_not_reused_under_a_different_history) ... ok
+test_draw_from_a_late_clock_does_not_poison_an_early_clock (tests.test_tt_context.TTDrawRegressionTests.test_draw_from_a_late_clock_does_not_poison_an_early_clock) ... ok
+test_repetition_draw_does_not_poison_a_fresh_history (tests.test_tt_context.TTDrawRegressionTests.test_repetition_draw_does_not_poison_a_fresh_history) ... ok
+test_warm_clock_zero_table_does_not_hide_the_fifty_move_draw (tests.test_tt_context.TTDrawRegressionTests.test_warm_clock_zero_table_does_not_hide_the_fifty_move_draw) ... ok
+test_matches_the_classical_evaluation (tests.test_tune.FeatureTests.test_matches_the_classical_evaluation) ... ok
+test_parameter_count (tests.test_tune.FeatureTests.test_parameter_count) ... ok
+test_start_position_is_symmetric (tests.test_tune.FeatureTests.test_start_position_is_symmetric) ... ok
+test_gradient_matches_finite_differences (tests.test_tune.GradientTests.test_gradient_matches_finite_differences) ... ok
+test_go_infinite_waits_for_stop (tests.test_uci.UciSessionTests.test_go_infinite_waits_for_stop) ... ok
+test_go_nodes_limit (tests.test_uci.UciSessionTests.test_go_nodes_limit) ... ok
+test_go_returns_a_legal_move (tests.test_uci.UciSessionTests.test_go_returns_a_legal_move) ... ok
+test_illegal_move_is_reported_and_position_unchanged (tests.test_uci.UciSessionTests.test_illegal_move_is_reported_and_position_unchanged) ... ok
+test_isready (tests.test_uci.UciSessionTests.test_isready) ... ok
+test_no_legal_moves_gives_null_move (tests.test_uci.UciSessionTests.test_no_legal_moves_gives_null_move) ... ok
+test_position_fen_with_moves (tests.test_uci.UciSessionTests.test_position_fen_with_moves) ... ok
+test_position_with_moves_is_applied (tests.test_uci.UciSessionTests.test_position_with_moves_is_applied) ... ok
+test_quit_sets_flag (tests.test_uci.UciSessionTests.test_quit_sets_flag) ... ok
+test_search_is_deterministic (tests.test_uci.UciSessionTests.test_search_is_deterministic) ... ok
+test_setoption_updates_seed (tests.test_uci.UciSessionTests.test_setoption_updates_seed) ... ok
+test_uci_handshake (tests.test_uci.UciSessionTests.test_uci_handshake) ... ok
+test_eval_option_is_applied_only_after_the_old_worker_stops (tests.test_uci_async.AsyncSessionTests.test_eval_option_is_applied_only_after_the_old_worker_stops) ... ok
+test_finite_search_publishes_without_another_input_command (tests.test_uci_async.AsyncSessionTests.test_finite_search_publishes_without_another_input_command) ... ok
+test_infinite_search_does_not_publish_before_stop_even_if_finished (tests.test_uci_async.AsyncSessionTests.test_infinite_search_does_not_publish_before_stop_even_if_finished) ... ok
+test_new_game_cancels_before_replacing_the_board (tests.test_uci_async.AsyncSessionTests.test_new_game_cancels_before_replacing_the_board) ... ok
+test_option_change_waits_for_cancel_before_resizing (tests.test_uci_async.AsyncSessionTests.test_option_change_waits_for_cancel_before_resizing) ... ok
+test_position_waits_for_cancel_and_suppresses_old_result (tests.test_uci_async.AsyncSessionTests.test_position_waits_for_cancel_and_suppresses_old_result) ... ok
+test_quit_cancels_and_does_not_publish_an_old_move (tests.test_uci_async.AsyncSessionTests.test_quit_cancels_and_does_not_publish_an_old_move) ... ok
+test_replacement_go_does_not_publish_the_cancelled_search (tests.test_uci_async.AsyncSessionTests.test_replacement_go_does_not_publish_the_cancelled_search) ... ok
+test_timed_search_is_ready_and_stops_once (tests.test_uci_async.AsyncSessionTests.test_timed_search_is_ready_and_stops_once) ... ok
+test_worker_error_is_reported_once_instead_of_silently_hanging (tests.test_uci_async.AsyncSessionTests.test_worker_error_is_reported_once_instead_of_silently_hanging) ... ok
+test_all_finite_limits_remain_ready_and_stop_with_one_legal_move (tests.test_uci_async.UciPipeTests.test_all_finite_limits_remain_ready_and_stop_with_one_legal_move) ... ok
+test_eof_cancels_an_active_search_and_exits (tests.test_uci_async.UciPipeTests.test_eof_cancels_an_active_search_and_exits) ... ok
+test_infinite_stop_still_returns_one_move (tests.test_uci_async.UciPipeTests.test_infinite_stop_still_returns_one_move) ... ok
+test_natural_completion_is_published_while_input_stays_open (tests.test_uci_async.UciPipeTests.test_natural_completion_is_published_while_input_stays_open) ... ok
+test_bishop_pair_option_does_not_reuse_the_old_score (tests.test_uci_configuration.ConfigurationSearchRegressionTests.test_bishop_pair_option_does_not_reuse_the_old_score) ... ok
+test_explicit_flag_mutation_matches_a_tt_disabled_oracle (tests.test_uci_configuration.ConfigurationSearchRegressionTests.test_explicit_flag_mutation_matches_a_tt_disabled_oracle) ... ok
+test_legacy_global_mutation_matches_a_tt_disabled_oracle (tests.test_uci_configuration.ConfigurationSearchRegressionTests.test_legacy_global_mutation_matches_a_tt_disabled_oracle) ... ok
+test_passed_pawn_option_does_not_reuse_the_old_score (tests.test_uci_configuration.ConfigurationSearchRegressionTests.test_passed_pawn_option_does_not_reuse_the_old_score) ... ok
+test_bad_boolean_changes_neither_configuration_nor_cache (tests.test_uci_configuration.UciConfigurationTests.test_bad_boolean_changes_neither_configuration_nor_cache) ... ok
+test_contempt_change_invalidates_but_same_value_does_not (tests.test_uci_configuration.UciConfigurationTests.test_contempt_change_invalidates_but_same_value_does_not) ... ok
+test_each_eval_change_clears_only_its_sessions_table (tests.test_uci_configuration.UciConfigurationTests.test_each_eval_change_clears_only_its_sessions_table) ... ok
+test_each_search_policy_change_invalidates_the_table (tests.test_uci_configuration.UciConfigurationTests.test_each_search_policy_change_invalidates_the_table) ... ok
+test_explicit_evaluators_and_sessions_are_independent (tests.test_uci_configuration.UciConfigurationTests.test_explicit_evaluators_and_sessions_are_independent) ... ok
+test_invalid_spin_values_do_not_apply_or_destroy_the_cache (tests.test_uci_configuration.UciConfigurationTests.test_invalid_spin_values_do_not_apply_or_destroy_the_cache) ... ok
+test_new_session_does_not_inherit_legacy_global_flags (tests.test_uci_configuration.UciConfigurationTests.test_new_session_does_not_inherit_legacy_global_flags) ... ok
+test_public_search_detects_a_replaced_legacy_default_object (tests.test_uci_configuration.UciConfigurationTests.test_public_search_detects_a_replaced_legacy_default_object) ... ok
+test_public_search_detects_changed_explicit_configuration (tests.test_uci_configuration.UciConfigurationTests.test_public_search_detects_changed_explicit_configuration) ... ok
+test_public_search_detects_changed_legacy_global_configuration (tests.test_uci_configuration.UciConfigurationTests.test_public_search_detects_changed_legacy_global_configuration) ... ok
+test_repeating_eval_and_search_values_preserves_valid_entries (tests.test_uci_configuration.UciConfigurationTests.test_repeating_eval_and_search_values_preserves_valid_entries) ... ok
+test_same_hash_preserves_cache_and_changed_hash_resizes (tests.test_uci_configuration.UciConfigurationTests.test_same_hash_preserves_cache_and_changed_hash_resizes) ... ok
+test_seed_and_time_policy_do_not_invalidate_node_scores (tests.test_uci_configuration.UciConfigurationTests.test_seed_and_time_policy_do_not_invalidate_node_scores) ... ok
+test_setting_the_same_seed_still_resets_the_random_stream (tests.test_uci_configuration.UciConfigurationTests.test_setting_the_same_seed_still_resets_the_random_stream) ... ok
+test_spin_ranges_match_the_advertised_protocol (tests.test_uci_configuration.UciConfigurationTests.test_spin_ranges_match_the_advertised_protocol) ... ok
+test_supported_spin_endpoints_are_accepted (tests.test_uci_configuration.UciConfigurationTests.test_supported_spin_endpoints_are_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 357 tests in 106.331s
+
+OK
+keep  Italian: +20 cp
+keep  Sicilian: +20 cp
+keep  A: +0 cp
+skip  B: duplicate line
+drop  Italian: mate score
+drop  Sicilian: mate score
+drop  Italian: +120 cp outside +-50
+drop  Sicilian: +120 cp outside +-50
+Starting position depth 1: 20
+Starting position depth 2: 400
+Starting position depth 3: 8902
+Starting position depth 4: 197281
+Kiwipete depth 1: 48
+Kiwipete depth 2: 2039
+Kiwipete depth 3: 97862
+Kiwipete depth 4: 4085603
+Position 3 depth 1: 14
+Position 3 depth 2: 191
+Position 3 depth 3: 2812
+Position 3 depth 4: 43238
+Position 4 depth 1: 6
+Position 4 depth 2: 264
+Position 4 depth 3: 9467
+Position 4 depth 4: 422333
+Position 5 depth 1: 44
+Position 5 depth 2: 1486
+Position 5 depth 3: 62379
+Position 6 depth 1: 46
+Position 6 depth 2: 2079
+Position 6 depth 3: 89890

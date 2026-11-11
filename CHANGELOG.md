@@ -1,5 +1,152 @@
 # Değişiklik günlüğü
 
+## Ana dala hazırlık — sekiz adımın doğrulanmış birleşimi
+
+- Son Kaggle kaydı `20261111T150657Z_fcced5ff`: 396 test başarılı; hata veya
+  atlanan test yok. Motor ağacı ve 10 konumun araması 7b sürümüyle aynı.
+- Önceki erken birleşmenin geri alma işlemi çözülerek doğrulanmış geliştirme
+  ağacının tamamı korunur; başlangıç referans araçları ve ham Kaggle kayıtları
+  birleşimden çıkarılmaz. Motor/araç/test kodları son doğrulanmış sürümle aynıdır.
+- Notebook varsayılan dalı `main`; sabit referans doğrulanmış 8. adım commit'idir.
+  Maçlar ve ek profil varsayılan kapalıdır. Elo artışı ölçülmedi.
+
+## Geliştirme — Adım 8: maç ve analiz araçlarında modül ayrımı
+
+- Maç aracı açılışlar, ayarlar/metadata ve tek oyun işçisi modüllerine ayrıldı.
+  Analiz aracından ham girdi okuma, sütun şemaları ve parça saklama/birleştirme
+  ayrıldı. Eski import adları yeniden dışa aktarılır; worker modül düzeyinde
+  serileştirilebilir. Motor kodu ve ham kayıt biçimleri değiştirilmedi.
+- Taşınan işlev gövdeleri AST ile, iki CLI'ın yardım metinleri birebir karşılaştırıldı.
+  Argüman varsayılanları ve seçili seçenekler aynı. 41 kısa modül/kimlik/parça/
+  sahte işçi kontrolü geçti (1,758 saniye); gerçek arama/maç yerelde başlatılmadı.
+- Analiz fingerprint'i ayrılan üç modülü de kapsar. Geçmiş çıktılar korunur;
+  yeni analiz notebook'u `data/analysis/step8` kullanır. Kaynak değiştiği için
+  eski analiz kimliğiyle yeni üretime devam edilmez.
+- Runner `step8-tool-modules` ile doğrulanmış 7b sürümüne karşı tam test ve arama
+  eşitliği bekler. Maçlar ve ek profil koşusu varsayılan kapalıdır. Kaggle
+  doğrulaması tamamlandı (`20261111T150657Z_fcced5ff`): 396 test başarılı;
+  motor ağacı ve arama birebir aynı. Tek koşuda süre 11,189→11,227 saniye.
+
+## Geliştirme — Adım 7 devamı: hafif şah güvenliği kontrolü
+
+- İlk deneme Kaggle'da 382 test ve arama eşitliğini sağladı; süre
+  14,438→14,424 saniye (yaklaşık %0,1) ile anlamlı hız kazanımı göstermedi.
+  Açmaz taraması çağrıları azaldı; profilli tam make/unmake sayısı 271497 kaldı.
+- Hızlı yasal hamle üretici, şah güvenliği için gereken kareleri geçici değiştirip
+  `is_square_attacked` çağırır; hash, taş listeleri, sayaçlar ve geçmiş güncellenmez.
+  Rokun kalesi, EP ile alınan piyon, terfi ve şahın yeni karesi kapsanır. Kareler
+  normal dönüşte ve istisnada geri yüklenir; geçici durum sırasında yalnızca
+  kare dizisini okuyan saldırı kontrolü çağrılır. Yavaş referans üretici ve gerçek
+  arama hamlelerinin make/unmake akışı korunur.
+- 25 kısa konum/hamle/geri yükleme/sahte terminal kontrolü geçti (0,348 saniye).
+  Yerelde gerçek arama, perft, benchmark veya profil başlatılmadı. Tam test paketi,
+  perft, arama eşitliği ve hız ölçümü Kaggle'ı bekliyor. Notebook
+  `step7b-legality-probe` ile ilk denemeye karşı birebir arama eşitliği ister;
+  maçlar kapalı, profil kayıtları açıktır. Hız artışı henüz doğrulanmadı.
+- Kaggle doğrulaması tamamlandı (`20261111T144401Z_61796702`): 387 test geçti;
+  10 konumda aynı arama ve 173729 düğüm korundu. Profilsiz süre 14,411→11,130
+  saniye (%22,8 azalma), işleme hızı 12055→15609 düğüm/saniye (%29,5 artış).
+  Profilli tam make/unmake çağrıları 271497→66798 azaldı; profilli arama da aynı.
+  Bunlar tek koşunun ölçümleridir; Elo artışı ölçülmedi.
+
+## Geliştirme — Adım 7: düğüm içi hazırlık paylaşımı ve profil
+
+- Sakinleştirme aramasında pat kontrolü ve alma üretimi için açmazlar/sıralı taş
+  listesi aynı düğüm içindeki `LegalMoveContext` ile bir kez hazırlanır. Normal
+  üretici arayüzü korunur; bağlam farklı/değişmiş tahtada reddedilir. Mat/pat,
+  terfiler, değerlendirme ve arama sırası değiştirilmez.
+- 26 kısa konum/hamle üretimi/sahte akış/profil raporu kontrolü geçti (0,082 saniye).
+  Gerçek aramalar, benchmark veya profil yerelde başlatılmadı. Hız kazanımı
+  Kaggle ölçümünü bekliyor; skor/hamle/derinlik/düğüm eşitliği zorunlu.
+- `tools.profile_search`, iki kaynak motor ağacı için ayrı cProfile JSON kayıtları
+  üretir. Notebook `step7-quiescence-performance` etiketiyle 6. adımı referans
+  alır; normal benchmark sonrası derinlik 3 profilini ve çağrı karşılaştırmasını
+  yayımlar. Profil süreleri hız oranı değildir. Maçlar kapalıdır.
+
+## Geliştirme — Adım 6: ufukta oyun sonu doğruluğu
+
+- Sakinleştirme araması statik puan/beta kesmesi ve MAX_PLY sınırından önce
+  mat/patı tanır. Yasal hamlesi olmayan şah çekilmemiş konum, normal Contempt
+  politikasına göre beraberlik puanı alır; sınırdaki mat statik puana dönüşmez.
+- `captures_only` üretimi sessiz ve alarak terfilerde Q/R/B/N seçeneklerinin
+  tamamını içerir. Vezirin pat ettiği ama kalenin oyunu sürdürdüğü konumda
+  ufuk araması kale terfisini görebilir. Değerlendirme ağırlıkları/özellik
+  varsayılanları değiştirilmedi.
+- 14 kısa konum/hamle üretimi/sahte terminal akışı kontrolü geçti (0,052 saniye).
+  Gerçek aramalar çalıştırılmadı; iki renk, farklı pencereler, güvenlik sınırı ve
+  sıcak/boş/kapalı TT ile kale terfisi regresyonları Kaggle'a bırakıldı.
+- Notebook `step6-endgame-rules` etiketiyle doğrulanmış 5. adıma karşı protokolü
+  denetler; arama farkları inceleme için saklanır. Ek yasal hamle kontrolünün
+  süre maliyeti olabilir; benchmark bunu ölçecek. Maçlar varsayılan kapalıdır.
+- Kaggle doğrulaması tamamlandı (`20261111T110935Z_bc955baa`): 370 test geçti;
+  pat, sınırda mat ve kale terfisi gerçek arama regresyonları başarılı. 10 konumda
+  skor/hamle/derinlik aynı; düğüm 160046→173729 (+%8,5), tek koşuda süre
+  10,838→13,664 saniye (+%26,1). Bu ölçüm bir Elo artışı kararı değildir.
+
+## Geliştirme — Adım 5: analiz kimliği ve kitap metadata doğruluğu
+
+- Analiz konfigürasyonu Stockfish dosyası, derinlik, Syzygy WDL içerikleri,
+  python-chess ve analiz kaynaklarından kimlik alır. Cache/parça adları ve
+  manifestler bu kimliği taşır; uyumsuz veya eski ayarlarla aynı klasöre devam
+  edilmez. Eski kayıtlar okunabilir ve değiştirilmez; cache atomik yazılır.
+- Rapor parça kimliği/bütünlüğünü denetler. Yapılandırılmış Syzygy açılamazsa
+  worker sessizce Stockfish-only analize dönmez. Yeni analiz notebook'u geliştirme
+  dalını ve ayrı `data/analysis/step5` klasörünü kullanır.
+- Maç metadata'sı iki tarafın OwnBook/BookFile varsayılanları ve son seçeneklerini
+  kaydeder; desteklenmeyen alanlar null'dır. Bu bilgi kitap isabeti ölçümü değildir.
+- 29 kısa sahte-veri/ayar kontrolü geçti; yerelde gerçek motor araması veya maç
+  başlatılmadı. Worker başlatma hataları sonsuz süreç yeniden başlatma döngüsü
+  yerine göreve aktarılır. Tam paket ve gerçek
+  pipe/arama kontrolleri Kaggle'a bırakılır. Runner `step5-analysis-provenance`
+  etiketiyle doğrulanmış 4. adıma karşı arama eşitliği ister; maçlar kapalıdır.
+- Kaggle doğrulaması tamamlandı (`20261111T105705Z_9c0ab8ca`): 357 test geçti;
+  10 konumda skor/hamle/derinlik/düğüm 4. adımla aynı (160046 düğüm).
+  Önceki ham kayıtlar değiştirilmedi.
+
+## Geliştirme — Adım 4: ayar izolasyonu ve TT geçersizleştirme
+
+- UCI oturumlarının `EvalFlags` nesneleri ayrıldı. Açık değerlendirme ayarı evaluator
+  ve Searcher'a aktarılır; eski doğrudan API'lerde global varsayılan korunur.
+- Eval/arama sezgiselleri/Contempt değiştiğinde TT temizlenir. Public `search()`
+  girişinde yapılandırma imzası denetlenir; aynı değer veya reddedilen ayar geçerli
+  önbelleği temizlemez. Seed ve süre bütçesi değişimleri TT'yi gereksiz sıfırlamaz.
+- Hash/Threads/Seed ve diğer sayısal seçenekler UCI'de ilan edilen sınırları
+  uygular. Aynı Seed yeniden verildiğinde RNG sıfırlama davranışı korunur.
+- 38 kısa ayar/bağlam/sahte-worker kontrolü geçti. Kaggle doğrulaması tamamlandı
+  (`20261111T103841Z_da6b3d57`): 335 test geçti; 10 konumda skor/hamle/derinlik/düğüm
+  doğrulanmış 3. adımla aynı (160046 düğüm). Ham kayıtlar değiştirilmedi.
+
+## Geliştirme — Adım 3: beraberlik bağlamına duyarlı TT
+
+- Zobrist tekrar anahtarı korunarak TT skorlarına yarım hamle sayacı ve bilinen
+  geri alınabilir konum geçmişi eklendi. Alt dalda bulunan bir tekrar beraberliği
+  de farklı geçmişe taşınmaz. Eşleşmeyen kayıt yalnızca hamle sıralamasına yardımcı olur.
+- Null-move alt ağaçlarında TT skoru okuma/yazma kapatıldı. Nonzero Contempt için
+  kök tarafı bağlama dahil edildi; farklı bağlamdaki daha derin kayıt yenisini engellemez.
+- Geçmiş anlık görüntüleri ihtiyatlıdır; TT isabetleri ve düğüm sayısı değişebilir.
+  Notebook `step3-tt-context` etiketiyle protokolü doğrular, arama farklarını saklar
+  ve inceleme gerektiriyorsa işaretler. Önceki ham kayıtlar değiştirilmez.
+- Kaggle doğrulaması tamamlandı (`20261111T101708Z_52588f4f`): 314 test geçti;
+  50 hamle sınırı ve alt daldan gelen tekrarın dört gerçek arama regresyonu başarılı.
+  10 konumda skor/hamle/derinlik aynı; düğüm sayısı 150018→160046 (+%6,7).
+  Bu tek koşuda süre 9,867→10,760 saniye (+%9); Elo sonucu çıkarılmadı.
+
+## Geliştirme — Adım 2: UCI durdurma akışı
+
+- CLI'da tüm aramalar ortak worker/stop-event yaşam döngüsüyle çalışır. Süreli,
+  derinlikli, saatli ve düğüm sınırlı `go` sırasında giriş komutları okunabilir;
+  `isready` yanıtlanır, `stop` mevcut aramayı durdurur.
+- Sonuç tek sefer yayımlanır. Doğal bitiş sonrası `stop`, eski konum/ayarlar
+  için geç sonuç ve `quit`/EOF sonrası worker sızıntısı için koruma eklendi.
+- Doğrudan `UciSession()` sonlu aramalarının senkron dönüş sözleşmesi korundu.
+  Arama algoritması ve değerlendirme değiştirilmedi.
+- Worker yaşam döngüsü ve gerçek UCI pipe regresyonları eklendi; Kaggle
+  notebook'u `step2-uci-stop` etiketiyle yeni kayıt toplar. Tam test paketi ve
+  benchmark Kaggle doğrulamasını bekliyor; yerelde uzun kontroller başlatılmadı.
+- Kaggle doğrulaması tamamlandı (`20261111T095720Z_22a03d90`): 302 test geçti,
+  13 yeni UCI kontrolü başarılı; 10 konumda skor/hamle/derinlik/düğüm eşleşti
+  (iki tarafta 150018 düğüm). Ham kayıtlar değiştirilmedi.
+
 ## 0.8.2 — Geniş açılış kitabı (90 hat, 18 ply)
 
 - `openings/book_seeds.txt`: kabul edilen 64 dengeli test hattı + 12 yeni Fransız dalı (Winawer ana/Poisoned Pawn, Steinitz, Burn, McCutcheon, Tarrasch 4.e5/Open, Advance Milner-Barry/Be2/Bd3, Rubinstein, KIA) + test setinde olmayan 14 popüler hat (Dragon Yugoslav, Classical Rauzer, Scheveningen Keres, Pirc, Modern, Scandinavian, Alekhine, KID Classical, Benoni, Benko, Dutch, King's Gambit, London vs KID, Spanish Classical). Toplam 90 hat; `acemi-64` test seti değişmedi.
