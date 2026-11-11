@@ -87,7 +87,8 @@ Testler başarısız olduğunda da oluşan günlükler gönderilmeye çalışıl
 
 Bu adımda aramanın değişmemesi beklenir; karşılaştırma konum kümesi, FEN, skor, derinlik,
 düğüm ve en iyi hamleyi kontrol eder. Varsayılan `RUN_VALIDATION_MATCHES=False` ayarıyla
-uzun self-play/Stockfish maçları çalışmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
+self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-play, 20 SF1500
+ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
 ## Maç çalıştırma

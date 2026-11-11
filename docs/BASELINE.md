@@ -20,9 +20,12 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 5. Başarılı iki kayıttan sonra karşılaştırma günlüğü ve `session.json` gönderilir.
 
 Notebook eski artımlı eval A/B deneyine ait `accept_h1` şartını kullanmaz. İsteğe
-bağlı 100 oyun self-play ve Stockfish kontrol maçları korunmuştur; yalnızca
-`RUN_VALIDATION_MATCHES=True` ile çalışırlar. Bu maçlardan gelen sonuçlar daha
-önceki gibi `data/runs/` altına yazılır.
+bağlı kısa kontroller yalnızca `RUN_VALIDATION_MATCHES=True` ile çalışır:
+`SELF_PLAY_GAMES=10` self-play, `STOCKFISH_GAMES=20` SF1500 ve aynı sayıda SF1320;
+toplam 50 oyun. Sayılar ilk ayar hücresinden değiştirilebilir; renk değişimli
+çiftler için pozitif çift sayılar kullanın. Varsayılan ayarda hiç maç oynanmaz.
+Bu küçük örnekler hata yakalamak içindir; Elo artışını kanıtlamaz. Maç sonuçları
+daha önceki gibi `data/runs/` altına yazılır.
 
 ## Dosyalar
 
