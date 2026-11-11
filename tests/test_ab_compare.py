@@ -97,6 +97,37 @@ class ExperimentTests(unittest.TestCase):
         self.assertFalse(args.sprt)
         self.assertEqual(plan["id"], "ab-500ms")
 
+    def test_same_build_feature_ab_is_one_bulk_100_game_run(self):
+        commit = "a" * 40
+        with patch.object(ab, "source_info", side_effect=lambda p, sha: {
+                "path": str(Path(p).resolve()), "commit": sha, "engine_tree": "tree-new"}):
+            plan = self.plan(name="qsee-fixture", new_commit=commit, old_commit=commit,
+                             new_options={"QuiescenceSEE": True}, old_options={"QuiescenceSEE": False},
+                             games=100, chunk_games=100, movetime_ms=500)
+            loaded = ab.load_plan(Path(plan["session_dir"]))
+        args = match._parse_args(ab.match_arguments(loaded, loaded["chunks"][0]))
+        self.assertEqual(args.git_commit, commit)
+        self.assertEqual((args.games, args.movetime_ms), (100, 500))
+        self.assertEqual(args.engine_option, ["OwnBook=false", "QuiescenceSEE=true"])
+        self.assertEqual(args.opponent_option, ["OwnBook=false", "QuiescenceSEE=false"])
+
+    def test_fixed_protocol_settings_cannot_be_overridden_as_features(self):
+        for overrides in ({"OwnBook": True}, {"Hash": True}, {"QuiescenceSEE": "true"}, {"bad\nname": True}):
+            with self.assertRaises(ValueError):
+                self.plan(new_options=overrides)
+
+    def test_feature_metadata_is_checked_before_checkpointing(self):
+        plan = self.plan(new_options={"QuiescenceSEE": True}, old_options={"QuiescenceSEE": False})
+        chunk = plan["chunks"][0]
+        run = self.fake_run(plan, chunk)
+        with self.assertRaisesRegex(ValueError, "feature options"):
+            ab._validate_run(plan, chunk, run)
+        meta = ab._read(run / "meta.json")
+        meta["engine_settings"]["extra_options"] = {"OwnBook": False, "QuiescenceSEE": True}
+        meta["opponent"]["extra_options"] = {"OwnBook": False, "QuiescenceSEE": False}
+        ab._write(run / "meta.json", meta)
+        ab._validate_run(plan, chunk, run)
+
     def test_completed_chunk_is_not_replayed_and_scores_are_new_perspective(self):
         plan = self.plan(games=4, chunk_games=2)
         def runner(argv, *, experiment):

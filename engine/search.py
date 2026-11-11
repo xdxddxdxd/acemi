@@ -23,6 +23,7 @@ Features:
 - Quiescence search at the horizon (captures, en passant, all promotions; all
   evasions when in check). Mate/stalemate are checked before stand-pat and the
   recursion safety limit so terminal leaves never receive a static score.
+  Opt-in QuiescenceSEE changes only non-check tactical ordering, without pruning.
 - Equal-scoring root moves are chosen between with a seeded RNG, so the engine
   does not shuffle and the same seed reproduces the same game.
 - Mate scores encode distance to mate: ``±(MATE_SCORE - ply)``.
@@ -51,6 +52,7 @@ from engine.eval import classic as classic_eval
 from engine.eval.base import evaluate
 from engine.eval.classic import EvalFlags, pst_delta
 from engine.movegen import LegalMoveContext, generate_legal_moves
+from engine.see import static_exchange
 
 MATE_SCORE = 100_000
 DRAW_SCORE = 0
@@ -231,8 +233,10 @@ class Searcher:
         contempt: int = 0,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
         eval_flags: EvalFlags | None = None,
+        quiescence_see: bool = False,
     ) -> None:
         self.eval_flags = eval_flags
+        self.use_quiescence_see = quiescence_see
         self.use_pvs = pvs
         self.contempt = contempt
         self._root_color: int | None = None
@@ -267,7 +271,8 @@ class Searcher:
     def _configuration_key(self) -> tuple:
         flags = classic_eval.FLAGS if self.eval_flags is None else self.eval_flags
         return (flags.signature(), self.use_null_move, self.use_lmr, self.use_killers,
-                self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt)
+                self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt,
+                self.use_quiescence_see)
 
     def sync_configuration(self) -> None:
         """Discard old scores after an evaluator/search policy change.
@@ -641,6 +646,17 @@ class Searcher:
         key = (moving_piece, move.to_square)
         self._history[key] = self._history.get(key, 0) + depth * depth
 
+    def _order_quiescence(self, board: Board, moves: list[Move], in_check: bool) -> None:
+        """SEE changes only tactical ordering outside check; never removes a move."""
+        if not self.use_quiescence_see or in_check or len(moves) < 2:
+            order_moves(board, moves)
+            return
+        scores = {}
+        for move in moves:
+            self._check_stopped()
+            scores[move] = (static_exchange(board, move), _move_score(board, move))
+        moves.sort(key=scores.__getitem__, reverse=True)
+
     def _quiesce(self, board: Board, alpha: int, beta: int, ply: int) -> int:
         """Resolve captures until the position is quiet, then evaluate.
 
@@ -682,7 +698,7 @@ class Searcher:
             ))
 
         self._check_stopped()
-        order_moves(board, moves)
+        self._order_quiescence(board, moves, in_check)
         for move in moves:
             board.make_move(move)
             try:

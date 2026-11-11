@@ -101,6 +101,20 @@ record opponent_timeouts/opponent_illegal_moves/opponent_engine_crashes.
 Legacy runs still exclude opponent failures. Aggregate results distinguish
 requested games, recorded attempts, counted games and aborted internal failures.
 
-### `data/index.csv`
+### Quiescence SEE experiment
+
+`codex/quiescence-see` adds `notebooks/kaggle_quiescence_see.ipynb` and
+`docs/QUIESCENCE_SEE.md`. Both sides use the same pinned full source commit;
+protocol `feature_options.new/old` distinguishes QuiescenceSEE true/false.
+The A/B collector validates recorded option overrides against the protocol.
+The feature defaults off and orders only non-check quiescence tactical moves;
+no capture is pruned. Draw adjudication and time policy are unchanged.
+`data/ab/<id>/validation/` records the full Kaggle test log, depth-3 reference,
+SEE-off and SEE-on diagnostics, source identity and hashed gate artifacts.
+SEE-off must match validated `4068a04` scores/moves/depths/nodes before matches.
+Local checks must not invoke `test_quiescence_see_search` or the real validation
+worker; all real searches and the single 100-game match run only in Kaggle.
+
+### `data/index.csv` columns
 
 One row per run: `run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision`.

@@ -71,7 +71,9 @@ def _runner_hashes():
 
 
 def prepare(out, new_source, old_source, *, games=100, chunk_games=10, movetime_ms=100,
-            concurrency=2, hash_mb=16, max_plies=400, seed=1):
+            concurrency=2, hash_mb=16, max_plies=400, seed=1,
+            new_commit=NEW_COMMIT, old_commit=OLD_COMMIT,
+            new_options=None, old_options=None):
     out = Path(out).resolve()
     if out.exists():
         raise FileExistsError(f"Session already exists; use its saved protocol to resume: {out}")
@@ -81,7 +83,16 @@ def prepare(out, new_source, old_source, *, games=100, chunk_games=10, movetime_
         raise ValueError("Game and chunk counts must be positive even numbers")
     if min(movetime_ms, concurrency, hash_mb, max_plies) < 1 or max_plies > 1000:
         raise ValueError("Invalid time, concurrency, hash or ply limit")
-    sources = {"new": source_info(new_source, NEW_COMMIT), "old": source_info(old_source, OLD_COMMIT)}
+    if any(not re.fullmatch(r"[0-9a-f]{40}", commit) for commit in (new_commit, old_commit)):
+        raise ValueError("Pin both sources to full commit SHAs")
+    options = {}
+    for label, overrides in (("new", new_options), ("old", old_options)):
+        options[label] = dict(overrides or {})
+        if any(not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", name)
+               or name.lower() in ("ownbook", "hash", "threads", "seed")
+               or type(value) is not bool for name, value in options[label].items()):
+            raise ValueError("Only boolean feature options may override the fixed protocol")
+    sources = {"new": source_info(new_source, new_commit), "old": source_info(old_source, old_commit)}
     if _git(ROOT, "rev-parse", "HEAD:engine") != sources["new"]["engine_tree"]:
         raise ValueError("Collector board implementation differs from the pinned new engine")
     opening_file = Path(new_source) / "openings" / "acemi-64.txt"
@@ -106,6 +117,7 @@ def prepare(out, new_source, old_source, *, games=100, chunk_games=10, movetime_
             "movetime_ms": movetime_ms, "hash_mb": hash_mb, "max_plies": max_plies,
             "concurrency": min(concurrency, os.cpu_count() or 1), "threads_per_engine": 1,
             "opening_book": False, "sprt_enabled": False, "timeout_grace_ms": 1000,
+            "feature_options": options,
             "forfeit_policy": "loss_for_either_engine",
             "opening_source_sha256": _sha(opening_file), "selection_seed": seed, "chunks": chunks,
             "runtime": platform.python_implementation(), "runtime_version": platform.python_version()}
@@ -123,9 +135,9 @@ def load_plan(out):
         raise ValueError("Experiment protocol identity/path differs")
     if plan["runner_sources"] != _runner_hashes():
         raise ValueError("Match runner code changed; use a new experiment id instead of mixing results")
-    for label, commit in (("new", NEW_COMMIT), ("old", OLD_COMMIT)):
+    for label in ("new", "old"):
         info = plan["sources"][label]
-        if info != source_info(info["path"], commit):
+        if info != source_info(info["path"], info["commit"]):
             raise ValueError(f"Pinned {label} source differs")
     if _git(ROOT, "rev-parse", "HEAD:engine") != plan["sources"]["new"]["engine_tree"]:
         raise ValueError("Collector engine changed")
@@ -144,7 +156,7 @@ def experiment_meta(plan, chunk):
 def match_arguments(plan, chunk):
     executable = [sys.executable, "-u", "-m", "engine"]
     command = subprocess.list2cmdline(executable) if os.name == "nt" else shlex.join(executable)
-    return ["--games", str(chunk["games"]), "--movetime-ms", str(plan["movetime_ms"]),
+    args = ["--games", str(chunk["games"]), "--movetime-ms", str(plan["movetime_ms"]),
             "--concurrency", str(plan["concurrency"]), "--hash-mb", str(plan["hash_mb"]),
             "--max-plies", str(plan["max_plies"]), "--grace-ms", str(plan["timeout_grace_ms"]),
             "--seed", str(chunk["seed"]), "--engine-cmd", command,
@@ -152,7 +164,11 @@ def match_arguments(plan, chunk):
             "--opponent-cwd", plan["sources"]["old"]["path"],
             "--engine-option", "OwnBook=false", "--opponent-option", "OwnBook=false",
             "--openings", str(Path(plan["session_dir"]) / chunk["openings"]),
-            "--git-commit", NEW_COMMIT, "--root", plan["repo_root"]]
+            "--git-commit", plan["sources"]["new"]["commit"], "--root", plan["repo_root"]]
+    for label, flag in (("new", "--engine-option"), ("old", "--opponent-option")):
+        for name, value in sorted(plan.get("feature_options", {}).get(label, {}).items()):
+            args.extend((flag, f"{name}={str(value).lower()}"))
+    return args
 
 
 def _runs(plan, chunk):
@@ -172,7 +188,7 @@ def _runs(plan, chunk):
 def _validate_run(plan, chunk, run):
     meta, result = _read(run / "meta.json"), _read(run / "results.json")
     if (meta.get("experiment") != experiment_meta(plan, chunk)
-            or meta["git_commit"] != NEW_COMMIT or meta["match_settings"]["games_requested"] != chunk["games"]
+            or meta["git_commit"] != plan["sources"]["new"]["commit"] or meta["match_settings"]["games_requested"] != chunk["games"]
             or meta["engine_settings"]["move_time_ms"] != plan["movetime_ms"]
             or meta["engine_settings"]["hash_mb"] != plan["hash_mb"]
             or meta["engine_settings"]["random_seed"] != chunk["seed"]
@@ -182,6 +198,10 @@ def _validate_run(plan, chunk, run):
             or result["sprt"]["enabled"] is not False
             or result["games"] + result.get("aborted_games", 0) != chunk["games"]):
         raise ValueError("Recorded chunk does not match the fixed A/B protocol")
+    for label, settings in (("new", meta["engine_settings"]), ("old", meta["opponent"])):
+        expected = plan.get("feature_options", {}).get(label, {})
+        if expected and settings.get("extra_options") != {"OwnBook": False, **expected}:
+            raise ValueError("Recorded feature options differ from the A/B protocol")
     index = Path(plan["repo_root"]) / "data" / "index.csv"
     with index.open(encoding="utf-8", newline="") as stream:
         if not any(row["run_name"] == run.name for row in csv.DictReader(stream)):
@@ -228,10 +248,12 @@ def summarize(plan):
                "requested_games": plan["games"], "recorded_attempts": attempts,
                "completed_chunks": completed, **totals,
                "score_pct": 100 * (totals["wins"] + totals["draws"] / 2) / totals["games"] if totals["games"] else None,
-               "score_perspective": "new engine (all eight changes)", "updated_at": _utc()}
+               "score_perspective": "new side (pinned source and feature options)", "updated_at": _utc()}
     out = Path(plan["session_dir"])
     _write(out / "results.json", summary)
-    text = (f"# A/B: {plan['id']}\n\n- New: `{NEW_COMMIT}`\n- Old: `{OLD_COMMIT}`\n"
+    text = (f"# A/B: {plan['id']}\n\n- New: `{plan['sources']['new']['commit']}`\n"
+            f"- Old: `{plan['sources']['old']['commit']}`\n"
+            f"- Feature options: {plan.get('feature_options', {})}\n"
             f"- Status: {summary['status']}; chunks {len(completed)}/{len(plan['chunks'])}\n"
             f"- Requested games: {plan['games']}; recorded attempts: {attempts}; counted: {totals['games']}\n"
             f"- New W/D/L: {totals['wins']}/{totals['draws']}/{totals['losses']}\n"

@@ -2,6 +2,11 @@
 
 Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sırası doğruluk, güç ve hızdır. Motor çekirdeği `engine/` altında yalnızca standart kütüphaneyle çalışır; `python-chess` yalnızca `tools/` ve testlerde kullanılır.
 
+Quiescence için deneysel SEE sıralaması: [deney açıklaması](docs/QUIESCENCE_SEE.md).
+`codex/quiescence-see` dalındaki `notebooks/kaggle_quiescence_see.ipynb`, önce
+Kaggle doğruluk kontrollerini, sonra SEE açık/kapalı **500 ms, tek toplu 100 maç**
+karşılaştırmasını çalıştırır. `QuiescenceSEE` varsayılan olarak kapalıdır.
+
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
 ## English summary
