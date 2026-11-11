@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "chunk": 1,
+  "run_name": "20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01",
+  "file_sha256": {
+    "meta.json": "a8a62c6c77bb771ac7ae9cfac70de4527cdb75fc899cd01b9f89b84798ef3a88",
+    "results.json": "f3821ce8135b0bc2328a13050f03b204d61abf0a725f6abb4e75560a5837ed7f",
+    "SUMMARY.md": "05773626a769d09e4c99ad26b4ac0b46da4c11665697ee52286f5a6fe5e4654a",
+    "games.pgn.gz": "5e0ac56d61846ab580202f2b093a9fbe1945e525650abbc14d1f4dd6751b8fac",
+    "moves.jsonl.gz": "c16a8c5eea8f9106c5f5ba5997448e5f4bdc3f18a9817f7f1a3e8dfa94d52d70",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "finished_at": "2026-11-11T17:34:23.192079+00:00"
+}

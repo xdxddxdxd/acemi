@@ -1,0 +1,29 @@
+# 20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01
+
+- Experiment: quiescence-see-100ms-100games-v1; chunk 1
+- New commit: `d0bbfe22eb01d0f8869b493182f8207a2770d3ca`; old commit: `d0bbfe22eb01d0f8869b493182f8207a2770d3ca`
+- Forfeits: either engine loses on timeout/illegal move/crash.
+- Engine: Acemi 0.8.2; opponent: Acemi 0.8.2
+- Opening set: chunk_01; move time: 100 ms
+- Games: 100 (W/D/L: 34/36/30), score: 52.0%
+- Elo difference: +13.9 (95% Wilson interval -53.8 to +81.6)
+- SPRT: not run
+- Completed games: 100; aborted games: 0; average plies: 111.3
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 2.7; nodes/second: 17556
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 c7c5: 0/0/2
+  - e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 e7e6: 0/0/2
+  - d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3: 0/0/2
+  - e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5: 0/0/2
+  - e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4 d2d4 d6d5: 0/0/2
+  - e2e4 c7c5 b1c3 b8c6 f2f4 g7g6 g1f3 f8g7 a2a4 a7a6: 1/0/1
+  - d2d4 d7d5 c2c4 c7c6 c4d5 c6d5 b1c3 g8f6 c1f4 b8c6: 0/1/1
+  - c2c4 g7g6 b1c3 f8g7 g2g3 g8f6 f1g2 e8g8 g1f3 d7d6: 0/1/1
+  - e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 d8d7 e1g1 g8f6: 1/0/1
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 a7a6: 1/0/1
+- Losses by game phase at game end (opening 0; middlegame 4; endgame 26). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 64, insufficient_material 1, threefold_repetition 35
+- Engine moves without a search score: 0 of 5065 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 18546 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'OwnBook': False, 'QuiescenceSEE': True}; opponent {'OwnBook': False, 'QuiescenceSEE': False}

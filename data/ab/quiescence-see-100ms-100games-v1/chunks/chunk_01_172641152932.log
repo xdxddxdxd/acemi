@@ -1,0 +1,132 @@
+Engine: Acemi 0.8.2 | Opponent: Acemi 0.8.2 | uci_elo=None
+game 1: Acemi white -> win (checkmate, 71 plies) | W/D/L 1/0/0
+game 2: Acemi black -> loss (checkmate, 75 plies) | W/D/L 1/0/1
+game 3: Acemi white -> loss (checkmate, 54 plies) | W/D/L 1/0/2
+game 4: Acemi black -> draw (threefold_repetition, 55 plies) | W/D/L 1/1/2
+game 6: Acemi black -> draw (threefold_repetition, 67 plies) | W/D/L 1/2/2
+game 5: Acemi white -> draw (threefold_repetition, 98 plies) | W/D/L 1/3/2
+game 7: Acemi white -> draw (threefold_repetition, 174 plies) | W/D/L 1/4/2
+game 8: Acemi black -> loss (checkmate, 151 plies) | W/D/L 1/4/3
+game 10: Acemi black -> draw (threefold_repetition, 111 plies) | W/D/L 1/5/3
+game 9: Acemi white -> draw (threefold_repetition, 194 plies) | W/D/L 1/6/3
+game 11: Acemi white -> draw (threefold_repetition, 97 plies) | W/D/L 1/7/3
+game 12: Acemi black -> win (checkmate, 104 plies) | W/D/L 2/7/3
+game 13: Acemi white -> loss (checkmate, 98 plies) | W/D/L 2/7/4
+game 14: Acemi black -> win (checkmate, 96 plies) | W/D/L 3/7/4
+game 16: Acemi black -> draw (threefold_repetition, 59 plies) | W/D/L 3/8/4
+game 15: Acemi white -> win (checkmate, 147 plies) | W/D/L 4/8/4
+game 18: Acemi black -> win (checkmate, 60 plies) | W/D/L 5/8/4
+game 19: Acemi white -> win (checkmate, 75 plies) | W/D/L 6/8/4
+game 17: Acemi white -> loss (checkmate, 156 plies) | W/D/L 6/8/5
+game 21: Acemi white -> draw (threefold_repetition, 50 plies) | W/D/L 6/9/5
+game 22: Acemi black -> loss (checkmate, 71 plies) | W/D/L 6/9/6
+game 20: Acemi black -> win (checkmate, 132 plies) | W/D/L 7/9/6
+game 24: Acemi black -> loss (checkmate, 71 plies) | W/D/L 7/9/7
+game 25: Acemi white -> draw (threefold_repetition, 79 plies) | W/D/L 7/10/7
+game 23: Acemi white -> loss (checkmate, 140 plies) | W/D/L 7/10/8
+game 27: Acemi white -> loss (checkmate, 132 plies) | W/D/L 7/10/9
+game 26: Acemi black -> draw (insufficient_material, 174 plies) | W/D/L 7/11/9
+game 28: Acemi black -> loss (checkmate, 87 plies) | W/D/L 7/11/10
+game 30: Acemi black -> draw (threefold_repetition, 58 plies) | W/D/L 7/12/10
+game 29: Acemi white -> loss (checkmate, 124 plies) | W/D/L 7/12/11
+game 31: Acemi white -> draw (threefold_repetition, 104 plies) | W/D/L 7/13/11
+game 32: Acemi black -> win (checkmate, 146 plies) | W/D/L 8/13/11
+game 33: Acemi white -> win (checkmate, 123 plies) | W/D/L 9/13/11
+game 34: Acemi black -> win (checkmate, 52 plies) | W/D/L 10/13/11
+game 36: Acemi black -> win (checkmate, 124 plies) | W/D/L 11/13/11
+game 35: Acemi white -> draw (threefold_repetition, 157 plies) | W/D/L 11/14/11
+game 38: Acemi black -> draw (threefold_repetition, 89 plies) | W/D/L 11/15/11
+game 37: Acemi white -> win (checkmate, 119 plies) | W/D/L 12/15/11
+game 40: Acemi black -> loss (checkmate, 97 plies) | W/D/L 12/15/12
+game 39: Acemi white -> win (checkmate, 143 plies) | W/D/L 13/15/12
+game 41: Acemi white -> win (checkmate, 119 plies) | W/D/L 14/15/12
+game 42: Acemi black -> loss (checkmate, 127 plies) | W/D/L 14/15/13
+game 43: Acemi white -> draw (threefold_repetition, 83 plies) | W/D/L 14/16/13
+game 44: Acemi black -> win (checkmate, 110 plies) | W/D/L 15/16/13
+game 45: Acemi white -> draw (threefold_repetition, 90 plies) | W/D/L 15/17/13
+game 46: Acemi black -> loss (checkmate, 97 plies) | W/D/L 15/17/14
+game 47: Acemi white -> draw (threefold_repetition, 145 plies) | W/D/L 15/18/14
+game 48: Acemi black -> win (checkmate, 96 plies) | W/D/L 16/18/14
+game 50: Acemi black -> win (checkmate, 88 plies) | W/D/L 17/18/14
+game 49: Acemi white -> win (checkmate, 127 plies) | W/D/L 18/18/14
+game 51: Acemi white -> draw (threefold_repetition, 99 plies) | W/D/L 18/19/14
+game 53: Acemi white -> draw (threefold_repetition, 23 plies) | W/D/L 18/20/14
+game 52: Acemi black -> win (checkmate, 126 plies) | W/D/L 19/20/14
+game 54: Acemi black -> loss (checkmate, 133 plies) | W/D/L 19/20/15
+game 55: Acemi white -> win (checkmate, 135 plies) | W/D/L 20/20/15
+game 56: Acemi black -> draw (threefold_repetition, 69 plies) | W/D/L 20/21/15
+game 57: Acemi white -> draw (threefold_repetition, 106 plies) | W/D/L 20/22/15
+game 58: Acemi black -> win (checkmate, 132 plies) | W/D/L 21/22/15
+game 59: Acemi white -> loss (checkmate, 110 plies) | W/D/L 21/22/16
+game 60: Acemi black -> win (checkmate, 142 plies) | W/D/L 22/22/16
+game 61: Acemi white -> win (checkmate, 107 plies) | W/D/L 23/22/16
+game 62: Acemi black -> draw (threefold_repetition, 145 plies) | W/D/L 23/23/16
+game 63: Acemi white -> win (checkmate, 169 plies) | W/D/L 24/23/16
+game 65: Acemi white -> draw (threefold_repetition, 68 plies) | W/D/L 24/24/16
+game 64: Acemi black -> loss (checkmate, 135 plies) | W/D/L 24/24/17
+game 66: Acemi black -> draw (threefold_repetition, 72 plies) | W/D/L 24/25/17
+game 67: Acemi white -> win (checkmate, 165 plies) | W/D/L 25/25/17
+game 68: Acemi black -> win (checkmate, 166 plies) | W/D/L 26/25/17
+game 69: Acemi white -> loss (checkmate, 120 plies) | W/D/L 26/25/18
+game 70: Acemi black -> loss (checkmate, 101 plies) | W/D/L 26/25/19
+game 72: Acemi black -> draw (threefold_repetition, 86 plies) | W/D/L 26/26/19
+game 71: Acemi white -> loss (checkmate, 148 plies) | W/D/L 26/26/20
+game 73: Acemi white -> win (checkmate, 93 plies) | W/D/L 27/26/20
+game 74: Acemi black -> draw (threefold_repetition, 120 plies) | W/D/L 27/27/20
+game 75: Acemi white -> loss (checkmate, 118 plies) | W/D/L 27/27/21
+game 76: Acemi black -> draw (threefold_repetition, 81 plies) | W/D/L 27/28/21
+game 77: Acemi white -> draw (threefold_repetition, 161 plies) | W/D/L 27/29/21
+game 79: Acemi white -> win (checkmate, 63 plies) | W/D/L 28/29/21
+game 78: Acemi black -> draw (threefold_repetition, 179 plies) | W/D/L 28/30/21
+game 80: Acemi black -> win (checkmate, 106 plies) | W/D/L 29/30/21
+game 81: Acemi white -> loss (checkmate, 112 plies) | W/D/L 29/30/22
+game 82: Acemi black -> win (checkmate, 132 plies) | W/D/L 30/30/22
+game 83: Acemi white -> win (checkmate, 151 plies) | W/D/L 31/30/22
+game 85: Acemi white -> draw (threefold_repetition, 61 plies) | W/D/L 31/31/22
+game 86: Acemi black -> draw (threefold_repetition, 74 plies) | W/D/L 31/32/22
+game 87: Acemi white -> win (checkmate, 53 plies) | W/D/L 32/32/22
+game 84: Acemi black -> draw (threefold_repetition, 198 plies) | W/D/L 32/33/22
+game 89: Acemi white -> loss (checkmate, 82 plies) | W/D/L 32/33/23
+game 88: Acemi black -> loss (checkmate, 143 plies) | W/D/L 32/33/24
+game 91: Acemi white -> win (checkmate, 135 plies) | W/D/L 33/33/24
+game 90: Acemi black -> loss (checkmate, 209 plies) | W/D/L 33/33/25
+game 92: Acemi black -> loss (checkmate, 81 plies) | W/D/L 33/33/26
+game 93: Acemi white -> loss (checkmate, 102 plies) | W/D/L 33/33/27
+game 95: Acemi white -> loss (checkmate, 144 plies) | W/D/L 33/33/28
+game 94: Acemi black -> draw (threefold_repetition, 181 plies) | W/D/L 33/34/28
+game 96: Acemi black -> win (checkmate, 84 plies) | W/D/L 34/34/28
+game 97: Acemi white -> loss (checkmate, 92 plies) | W/D/L 34/34/29
+game 98: Acemi black -> loss (checkmate, 111 plies) | W/D/L 34/34/30
+game 99: Acemi white -> draw (threefold_repetition, 112 plies) | W/D/L 34/35/30
+game 100: Acemi black -> draw (threefold_repetition, 99 plies) | W/D/L 34/36/30
+Recorded run: /kaggle/working/acemi/data/runs/20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01
+# 20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01
+
+- Experiment: quiescence-see-100ms-100games-v1; chunk 1
+- New commit: `d0bbfe22eb01d0f8869b493182f8207a2770d3ca`; old commit: `d0bbfe22eb01d0f8869b493182f8207a2770d3ca`
+- Forfeits: either engine loses on timeout/illegal move/crash.
+- Engine: Acemi 0.8.2; opponent: Acemi 0.8.2
+- Opening set: chunk_01; move time: 100 ms
+- Games: 100 (W/D/L: 34/36/30), score: 52.0%
+- Elo difference: +13.9 (95% Wilson interval -53.8 to +81.6)
+- SPRT: not run
+- Completed games: 100; aborted games: 0; average plies: 111.3
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 2.7; nodes/second: 17556
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 c7c5: 0/0/2
+  - e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 e7e6: 0/0/2
+  - d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5 e2e4 d5c3: 0/0/2
+  - e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5: 0/0/2
+  - e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4 d2d4 d6d5: 0/0/2
+  - e2e4 c7c5 b1c3 b8c6 f2f4 g7g6 g1f3 f8g7 a2a4 a7a6: 1/0/1
+  - d2d4 d7d5 c2c4 c7c6 c4d5 c6d5 b1c3 g8f6 c1f4 b8c6: 0/1/1
+  - c2c4 g7g6 b1c3 f8g7 g2g3 g8f6 f1g2 e8g8 g1f3 d7d6: 0/1/1
+  - e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 d8d7 e1g1 g8f6: 1/0/1
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 a7a6: 1/0/1
+- Losses by game phase at game end (opening 0; middlegame 4; endgame 26). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 64, insufficient_material 1, threefold_repetition 35
+- Engine moves without a search score: 0 of 5065 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 18546 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'OwnBook': False, 'QuiescenceSEE': True}; opponent {'OwnBook': False, 'QuiescenceSEE': False}
+
