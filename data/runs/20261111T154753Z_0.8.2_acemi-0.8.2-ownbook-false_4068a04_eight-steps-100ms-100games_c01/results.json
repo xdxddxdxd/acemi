@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "is_demo": false,
+  "games": 10,
+  "wins": 2,
+  "draws": 4,
+  "losses": 4,
+  "score_pct": 40.0,
+  "elo_diff": -70.4,
+  "elo_confidence_interval": [
+    -277.7,
+    136.8
+  ],
+  "sprt": {
+    "enabled": false,
+    "elo0": 0.0,
+    "elo1": 10.0,
+    "alpha": 0.05,
+    "beta": 0.05,
+    "max_games": 10,
+    "llr": null,
+    "lower_bound": null,
+    "upper_bound": null,
+    "decision": "not_run"
+  },
+  "by_color": {
+    "white": {
+      "wins": 1,
+      "draws": 2,
+      "losses": 2
+    },
+    "black": {
+      "wins": 1,
+      "draws": 2,
+      "losses": 2
+    }
+  },
+  "tactics": null,
+  "timeouts": 0,
+  "illegal_moves": 0,
+  "engine_crashes": 0,
+  "aborted_games": 0,
+  "unpaired_games_excluded": 0,
+  "post_decision_games_excluded": 0,
+  "board_disagreements": 0,
+  "average_plies": 112.8,
+  "average_depth": 2.4,
+  "nodes_per_second": 14101,
+  "nodes_per_second_search": 15138,
+  "terminations": {
+    "checkmate": 6,
+    "threefold_repetition": 4
+  },
+  "engine_moves": 514,
+  "engine_moves_without_score": 0,
+  "opponent_timeouts": 0,
+  "opponent_illegal_moves": 0,
+  "opponent_engine_crashes": 0
+}
