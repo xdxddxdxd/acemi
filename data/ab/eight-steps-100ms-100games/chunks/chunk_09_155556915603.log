@@ -1,0 +1,34 @@
+Engine: Acemi 0.8.2 | Opponent: Acemi 0.8.2 | uci_elo=None
+game 1: Acemi white -> win (checkmate, 87 plies) | W/D/L 1/0/0
+game 2: Acemi black -> win (checkmate, 86 plies) | W/D/L 2/0/0
+game 4: Acemi black -> win (checkmate, 110 plies) | W/D/L 3/0/0
+game 3: Acemi white -> win (checkmate, 137 plies) | W/D/L 4/0/0
+game 5: Acemi white -> loss (checkmate, 120 plies) | W/D/L 4/0/1
+game 6: Acemi black -> loss (checkmate, 103 plies) | W/D/L 4/0/2
+game 7: Acemi white -> draw (threefold_repetition, 93 plies) | W/D/L 4/1/2
+game 8: Acemi black -> draw (threefold_repetition, 104 plies) | W/D/L 4/2/2
+game 10: Acemi black -> draw (threefold_repetition, 104 plies) | W/D/L 4/3/2
+game 9: Acemi white -> loss (checkmate, 132 plies) | W/D/L 4/3/3
+Recorded run: /kaggle/working/acemi/data/runs/20261111T155557Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c09
+# 20261111T155557Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c09
+
+- Experiment: eight-steps-100ms-100games; chunk 9
+- New commit: `4068a0459f8119274014cd466270a2ffd3cd30c3`; old commit: `db058b344df8759810e957f11a58b4149055fe49`
+- Forfeits: either engine loses on timeout/illegal move/crash.
+- Engine: Acemi 0.8.2; opponent: Acemi 0.8.2
+- Opening set: chunk_09; move time: 100 ms
+- Games: 10 (W/D/L: 4/3/3), score: 55.0%
+- Elo difference: +34.9 (95% Wilson interval -169.6 to +239.3)
+- SPRT: not run
+- Completed games: 10; aborted games: 0; average plies: 107.6
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 2.2; nodes/second: 13817
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 g2g3 d7d6 f1g2 e8g8: 0/0/2
+  - e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5: 0/1/1
+- Losses by game phase at game end (opening 0; middlegame 0; endgame 3). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 7, threefold_repetition 3
+- Engine moves without a search score: 0 of 489 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 14738 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'OwnBook': False}; opponent {'OwnBook': False}
+
