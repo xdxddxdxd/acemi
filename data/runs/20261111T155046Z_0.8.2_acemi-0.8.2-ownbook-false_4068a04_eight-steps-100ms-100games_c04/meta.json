@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "run_name": "20261111T155046Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c04",
+  "is_demo": false,
+  "date": "20261111T155046Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.8.2",
+  "git_commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 100,
+    "hash_mb": 16,
+    "random_seed": 31,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.8.2",
+    "uci_elo": null,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false
+    }
+  },
+  "opening_set": "chunk_04",
+  "match_settings": {
+    "games_requested": 10,
+    "concurrency": 2,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 10 --movetime-ms 100 --concurrency 2 --hash-mb 16 --max-plies 400 --grace-ms 1000 --seed 31 --engine-cmd '/usr/bin/python3 -u -m engine' --engine-cwd /kaggle/working/acemi-ab-new --opponent-cmd '/usr/bin/python3 -u -m engine' --opponent-cwd /kaggle/working/acemi-ab-old --engine-option OwnBook=false --opponent-option OwnBook=false --openings /kaggle/working/acemi/data/ab/eight-steps-100ms-100games/openings/chunk_04.txt --git-commit 4068a0459f8119274014cd466270a2ffd3cd30c3 --root /kaggle/working/acemi",
+    "forfeit_policy": "loss_for_either_engine"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-11-11T15:50:46.436918Z",
+  "finished_at": "2026-11-11T15:51:30.551333Z",
+  "experiment": {
+    "schema_version": 1,
+    "id": "eight-steps-100ms-100games",
+    "chunk": 4,
+    "protocol_sha256": "2139cebb1ec76435f4ea7a3045ff673437862cd2816940c548aa623d3d2c2f3b",
+    "new": {
+      "path": "/kaggle/working/acemi-ab-new",
+      "commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+      "engine_tree": "bcc3eb39e95f400308c3383c1f8f98fd255a8657"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-ab-old",
+      "commit": "db058b344df8759810e957f11a58b4149055fe49",
+      "engine_tree": "e291b9179fd2a0017cde955909d297743b5ae40a"
+    },
+    "global_game_start": 31
+  }
+}
