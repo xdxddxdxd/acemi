@@ -15,3 +15,9 @@ use python-chess and NumPy. `test_baseline.py` checks reference provenance,
 failure retention, immutability and benchmark comparison boundaries.
 
 Kaggle reference collection and result publishing: [docs/BASELINE.md](../docs/BASELINE.md).
+
+`test_uci_async.py` covers worker cancellation and real CLI pipes: finite searches
+must answer `isready`, accept `stop`, publish natural completion without more
+input, and avoid duplicate `bestmove` responses. Position/option/new-game/quit
+cancellation and EOF cleanup are also covered. Run the full suite in Kaggle;
+the pipe regressions are bounded and do not run matches or Stockfish.

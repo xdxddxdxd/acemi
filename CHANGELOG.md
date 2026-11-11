@@ -1,5 +1,18 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 2: UCI durdurma akışı
+
+- CLI'da tüm aramalar ortak worker/stop-event yaşam döngüsüyle çalışır. Süreli,
+  derinlikli, saatli ve düğüm sınırlı `go` sırasında giriş komutları okunabilir;
+  `isready` yanıtlanır, `stop` mevcut aramayı durdurur.
+- Sonuç tek sefer yayımlanır. Doğal bitiş sonrası `stop`, eski konum/ayarlar
+  için geç sonuç ve `quit`/EOF sonrası worker sızıntısı için koruma eklendi.
+- Doğrudan `UciSession()` sonlu aramalarının senkron dönüş sözleşmesi korundu.
+  Arama algoritması ve değerlendirme değiştirilmedi.
+- Worker yaşam döngüsü ve gerçek UCI pipe regresyonları eklendi; Kaggle
+  notebook'u `step2-uci-stop` etiketiyle yeni kayıt toplar. Tam test paketi ve
+  benchmark Kaggle doğrulamasını bekliyor; yerelde uzun kontroller başlatılmadı.
+
 ## 0.8.2 — Geniş açılış kitabı (90 hat, 18 ply)
 
 - `openings/book_seeds.txt`: kabul edilen 64 dengeli test hattı + 12 yeni Fransız dalı (Winawer ana/Poisoned Pawn, Steinitz, Burn, McCutcheon, Tarrasch 4.e5/Open, Advance Milner-Barry/Be2/Bd3, Rubinstein, KIA) + test setinde olmayan 14 popüler hat (Dragon Yugoslav, Classical Rauzer, Scheveningen Keres, Pirc, Modern, Scandinavian, Alekhine, KID Classical, Benoni, Benko, Dutch, King's Gambit, London vs KID, Spanish Classical). Toplam 90 hat; `acemi-64` test seti değişmedi.

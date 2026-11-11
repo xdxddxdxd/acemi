@@ -41,6 +41,14 @@ setoption name BookFile value openings/book.bin
 
 ## UCI seçenekleri
 
+Geliştirme dalındaki UCI düzeltmesi: süreli, derinlikli ve düğüm sınırlı aramalar
+protokol döngüsünü bloke etmeden worker'da çalışır. `isready` arama sürerken
+yanıtlanır; `stop` aynı aramanın sonucunu döndürür. Doğal bitiş veya tekrarlanan
+`stop` ikinci bir `bestmove` üretmez. `position`, `setoption`, `ucinewgame`,
+`quit` ve girişin kapanması önce eski worker'ı durdurur. Doğrudan Python'da
+`UciSession()` kullanan kodun sonlu arama çağrıları önceki gibi sonucu bekler.
+Tam protokol ve doğruluk doğrulaması Kaggle'da yapılır (`tests/test_uci_async.py`).
+
 | Seçenek | Varsayılan | Not |
 |---|---:|---|
 | `Hash` | 16 | MB; 1–4096 |

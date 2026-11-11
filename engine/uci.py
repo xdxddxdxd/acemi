@@ -3,16 +3,19 @@
 Stage 4: ``go`` runs iterative negamax with quiescence; ``info depth`` is the
 last completed depth. Supported limits: ``depth``, ``movetime``, ``nodes``,
 the clock (``wtime``/``btime``/``winc``/``binc``/``movestogo``) and
-``infinite``/``stop``. Infinite search runs in a worker thread and ``stop``
-returns its latest result instead of starting a new search.
+``infinite``/``stop``. All searches run in a worker, keeping the protocol input
+loop responsive. A finite search publishes its result when finished; an infinite
+search waits for ``stop``. Direct sessions without an output callback retain the
+synchronous finite-search API used by embedders and in-process tests.
 """
 
 from __future__ import annotations
 
 import random
 import sys
-from threading import Event, Thread
-from typing import TextIO
+from dataclasses import dataclass, field
+from threading import Event, Lock, Thread
+from typing import Callable, TextIO
 
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
@@ -83,10 +86,27 @@ EVAL_OPTIONS = {
 }
 
 
-class UciSession:
-    """Line-oriented UCI state machine. ``handle_line`` returns the reply lines."""
+@dataclass
+class _SearchJob:
+    stop: Event
+    infinite: bool
+    thread: Thread | None = None
+    result: SearchResult | None = None
+    error: Exception | None = None
+    cancelled: bool = False
+    output_sent: bool = False
+    lock: Lock = field(default_factory=Lock)
 
-    def __init__(self) -> None:
+
+class UciSession:
+    """Line-oriented UCI state machine.
+
+    Immediate replies come from ``handle_line``. With ``on_output`` supplied,
+    finite searches additionally publish their result from the worker. Without
+    it, finite ``go`` calls wait and return the result as before.
+    """
+
+    def __init__(self, on_output: Callable[[list[str]], None] | None = None) -> None:
         self.board = Board(STARTING_FEN)
         self.seed = DEFAULT_SEED
         self.rng = random.Random(self.seed)  # Breaks ties between equal root moves.
@@ -97,9 +117,17 @@ class UciSession:
         self.book: PolyglotBook | None = None
         self.book_path = "openings/book.bin"
         self.quit_requested = False
-        self._infinite_thread: Thread | None = None
-        self._infinite_stop: Event | None = None
-        self._infinite_result: SearchResult | None = None
+        self._on_output = on_output
+        self._search_job: _SearchJob | None = None
+
+    @property
+    def searching(self) -> bool:
+        job = self._search_job
+        return job is not None and job.thread is not None and job.thread.is_alive()
+
+    def close(self) -> None:
+        """Stop outstanding work without publishing an obsolete result."""
+        self._cancel_search()
 
     def handle_line(self, line: str) -> list[str]:
         tokens = line.split()
@@ -117,24 +145,23 @@ class UciSession:
         if command == "isready":
             return ["readyok"]
         if command == "ucinewgame":
-            self._cancel_infinite()
+            self._cancel_search()
             self.board = Board(STARTING_FEN)
             self.rng = random.Random(self.seed)  # Same seed -> same game, every game.
             self.searcher.clear_tt()
             return []
         if command == "setoption":
-            self._cancel_infinite()
+            self._cancel_search()
             return self._set_option(args)
         if command == "position":
-            self._cancel_infinite()
+            self._cancel_search()
             return self._set_position(args)
         if command == "go":
             return self._go(args)
         if command == "stop":
-            result = self._finish_infinite()
-            return [] if result is None else self._format_result(result)
+            return self._finish_search(stop=True)
         if command == "quit":
-            self._cancel_infinite()
+            self._cancel_search()
             self.quit_requested = True
             return []
         return [f"info string Unknown command: {command}"]
@@ -245,11 +272,11 @@ class UciSession:
         return []
 
     def _go(self, args: list[str]) -> list[str]:
+        self._cancel_search()
         if "infinite" in args:
-            self._start_infinite()
+            self._start_search(depth=MAX_DEPTH, movetime_ms=None, infinite=True)
             return []
 
-        self._cancel_infinite()
         if self.use_book and self.book is not None and len(self.board.undo_stack) < 24:
             move = self.book.find_move(self.board, self.rng)
             if move is not None:
@@ -287,60 +314,90 @@ class UciSession:
         else:
             depth = DEFAULT_DEPTH
         nodes_limit = max(0, values["nodes"]) if "nodes" in values else None
-        return self._run_search(depth=depth, movetime_ms=movetime_ms, nodes_limit=nodes_limit)
+        self._start_search(depth=depth, movetime_ms=movetime_ms, nodes_limit=nodes_limit)
+        return [] if self._on_output is not None else self._finish_search(stop=False)
 
-    def _start_infinite(self) -> None:
-        self._cancel_infinite()
-        stop_event = Event()
-        self._infinite_stop = stop_event
-        self._infinite_result = None
-        self._infinite_thread = Thread(
-            target=self._search_infinite,
-            args=(stop_event,),
-            name="acemi-search",
-            daemon=True,
-        )
-        self._infinite_thread.start()
-
-    def _search_infinite(self, stop_event: Event) -> None:
-        self._infinite_result = self.searcher.search(
-            self.board,
-            depth=MAX_DEPTH,
-            stop_event=stop_event,
-            rng=self.rng,
-        )
-
-    def _finish_infinite(self) -> SearchResult | None:
-        thread = self._infinite_thread
-        stop_event = self._infinite_stop
-        if thread is None or stop_event is None:
-            return None
-        stop_event.set()
-        thread.join()
-        self._infinite_thread = None
-        self._infinite_stop = None
-        result = self._infinite_result
-        self._infinite_result = None
-        return result
-
-    def _cancel_infinite(self) -> None:
-        self._finish_infinite()
-
-    def _run_search(
+    def _start_search(
         self,
         *,
         depth: int,
         movetime_ms: int | None,
         nodes_limit: int | None = None,
-    ) -> list[str]:
-        result = self.searcher.search(
-            self.board,
-            depth=depth,
-            movetime_ms=movetime_ms,
-            nodes_limit=nodes_limit,
-            rng=self.rng,
+        infinite: bool = False,
+    ) -> None:
+        job = _SearchJob(stop=Event(), infinite=infinite)
+        self._search_job = job
+        job.thread = Thread(
+            target=self._search_worker,
+            args=(job, self.board, depth, movetime_ms, nodes_limit),
+            name="acemi-search",
+            daemon=True,
         )
-        return self._format_result(result)
+        job.thread.start()
+
+    def _search_worker(
+        self,
+        job: _SearchJob,
+        board: Board,
+        depth: int,
+        movetime_ms: int | None,
+        nodes_limit: int | None,
+    ) -> None:
+        try:
+            job.result = self.searcher.search(
+                board,
+                depth=depth,
+                movetime_ms=movetime_ms,
+                nodes_limit=nodes_limit,
+                stop_event=job.stop,
+                rng=self.rng,
+            )
+        except Exception as error:
+            # Keep a worker failure visible to both protocol and direct callers.
+            job.error = error
+        if self._on_output is not None and not job.infinite:
+            lines = self._take_output(job)
+            if lines:
+                self._on_output(lines)
+
+    def _take_output(self, job: _SearchJob) -> list[str]:
+        with job.lock:
+            if job.cancelled or job.output_sent:
+                return []
+            if job.error is not None:
+                job.output_sent = True
+                if self._on_output is None:
+                    raise job.error
+                detail = f"{type(job.error).__name__}: {job.error}".replace("\n", " ").replace("\r", " ")
+                return [f"info string Search failed: {detail}", f"bestmove {NO_MOVE}"]
+            if job.result is None:
+                return []
+            job.output_sent = True
+            return self._format_result(job.result)
+
+    def _finish_search(self, *, stop: bool) -> list[str]:
+        job = self._search_job
+        if job is None:
+            return []
+        if stop:
+            job.stop.set()
+        if job.thread is not None:
+            job.thread.join()
+        self._search_job = None
+        return self._take_output(job)
+
+    def _cancel_search(self) -> None:
+        job = self._search_job
+        if job is None:
+            return
+        with job.lock:
+            job.cancelled = True
+        job.stop.set()
+        # Never change the board, options or RNG while the worker still uses them.
+        # Also finish any in-flight output before processing the next position.
+        if job.thread is not None:
+            job.thread.join()
+        self._search_job = None
 
     @staticmethod
     def _format_result(result: SearchResult) -> list[str]:
@@ -359,14 +416,23 @@ class UciSession:
 def main(stdin: TextIO | None = None, stdout: TextIO | None = None) -> None:
     stdin = stdin if stdin is not None else sys.stdin
     stdout = stdout if stdout is not None else sys.stdout
-    session = UciSession()
-    for raw_line in stdin:
-        output = session.handle_line(raw_line)
-        if output:
-            stdout.write("\n".join(output) + "\n")
-            stdout.flush()
-        if session.quit_requested:
-            break
+    output_lock = Lock()
+
+    def emit(lines: list[str]) -> None:
+        if lines:
+            with output_lock:
+                stdout.write("\n".join(lines) + "\n")
+                stdout.flush()
+
+    session = UciSession(on_output=emit)
+    try:
+        for raw_line in stdin:
+            emit(session.handle_line(raw_line))
+            if session.quit_requested:
+                break
+    finally:
+        # EOF and quit both release the search worker.
+        session.close()
 
 
 if __name__ == "__main__":

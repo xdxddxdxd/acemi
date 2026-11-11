@@ -6,6 +6,12 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step2-uci-stop"` ile
+2. adımı doğrular. İlk adımın GitHub'a gönderilmiş kayıtları değiştirilmez.
+Yeni UCI regresyonları güncel test paketine dahildir; testler ve benchmark
+Kaggle'da çalışır. Maçlar varsayılan olarak kapalı kalır. Arama algoritması
+değişmediği için sabit derinlik sonuçlarında yine eşitlik beklenir.
+
 1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
    Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;
    sonuçlar bu dala gönderilir. `main` ile geliştirme tamamlanınca birleştirilecek.
@@ -64,6 +70,9 @@ motor/araç/test/açılış değişikliği varsa kayıt başlamaz. Eksik veya s�
 bir çalıştırma başarılı sayılmaz. Başarısız benchmark sonuçları da saklanır.
 
 ## Komut satırı
+
+Bu komutlar Kaggle terminalinde de kullanılabilir. Yerel bilgisayarda uzun test,
+benchmark veya maç başlatılması gerekmez.
 
 Temiz bir kaynak checkout'u için:
 
