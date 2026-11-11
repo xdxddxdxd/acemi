@@ -77,6 +77,19 @@ python -m tools.bench --depth 3
 
 GitHub Actions her push/PR'da Ubuntu ve Windows üzerinde tam test paketini ve bench duman testini çalıştırır: `.github/workflows/ci.yml`.
 
+### Kaggle'da sabit referans (geliştirme adımı 1)
+
+`notebooks/kaggle_runner.ipynb` varsayılan olarak motor değişikliği yapmadan referans toplar.
+Sabit `db058b3` kaynak checkout'u ve güncel kod için test paketi ile aynı derinlikte benchmark ayrı ayrı çalışır.
+Test özeti/günlükleri, benchmark, commit, motor ağacı ve ortam bilgisi yeni
+`data/baselines/<oturum>/reference` ve `current` klasörlerine kaydedilip GitHub'a gönderilir.
+Testler başarısız olduğunda da oluşan günlükler gönderilmeye çalışılır; önceki kayıtlar değiştirilmez.
+
+Bu adımda aramanın değişmemesi beklenir; karşılaştırma konum kümesi, FEN, skor, derinlik,
+düğüm ve en iyi hamleyi kontrol eder. Varsayılan `RUN_VALIDATION_MATCHES=False` ayarıyla
+uzun self-play/Stockfish maçları çalışmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
+[docs/BASELINE.md](docs/BASELINE.md).
+
 ## Maç çalıştırma
 
 ```powershell

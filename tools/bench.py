@@ -99,9 +99,18 @@ def compare(first: dict, second: dict) -> tuple[bool, list[str]]:
     identical = True
     if first["depth"] != second["depth"]:
         return False, [f"Depths differ: {first['depth']} vs {second['depth']}; cannot compare."]
+    for label, document in (("A", first), ("B", second)):
+        names = [row["name"] for row in document["positions"]]
+        if not names or any(not name for name in names) or len(names) != len(set(names)):
+            return False, [f"{label}: position names must be nonempty and unique; cannot compare."]
+    first_names = {row["name"] for row in first["positions"]}
     second_rows = {row["name"]: row for row in second["positions"]}
+    extra = set(second_rows) - first_names
+    if extra:
+        identical = False
+        lines.append(f"Positions only in B: {', '.join(sorted(extra))}")
     lines.append(
-        f"{'position':<16}{'nodes A':>10}{'nodes B':>10}{'sec A':>9}{'sec B':>9}{'speedup':>9}  same"
+        f"{'position':<16}{'nodes A':>10}{'nodes B':>10}{'sec A':>9}{'sec B':>9}{'time A/B':>9}  same"
     )
     for row in first["positions"]:
         other = second_rows.get(row["name"])
@@ -109,7 +118,7 @@ def compare(first: dict, second: dict) -> tuple[bool, list[str]]:
             identical = False
             lines.append(f"{row['name']:<16} missing in B")
             continue
-        same = all(row[key] == other[key] for key in ("score", "depth", "nodes", "best_move"))
+        same = all(row[key] == other[key] for key in ("fen", "score", "depth", "nodes", "best_move"))
         identical = identical and same
         speedup = row["seconds"] / other["seconds"] if other["seconds"] > 0 else float("inf")
         lines.append(
@@ -117,6 +126,8 @@ def compare(first: dict, second: dict) -> tuple[bool, list[str]]:
             f"{row['seconds']:>9.2f}{other['seconds']:>9.2f}{speedup:>8.2f}x  {'yes' if same else 'NO'}"
         )
         if not same:
+            if row["fen"] != other["fen"]:
+                lines.append(f"    FEN differs: {row['fen']} vs {other['fen']}")
             lines.append(
                 f"    A: score {row['score']} depth {row['depth']} nodes {row['nodes']} move {row['best_move']}"
             )
@@ -126,13 +137,23 @@ def compare(first: dict, second: dict) -> tuple[bool, list[str]]:
     total_speedup = (
         first["total_seconds"] / second["total_seconds"] if second["total_seconds"] > 0 else float("inf")
     )
+    same_environment = all(
+        first.get(key) is not None and first.get(key) == second.get(key)
+        for key in ("runtime", "runtime_version", "cpu_model")
+    )
+    timing_note = (
+        f"Elapsed-time ratio A/B: {total_speedup:.2f}x (same reported environment; single run)."
+        if identical and same_environment
+        else f"Elapsed-time ratio A/B: {total_speedup:.2f}x; "
+             "not an isolated speedup measurement (search or environment differs/is unknown)."
+    )
     lines.append(
         f"Total: A {first['nodes_per_second']} nps ({first['label']}, {first['runtime']}), "
         f"B {second['nodes_per_second']} nps ({second['label']}, {second['runtime']}); "
-        f"B is {total_speedup:.2f}x faster at fixed depth."
+        + timing_note
     )
     lines.append(
-        "Search identical (score, depth, nodes, best move on every position): "
+        "Search identical (position set, FEN, score, depth, nodes, best move): "
         + ("YES" if identical else "NO - the two builds do not search the same way")
     )
     return identical, lines
