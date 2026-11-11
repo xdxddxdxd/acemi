@@ -102,8 +102,9 @@ GitHub Actions her push/PR'da Ubuntu ve Windows üzerinde tam test paketini ve b
 
 ### Kaggle'da sabit referans (geliştirme adımı 1)
 
-`notebooks/kaggle_runner.ipynb` varsayılan olarak motor değişikliği yapmadan referans toplar.
-Sabit `db058b3` kaynak checkout'u ve güncel kod için test paketi ile aynı derinlikte benchmark ayrı ayrı çalışır.
+`notebooks/kaggle_runner.ipynb` sabit referans ve güncel kaynak için kayıt toplar.
+İlk referans `db058b3` idi; güncel aşamanın sabit commit'i aşağıda belirtilir.
+İki kaynak için test paketi ile aynı derinlikte benchmark ayrı ayrı çalışır.
 Test özeti/günlükleri, benchmark, commit, motor ağacı ve ortam bilgisi yeni
 `data/baselines/<oturum>/reference` ve `current` klasörlerine kaydedilip GitHub'a gönderilir.
 Testler başarısız olduğunda da oluşan günlükler gönderilmeye çalışılır; önceki kayıtlar değiştirilmez.
@@ -114,11 +115,12 @@ self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
-Güncel notebook 7. adımın ikinci denemesini `step7b-legality-probe` etiketiyle,
-ilk denemenin `41e0af6` commit'ine karşı çalıştırır. Mat/pat ve dört terfi korunur;
+Güncel notebook 8. adımı `step8-tool-modules` etiketiyle, doğrulanmış 7b sürümünün
+`c716073` commit'ine karşı çalıştırır. Motor kodu değiştirilmez;
 hamle/skor/derinlik/düğüm eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`).
-Normal benchmark hız karşılaştırması içindir; ek cProfile kayıtları çağrı
-maliyetlerini incelemek içindir. Önceki kayıtlar korunur, maçlar kapalıdır.
+Normal benchmark hız karşılaştırması içindir; ek cProfile kaydı bu adımda varsayılan
+kapalıdır. Önceki kayıtlar korunur, maçlar kapalıdır. Araçların modül yapısı ve
+korunan import yolları: [docs/TOOLS.md](docs/TOOLS.md).
 
 ## Maç çalıştırma
 

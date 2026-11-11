@@ -4,6 +4,9 @@
 
 - `engine/`: chess engine. The engine core is standard-library-only; do not use `python-chess` here.
 - `tools/`: match, recording, Stockfish/UCI integration, and analysis utilities. `python-chess` is allowed only here.
+  CLI entry points remain unchanged; module responsibilities and compatibility exports
+  are documented in `docs/TOOLS.md`. Extracted analysis modules are included in the
+  source fingerprint. Historical raw run/analysis artifacts are not migrated or rewritten.
 - `tests/`: correctness tests and tactical positions.
 - `notebooks/kaggle_runner.ipynb`: run tests, save raw results, and push them. It must not make analysis or strength decisions.
 - `data/`: machine-readable run results. `data/runs/<run_name>/` holds immutable run artifacts; `data/index.csv` is the run index.
@@ -54,6 +57,8 @@ Real runs add fields; absent fields in older demo runs mean not recorded.
   Existing records are never overwritten. Failed/zero-test runs are not passing
   references; their logs are still published. `session.json` and `comparison.log`
   describe the fixed-depth comparison, not a strength decision or Elo estimate.
+  Step 8 additionally records `engine_tree_matches` / `require_identical_engine_tree`
+  and requires unchanged engine files for the tools-only refactor.
 
 ### Search profiling (Step 7)
 

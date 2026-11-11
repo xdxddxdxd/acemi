@@ -10,7 +10,7 @@ import statistics
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from tools.analyze_games import valid_parts
+from tools.analysis_artifacts import valid_parts
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DIR = ROOT / "data" / "analysis"

@@ -6,9 +6,9 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step7b-legality-probe"` ile
-7. adımın ikinci denemesini doğrular. Referans ilk denemenin Kaggle'da arama
-eşitliği doğrulanmış `41e0af6523ac8f110d0847c1decfa07ab5ab4567` commit'idir. Önceki adımların
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step8-tool-modules"` ile
+8. adımı doğrular. Referans, Kaggle'da doğrulanmış 7b sürümünün
+`c7160732606b50648c539f74d37601c329cd8560` commit'idir. Önceki adımların
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
@@ -17,12 +17,14 @@ Pat, güvenlik sınırında mat/pat ve ufukta kale terfisi regresyonları tam pa
 dahildir; bu adım için ayrıca uzun oyun analizi veya maç çalıştırmak gerekmez.
 Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
-Bu deneme şah güvenliğini tam hamle kaydı yerine geçici kare doluluğuyla sınar:
-`REQUIRE_IDENTICAL_SEARCH=True`. Konum/FEN/derinlik, skor/düğüm/hamleler ilk
-7. adım denemesiyle aynı olmalıdır; fark çıkarsa
+Bu adım maç/analiz araçlarının modüllerini ayırır; motor kodunu değiştirmez.
+`REQUIRE_IDENTICAL_SEARCH=True`. Konum/FEN/derinlik, skor/düğüm/hamleler
+7b sürümüyle aynı olmalıdır; fark çıkarsa
 kayıtlar gönderilip notebook durur. Süre farkı arama eşitsizliği değildir.
+`REQUIRE_IDENTICAL_ENGINE_TREE=True` motor dosyalarının ağacını da aynı tutar;
+sonuç `session.json` içindeki `engine_tree_matches` alanına yazılır.
 3. ve 6. adımlarda doğruluk düzeltmeleri nedeniyle eşitlik zorunlu değildi;
-4–5. adımlarda ve şimdi 7. adımda zorunludur. Normal, profilsiz benchmark'ın
+4–5. adımlarda ve 7–8. adımlarda zorunludur. Normal, profilsiz benchmark'ın
 süre oranı tek koşunun gözlemidir; hız kazancı sonuçlar gelmeden varsayılmaz.
 
 İlk 7. adım kaydı (`20261111T142955Z_aef1069f`) 382 test ve arama eşitliğini
@@ -32,7 +34,13 @@ ancak tam `make_move`/`unmake_move` sayısı 271497 olarak kaldı. İkinci denem
 yasal hamle sınamasındaki bu tam durum güncellemelerini kaldırır. Aramada
 gerçekten seçilip incelenen hamleler yine normal make/unmake kullanır.
 
-`RUN_SEARCH_PROFILES=True`, normal benchmark bittikten sonra iki motor ağacı
+7b kaydı (`20261111T144401Z_61796702`) 387 test ve 10 konumda aynı aramayı
+doğruladı. Aynı koşudaki süre 14,411→11,130 saniye (%22,8 azalma), hız
+12055→15609 düğüm/saniye idi. Bu sonuç tek koşudur; Elo ölçümü değildir.
+Modül ayrımının kapsamı ve uyumluluk kuralları: [TOOLS.md](TOOLS.md).
+
+`RUN_SEARCH_PROFILES=False` 8. adımın varsayılanıdır; motor değişmediği için ek
+profil koşusu gerekmez. `True` seçilirse normal benchmark bittikten sonra iki motor ağacı
 için `PROFILE_DEPTH=3` düzeyinde ayrı cProfile kayıtları alır. Güncel
 `tools.profile_search` aracı eski checkout'un motorunu ayrı Python sürecinde
 yükler ve motor ağacını toplanan benchmark'a karşı doğrular. Çıktılar aynı

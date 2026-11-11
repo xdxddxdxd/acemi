@@ -1,5 +1,21 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 8: maç ve analiz araçlarında modül ayrımı
+
+- Maç aracı açılışlar, ayarlar/metadata ve tek oyun işçisi modüllerine ayrıldı.
+  Analiz aracından ham girdi okuma, sütun şemaları ve parça saklama/birleştirme
+  ayrıldı. Eski import adları yeniden dışa aktarılır; worker modül düzeyinde
+  serileştirilebilir. Motor kodu ve ham kayıt biçimleri değiştirilmedi.
+- Taşınan işlev gövdeleri AST ile, iki CLI'ın yardım metinleri birebir karşılaştırıldı.
+  Argüman varsayılanları ve seçili seçenekler aynı. 41 kısa modül/kimlik/parça/
+  sahte işçi kontrolü geçti (1,758 saniye); gerçek arama/maç yerelde başlatılmadı.
+- Analiz fingerprint'i ayrılan üç modülü de kapsar. Geçmiş çıktılar korunur;
+  yeni analiz notebook'u `data/analysis/step8` kullanır. Kaynak değiştiği için
+  eski analiz kimliğiyle yeni üretime devam edilmez.
+- Runner `step8-tool-modules` ile doğrulanmış 7b sürümüne karşı tam test ve arama
+  eşitliği bekler. Maçlar ve ek profil koşusu varsayılan kapalıdır. Kaggle
+  doğrulaması bekleniyor; `main` ile birleştirme yapılmadı.
+
 ## Geliştirme — Adım 7 devamı: hafif şah güvenliği kontrolü
 
 - İlk deneme Kaggle'da 382 test ve arama eşitliğini sağladı; süre
@@ -16,6 +32,11 @@
   perft, arama eşitliği ve hız ölçümü Kaggle'ı bekliyor. Notebook
   `step7b-legality-probe` ile ilk denemeye karşı birebir arama eşitliği ister;
   maçlar kapalı, profil kayıtları açıktır. Hız artışı henüz doğrulanmadı.
+- Kaggle doğrulaması tamamlandı (`20261111T144401Z_61796702`): 387 test geçti;
+  10 konumda aynı arama ve 173729 düğüm korundu. Profilsiz süre 14,411→11,130
+  saniye (%22,8 azalma), işleme hızı 12055→15609 düğüm/saniye (%29,5 artış).
+  Profilli tam make/unmake çağrıları 271497→66798 azaldı; profilli arama da aynı.
+  Bunlar tek koşunun ölçümleridir; Elo artışı ölçülmedi.
 
 ## Geliştirme — Adım 7: düğüm içi hazırlık paylaşımı ve profil
 

@@ -9,6 +9,11 @@ from pathlib import Path
 
 import chess
 
+ANALYSIS_SOURCES = (
+    "analyze_games.py", "analysis_config.py", "analysis_schema.py",
+    "analysis_inputs.py", "analysis_artifacts.py",
+)
+
 
 def file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -43,7 +48,7 @@ def analysis_configuration(stockfish: Path, depth: int, syzygy: Path | None = No
         "stockfish_options": {"Threads": 1, "Hash": 64},
         "python_chess_version": chess.__version__,
         "analysis_sources": {name: file_sha256(source_dir / name)
-                             for name in ("analyze_games.py", "analysis_config.py")},
+                             for name in ANALYSIS_SOURCES},
         "syzygy_wdl": tables,
     }
 

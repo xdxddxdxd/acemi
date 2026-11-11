@@ -8,6 +8,11 @@ ve Syzygy WDL dosyalarının adlarını/içerik özetlerini kapsar. Tablo dosyal
 kimlik hazırlanırken bir defa okunur; çok büyük tablolarda bu işlem zaman alabilir.
 Çalıştırma yolu, saat ve işçi sayısı kimliği değiştirmez.
 
+8. adımda ayrılan `analysis_inputs.py`, `analysis_schema.py` ve
+`analysis_artifacts.py` de kaynak kimliğine dahildir. Kaynak dosyaları taşındığı
+için davranış korunmuş olsa da önceki kimlik değişir; yeni analiz yeni klasöre
+yazılır. Önceki klasörler rapor/aggregate için okunabilir.
+
 Aynı kimlikle aynı `--out` klasörüne devam edilebilir. Ayar veya analiz kodu
 değişirse araç eski `config.json` ve sonuçları değiştirmeden durur ve yeni
 `--out` ister. Kimliği olmayan eski çıktıların yeni analizle devam ettirilmesi
@@ -28,10 +33,11 @@ Kaggle indirme hücresi tabloyu hiç hazırlayamazsa `--syzygy` verilmez ve
 Stockfish-only kimliği oluşur; daha sonra tablolar eklendiğinde yeni çıktı gerekir.
 
 `notebooks/kaggle_analysis.ipynb` geliştirme dalını ve yeni
-`ANALYSIS_DIR="data/analysis/step5"` klasörünü kullanır. İleride kimlik değişirse
+`ANALYSIS_DIR="data/analysis/step8"` klasörünü kullanır. İleride kimlik değişirse
 bu yolu da değiştirin; eski klasörleri silmek gerekmez. 5. adımın doğrulaması
 için normal `kaggle_runner.ipynb` yeterlidir; uzun analiz notebook'unu çalıştırma
-zorunluluğu yoktur. Tam testler ve benchmark Kaggle'a aittir; maçlar kapalıdır.
+zorunluluğu yoktur. 8. adımın araç kontrolleri de normal runner'ın test paketindedir.
+Tam testler ve benchmark Kaggle'a aittir; maçlar kapalıdır.
 
 Maç metadata'sındaki `engine_settings.opening_book` ve `opponent.opening_book`,
 motorun ilan ettiği `OwnBook` varsayılanından ve sırayla uygulanan son seçenekten

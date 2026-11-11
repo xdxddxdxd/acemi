@@ -66,3 +66,9 @@ colour mirrors. It checks legal move order and python-chess agreement, verifies
 restoration on exceptions during castling/EP/promotion/capture, and ensures the
 fast generator does not call full make/unmake. A bounded deterministic playout
 supplies more independent single-position fixtures; it does not run search or matches.
+
+`test_tools_modules.py` checks preserved imports/CLI values, worker/Opening pickle
+compatibility, mocked worker cleanup, opening validation, aggregate-only routing,
+AB/SF deduplication and source fingerprints for every extracted analysis module.
+The full existing fake-UCI analysis pipeline remains in the Kaggle suite; no real
+matches are needed for the module refactor.
