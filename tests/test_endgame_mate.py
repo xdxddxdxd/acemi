@@ -70,7 +70,8 @@ class EndgameMateTests(FlagTestCase):
         self.assertIn("option name EvalEndgameMate type check default false", "\n".join(session.handle_line("uci")))
         self.assertFalse(FLAGS.endgame_mate)
         self.assertEqual(session.handle_line("setoption name EvalEndgameMate value true"), [])
-        self.assertTrue(FLAGS.endgame_mate)
+        self.assertTrue(session.eval_flags.endgame_mate)
+        self.assertFalse(FLAGS.endgame_mate)
 
 
 if __name__ == "__main__":

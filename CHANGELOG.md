@@ -1,5 +1,18 @@
 # Değişiklik günlüğü
 
+## Geliştirme — Adım 4: ayar izolasyonu ve TT geçersizleştirme
+
+- UCI oturumlarının `EvalFlags` nesneleri ayrıldı. Açık değerlendirme ayarı evaluator
+  ve Searcher'a aktarılır; eski doğrudan API'lerde global varsayılan korunur.
+- Eval/arama sezgiselleri/Contempt değiştiğinde TT temizlenir. Public `search()`
+  girişinde yapılandırma imzası denetlenir; aynı değer veya reddedilen ayar geçerli
+  önbelleği temizlemez. Seed ve süre bütçesi değişimleri TT'yi gereksiz sıfırlamaz.
+- Hash/Threads/Seed ve diğer sayısal seçenekler UCI'de ilan edilen sınırları
+  uygular. Aynı Seed yeniden verildiğinde RNG sıfırlama davranışı korunur.
+- 38 kısa ayar/bağlam/sahte-worker kontrolü geçti. Gerçek aramalar, tam paket
+  ve benchmark Kaggle doğrulamasını bekliyor. Notebook `step4-configuration`
+  etiketi ve doğrulanmış 3. adım referansıyla varsayılan arama eşitliğini zorunlu tutar.
+
 ## Geliştirme — Adım 3: beraberlik bağlamına duyarlı TT
 
 - Zobrist tekrar anahtarı korunarak TT skorlarına yarım hamle sayacı ve bilinen
@@ -10,8 +23,10 @@
 - Geçmiş anlık görüntüleri ihtiyatlıdır; TT isabetleri ve düğüm sayısı değişebilir.
   Notebook `step3-tt-context` etiketiyle protokolü doğrular, arama farklarını saklar
   ve inceleme gerektiriyorsa işaretler. Önceki ham kayıtlar değiştirilmez.
-- Aramasız 8 bağlam testi geçti. 50 hamle sınırı ve alt daldan gelen tekrar
-  beraberliği regresyonları, tam paket ve benchmark Kaggle doğrulamasını bekliyor.
+- Kaggle doğrulaması tamamlandı (`20261111T101708Z_52588f4f`): 314 test geçti;
+  50 hamle sınırı ve alt daldan gelen tekrarın dört gerçek arama regresyonu başarılı.
+  10 konumda skor/hamle/derinlik aynı; düğüm sayısı 150018→160046 (+%6,7).
+  Bu tek koşuda süre 9,867→10,760 saniye (+%9); Elo sonucu çıkarılmadı.
 
 ## Geliştirme — Adım 2: UCI durdurma akışı
 

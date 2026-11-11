@@ -20,7 +20,7 @@ from typing import Callable, TextIO
 from engine import __version__
 from engine.board import STARTING_FEN, WHITE, Board
 from engine.book import PolyglotBook
-from engine.eval.classic import FLAGS
+from engine.eval.classic import EvalFlags
 from engine.movegen import find_legal_move
 from engine.search import DEFAULT_DEPTH, MAX_DEPTH, Searcher, SearchResult
 
@@ -85,6 +85,14 @@ EVAL_OPTIONS = {
     "evalendgamemate": "endgame_mate",
 }
 
+SPIN_LIMITS = {
+    "hash": (1, 4096),
+    "threads": (1, 1),
+    "seed": (0, 2147483647),
+    "nextiterationpct": (50, 500),
+    "contempt": (0, 200),
+}
+
 
 @dataclass
 class _SearchJob:
@@ -111,7 +119,8 @@ class UciSession:
         self.seed = DEFAULT_SEED
         self.rng = random.Random(self.seed)  # Breaks ties between equal root moves.
         self.hash_mb = DEFAULT_HASH_MB
-        self.searcher = Searcher(self.hash_mb)  # Keeps its transposition table between moves.
+        self.eval_flags = EvalFlags()
+        self.searcher = Searcher(self.hash_mb, eval_flags=self.eval_flags)
         self.threads = 1
         self.use_book = False
         self.book: PolyglotBook | None = None
@@ -204,45 +213,38 @@ class UciSession:
             text = value.strip().lower()
             if text not in ("true", "false"):
                 return [f"info string Option {name} needs true or false"]
-            setattr(FLAGS, EVAL_OPTIONS[name], text == "true")
+            setattr(self.eval_flags, EVAL_OPTIONS[name], text == "true")
+            self.searcher.sync_configuration()
             return []
         if name in CHECK_OPTIONS:
             text = value.strip().lower()
             if text not in ("true", "false"):
                 return [f"info string Option {name} needs true or false"]
             setattr(self.searcher, CHECK_OPTIONS[name], text == "true")
+            self.searcher.sync_configuration()
             return []
-        if name == "contempt":
+        if name in SPIN_LIMITS:
             try:
                 number = int(value)
             except ValueError:
                 return [f"info string Option {name} needs an integer value"]
-            if not 0 <= number <= 200:
-                return [f"info string Option {name} must be between 0 and 200"]
-            self.searcher.contempt = number
-            return []
-        if name == "nextiterationpct":
-            try:
-                percent = int(value)
-            except ValueError:
-                return [f"info string Option {name} needs an integer value"]
-            if not 50 <= percent <= 500:
-                return [f"info string Option {name} must be between 50 and 500"]
-            self.searcher.next_iteration_factor = percent / 100.0
-            return []
-        if name in ("hash", "threads", "seed"):
-            try:
-                number = int(value)
-            except ValueError:
-                return [f"info string Option {name} needs an integer value"]
+            minimum, maximum = SPIN_LIMITS[name]
+            if not minimum <= number <= maximum:
+                return [f"info string Option {name} must be between {minimum} and {maximum}"]
             if name == "hash":
-                self.hash_mb = number
-                self.searcher.resize_tt(number)
+                if self.hash_mb != number:
+                    self.hash_mb = number
+                    self.searcher.resize_tt(number)
             elif name == "threads":
                 self.threads = number
-            else:
+            elif name == "seed":
                 self.seed = number
                 self.rng = random.Random(number)
+            elif name == "nextiterationpct":
+                self.searcher.next_iteration_factor = number / 100.0
+            else:  # contempt
+                self.searcher.contempt = number
+                self.searcher.sync_configuration()
             return []
         return [f"info string Unknown option: {' '.join(name_tokens)}"]
 

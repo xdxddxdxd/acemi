@@ -9,9 +9,9 @@ specific implementation.
 from __future__ import annotations
 
 from engine.board import Board
-from engine.eval.classic import evaluate_classic
+from engine.eval.classic import EvalFlags, evaluate_classic
 
 
-def evaluate(board: Board) -> int:
+def evaluate(board: Board, flags: EvalFlags | None = None) -> int:
     """Return a centipawn evaluation from the side to move's perspective."""
-    return evaluate_classic(board)
+    return evaluate_classic(board, flags)

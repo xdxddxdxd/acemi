@@ -114,6 +114,26 @@ class AsyncSessionTests(unittest.TestCase):
         self.assertEqual(self.session.searcher.tt_capacity, 10000)
         self.assertTrue(self.output.empty())
 
+    def test_eval_option_is_applied_only_after_the_old_worker_stops(self):
+        entered = Event()
+        observed = []
+
+        def search(board, **kwargs):
+            entered.set()
+            if not kwargs["stop_event"].wait(5):
+                raise AssertionError("Old worker did not stop")
+            observed.append(self.session.eval_flags.passed_pawns)
+            return result()
+
+        with patch.object(self.session.searcher, "search", side_effect=search):
+            self.session.handle_line("go depth 64")
+            self.assertTrue(entered.wait(5))
+            self.assertEqual(self.session.handle_line("setoption name EvalPassedPawns value true"), [])
+        self.assertEqual(observed, [False])
+        self.assertTrue(self.session.eval_flags.passed_pawns)
+        self.assertFalse(self.session.searching)
+        self.assertTrue(self.output.empty())
+
     def test_new_game_cancels_before_replacing_the_board(self):
         entered, stopped, _ = self.block_until_stopped()
         self.session.handle_line("go depth 64")

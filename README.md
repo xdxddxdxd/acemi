@@ -55,6 +55,15 @@ sıralama ipucu olabilir; null-move alt ağaçları TT skoru okumaz/yazmaz. Tekr
 kullanılan Zobrist anahtarı ve mevcut veri kayıtları değiştirilmez. Bu ihtiyatlı
 eşleşme önbellek isabetlerini azaltabilir; hız etkisi Kaggle ölçümünü bekler.
 
+Geliştirme adımı 4'te her UCI oturumu kendi değerlendirme ayarlarını taşır.
+`Eval*`, arama sezgiselleri veya `Contempt` değişince eski TT skorları temizlenir;
+aynı değer ve hatalı değerler geçerli önbelleği bozmaz. `Hash`, `Threads`, `Seed`,
+`NextIterationPct` ve `Contempt` ilan edilen sınırlarla doğrulanır. Seed yeniden
+verildiğinde rastgele akış önceki gibi sıfırlanır; Seed/süre politikası değişimi
+tek başına TT'yi temizlemez. Doğrudan `evaluate(board)` ve `Searcher()` eski global
+varsayılanı korur; açık ayar için `evaluate(board, flags)` ve `Searcher(eval_flags=flags)`
+kullanılabilir. `Searcher.search()` çağrılar arasında değişen yapılandırmayı denetler.
+
 | Seçenek | Varsayılan | Not |
 |---|---:|---|
 | `Hash` | 16 | MB; 1–4096 |
@@ -105,9 +114,9 @@ self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
-Güncel notebook 3. adımı `step3-tt-context` etiketiyle çalıştırır. Bu doğruluk
-düzeltmesinde arama farkları incelemeye bırakılır (`REQUIRE_IDENTICAL_SEARCH=False`);
-konum/FEN/derinlik protokolünün aynı olması ve testlerin geçmesi zorunludur.
+Güncel notebook 4. adımı `step4-configuration` etiketiyle, doğrulanmış 3. adımın
+`700b32e` commit'ine karşı çalıştırır. Varsayılan ayarlar değişmediği için arama
+eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`). Önceki kayıtlar korunur.
 
 ## Maç çalıştırma
 

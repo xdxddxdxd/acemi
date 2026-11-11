@@ -6,17 +6,18 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step3-tt-context"` ile
-3. adımı doğrular. İlk iki adımın GitHub'a gönderilmiş kayıtları değiştirilmez.
-UCI ve TT bağlamı regresyonları güncel test paketine dahildir; gerçek aramalar,
-tam paket ve benchmark Kaggle'da çalışır. Maçlar varsayılan olarak kapalı kalır.
+Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step4-configuration"` ile
+4. adımı doğrular. Referans, Kaggle'da doğrulanmış 3. adım commit'i
+`700b32e1db8ec3cc87570c31d6d79c3c7fe3d6dc` olarak sabitlenmiştir. Önceki üç adımın
+GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
+test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
+Maçlar varsayılan olarak kapalı kalır.
 
-TT geçerliliği düzeltmesi önbellek isabetlerini, düğüm sayılarını ve kimi konumlarda
-skor/hamleyi değiştirebilir. Bu yüzden `REQUIRE_IDENTICAL_SEARCH=False` varsayılandır:
-testler yine geçmeli, benchmark protokolü (derinlik, konum kümesi ve FEN) aynı olmalı;
-arama farkları kaydedilip `review_required=true` ile işaretlenir. Bu işaret bir güç
-veya hız kazancı kararı değildir. Farklar GitHub'a geldikten sonra incelenir.
-Sadece davranış koruyan optimizasyonlarda ayar `True` yapılarak eşitlik zorunlu tutulabilir.
+Varsayılan özellik değerleri değiştirilmediği için `REQUIRE_IDENTICAL_SEARCH=True`:
+konum/FEN/derinlik protokolü ile skor, düğüm ve hamleler eşleşmelidir. Yalnızca süre
+farkı eşitliği bozmaz. Eşitlik sağlanmazsa kayıtlar gönderilip notebook durur.
+3. adımda TT geçerliliği kasıtlı değiştiği için bu ayar `False` idi ve arama farkları
+`review_required=true` ile kaydedildi. Bu işaret bir güç veya hız kazancı kararı değildir.
 
 1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
    Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;

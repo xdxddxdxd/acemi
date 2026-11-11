@@ -27,3 +27,11 @@ regressions. Kaggle runs the original clock-0/clock-98 warm-table example and
 both directions of a controlled legal cycle whose descendant becomes a third
 repetition only with prior history. The oracle has TT disabled, and null-move/LMR
 are disabled in these comparisons to isolate cache correctness.
+
+`test_uci_configuration.py` checks per-session evaluation settings, immediate TT
+invalidation, rejected spin values, same-value reuse and legacy evaluator compatibility.
+Its short configuration tests stub the root where needed; the separate search
+regression class belongs to Kaggle. Real regressions compare toggled passed-pawn
+and bishop-pair scores with clean sessions, and explicit/legacy flag changes with
+a TT-disabled oracle. A mocked worker test also checks that an Eval option is not
+mutated until the previous worker has stopped.

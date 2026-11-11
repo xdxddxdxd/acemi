@@ -46,8 +46,9 @@ from dataclasses import dataclass
 from threading import Event
 
 from engine.board import BISHOP, DATACLASS_SLOTS, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
+from engine.eval import classic as classic_eval
 from engine.eval.base import evaluate
-from engine.eval.classic import pst_delta
+from engine.eval.classic import EvalFlags, pst_delta
 from engine.movegen import generate_legal_moves
 
 MATE_SCORE = 100_000
@@ -228,7 +229,9 @@ class Searcher:
         lmp: bool = False,
         contempt: int = 0,
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
+        eval_flags: EvalFlags | None = None,
     ) -> None:
+        self.eval_flags = eval_flags
         self.use_pvs = pvs
         self.contempt = contempt
         self._root_color: int | None = None
@@ -248,6 +251,7 @@ class Searcher:
         self._tt: dict[int, _TTEntry] = {}
         self._tt_max = 0
         self.resize_tt(hash_mb)
+        self._tt_configuration = self._configuration_key()
 
     # -- table management ---------------------------------------------------
 
@@ -258,6 +262,23 @@ class Searcher:
 
     def clear_tt(self) -> None:
         self._tt.clear()
+
+    def _configuration_key(self) -> tuple:
+        flags = classic_eval.FLAGS if self.eval_flags is None else self.eval_flags
+        return (flags.signature(), self.use_null_move, self.use_lmr, self.use_killers,
+                self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt)
+
+    def sync_configuration(self) -> None:
+        """Discard old scores after an evaluator/search policy change.
+
+        Called once before each public search, and by UCI after a validated
+        change while no worker is active. Time budgets, seeds and book settings
+        do not change a node's score and need not invalidate the table.
+        """
+        configuration = self._configuration_key()
+        if configuration != self._tt_configuration:
+            self.clear_tt()
+            self._tt_configuration = configuration
 
     @property
     def tt_size(self) -> int:
@@ -328,6 +349,7 @@ class Searcher:
         if nodes_limit is not None and nodes_limit < 0:
             raise ValueError("nodes limit cannot be negative")
 
+        self.sync_configuration()
         self.nodes = 0
         self._root_color = board.side_to_move
         started = time.monotonic()
@@ -348,7 +370,7 @@ class Searcher:
 
         if depth == 0:
             self.nodes = 1
-            return self._result(moves[0], evaluate(board), 0, started)
+            return self._result(moves[0], evaluate(board, self.eval_flags), 0, started)
 
         # Fallback if not even depth 1 completes: the best-ordered legal move,
         # no score claim.
@@ -633,7 +655,7 @@ class Searcher:
         if board.is_threefold_repetition() or board.is_insufficient_material():
             return self._draw_score(board)
         if ply >= MAX_PLY:
-            return evaluate(board)
+            return evaluate(board, self.eval_flags)
 
         if board.in_check():
             moves = list(generate_legal_moves(board, known_in_check=True))
@@ -641,7 +663,7 @@ class Searcher:
                 return -MATE_SCORE + ply
             best = -MATE_SCORE + ply
         else:
-            best = evaluate(board)
+            best = evaluate(board, self.eval_flags)
             if best >= beta:
                 return best
             if best > alpha:
@@ -672,7 +694,7 @@ class Searcher:
         """
         if self.contempt == 0 or self._root_color is None:
             return DRAW_SCORE
-        side_value = evaluate(board)
+        side_value = evaluate(board, self.eval_flags)
         root_value = side_value if board.side_to_move == self._root_color else -side_value
         if root_value <= 150:
             return DRAW_SCORE
