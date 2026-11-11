@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "validation_label": "step5-analysis-provenance",
+  "reference_commit": "a1326202ecef4ce0ae4811bbdd47af3a104636a2",
+  "current_code_commit": "336560a3fcc9022472b85274038cd405cd348792",
+  "depth": 4,
+  "search_identical": true,
+  "protocol_matches": true,
+  "require_identical_search": true,
+  "comparison_returncode": 0,
+  "review_required": false,
+  "reference": "reference",
+  "current": "current"
+}
