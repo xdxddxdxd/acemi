@@ -6,9 +6,10 @@ algoritmasını değiştirmez. İlk referans kaynak commit'i:
 
 ## Kaggle
 
-Geliştirme dalının güncel notebook'u `VALIDATION_LABEL="step8-tool-modules"` ile
-8. adımı doğrular. Referans, Kaggle'da doğrulanmış 7b sürümünün
-`c7160732606b50648c539f74d37601c329cd8560` commit'idir. Önceki adımların
+Sekiz geliştirme adımı Kaggle'da doğrulandı. Güncel notebook
+`VALIDATION_LABEL="main-validation"` ile ana dalı yeniden doğrular. Referans,
+396 testten geçen 8. adımın `2c3312b3b45dcb8cf354940fc1f6b52c788fb970`
+commit'idir. Önceki adımların
 GitHub'a gönderilmiş kayıtları değiştirilmez. UCI, TT ve ayar regresyonları güncel
 test paketine dahildir; gerçek aramalar, tam paket ve benchmark Kaggle'da çalışır.
 Maçlar varsayılan olarak kapalı kalır.
@@ -19,7 +20,7 @@ Yeni analiz çıktı kuralları: [ANALYSIS.md](ANALYSIS.md).
 
 Bu adım maç/analiz araçlarının modüllerini ayırır; motor kodunu değiştirmez.
 `REQUIRE_IDENTICAL_SEARCH=True`. Konum/FEN/derinlik, skor/düğüm/hamleler
-7b sürümüyle aynı olmalıdır; fark çıkarsa
+doğrulanmış 8. adımla aynı olmalıdır; fark çıkarsa
 kayıtlar gönderilip notebook durur. Süre farkı arama eşitsizliği değildir.
 `REQUIRE_IDENTICAL_ENGINE_TREE=True` motor dosyalarının ağacını da aynı tutar;
 sonuç `session.json` içindeki `engine_tree_matches` alanına yazılır.
@@ -52,9 +53,9 @@ içerir; hız oranı olarak kullanılmaz. Profil hücresi tekrarında üzerine y
 yeni kayıt için toplama hücresiyle yeni oturum oluşturun. İstenirse bu ek teşhis
 ilk ayar hücresinden kapatılabilir. Gerçek arama/profil yerel bilgisayarda başlatılmaz.
 
-1. `codex/kaggle-baseline` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
-   Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="codex/kaggle-baseline"` varsayılandır;
-   sonuçlar bu dala gönderilir. `main` ile geliştirme tamamlanınca birleştirilecek.
+1. `main` dalındaki güncel `notebooks/kaggle_runner.ipynb` dosyasını
+   Kaggle'a alın. İlk hücrede `GITHUB_BRANCH="main"` varsayılandır;
+   sonuçlar bu dala gönderilir. Geliştirme dalı geçmiş kayıtlarıyla korunur.
    Kurulum hücresi eski Kaggle checkout'unu seçilen dala geçirir ve referans
    aracının varlığını testlerden önce denetler.
 2. Internet'i açın ve `GITHUB_TOKEN` Kaggle Secret'ını tanımlayın. Token yalnızca
@@ -81,7 +82,7 @@ Bu hata test başlamadan, Kaggle checkout'unda yeni aracın bulunmadığını g�
 GitHub içe aktarma ekranında dal seçmek, notebook içindeki eski `GITHUB_BRANCH`
 ayarını değiştirmez. Güncel notebook'u geliştirme dalından yeniden içe aktarın;
 ayarlar ve depo kurulumundan başlayarak hücreleri sırayla çalıştırın. Kurulum
-çıktısında `codex/kaggle-baseline; tools/baseline.py found` görülmeli.
+çıktısında `main; tools/baseline.py found` görülmeli.
 
 Maçlar, benchmark ve tam test paketi Kaggle'da çalıştırılır; yerel bilgisayarda
 bu uzun kontrolleri başlatmak gerekmez.

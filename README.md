@@ -115,8 +115,10 @@ self-play/Stockfish maçları çalışmaz. Açılırsa kısa kontroller 10 self-
 ve 20 SF1320 oyunudur; bu sayılar Elo ölçümü için kullanılmaz. Ayrıntılar ve sonraki karşılaştırma komutları:
 [docs/BASELINE.md](docs/BASELINE.md).
 
-Güncel notebook 8. adımı `step8-tool-modules` etiketiyle, doğrulanmış 7b sürümünün
-`c716073` commit'ine karşı çalıştırır. Motor kodu değiştirilmez;
+Sekiz geliştirme adımı Kaggle'da doğrulandı. Son aşamada 396 test geçti; motor
+ağacı ve 10 konumun hamle/skor/derinlik/düğüm sonuçları 7b ile aynı kaldı.
+Güncel notebook `main-validation` etiketiyle, doğrulanmış 8. adımın `2c3312b`
+commit'ine karşı çalıştırır ve sonuçları `main` dalına gönderir;
 hamle/skor/derinlik/düğüm eşitliği zorunludur (`REQUIRE_IDENTICAL_SEARCH=True`).
 Normal benchmark hız karşılaştırması içindir; ek cProfile kaydı bu adımda varsayılan
 kapalıdır. Önceki kayıtlar korunur, maçlar kapalıdır. Araçların modül yapısı ve

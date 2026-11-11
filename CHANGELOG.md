@@ -1,5 +1,15 @@
 # Değişiklik günlüğü
 
+## Ana dala hazırlık — sekiz adımın doğrulanmış birleşimi
+
+- Son Kaggle kaydı `20261111T150657Z_fcced5ff`: 396 test başarılı; hata veya
+  atlanan test yok. Motor ağacı ve 10 konumun araması 7b sürümüyle aynı.
+- Önceki erken birleşmenin geri alma işlemi çözülerek doğrulanmış geliştirme
+  ağacının tamamı korunur; başlangıç referans araçları ve ham Kaggle kayıtları
+  birleşimden çıkarılmaz. Motor/araç/test kodları son doğrulanmış sürümle aynıdır.
+- Notebook varsayılan dalı `main`; sabit referans doğrulanmış 8. adım commit'idir.
+  Maçlar ve ek profil varsayılan kapalıdır. Elo artışı ölçülmedi.
+
 ## Geliştirme — Adım 8: maç ve analiz araçlarında modül ayrımı
 
 - Maç aracı açılışlar, ayarlar/metadata ve tek oyun işçisi modüllerine ayrıldı.
@@ -14,7 +24,8 @@
   eski analiz kimliğiyle yeni üretime devam edilmez.
 - Runner `step8-tool-modules` ile doğrulanmış 7b sürümüne karşı tam test ve arama
   eşitliği bekler. Maçlar ve ek profil koşusu varsayılan kapalıdır. Kaggle
-  doğrulaması bekleniyor; `main` ile birleştirme yapılmadı.
+  doğrulaması tamamlandı (`20261111T150657Z_fcced5ff`): 396 test başarılı;
+  motor ağacı ve arama birebir aynı. Tek koşuda süre 11,189→11,227 saniye.
 
 ## Geliştirme — Adım 7 devamı: hafif şah güvenliği kontrolü
 

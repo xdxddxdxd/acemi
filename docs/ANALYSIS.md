@@ -32,7 +32,7 @@ pozisyonlar için mevcut Stockfish etiketi kullanılmaya devam eder.
 Kaggle indirme hücresi tabloyu hiç hazırlayamazsa `--syzygy` verilmez ve
 Stockfish-only kimliği oluşur; daha sonra tablolar eklendiğinde yeni çıktı gerekir.
 
-`notebooks/kaggle_analysis.ipynb` geliştirme dalını ve yeni
+`notebooks/kaggle_analysis.ipynb` ana dalı (`main`) ve yeni
 `ANALYSIS_DIR="data/analysis/step8"` klasörünü kullanır. İleride kimlik değişirse
 bu yolu da değiştirin; eski klasörleri silmek gerekmez. 5. adımın doğrulaması
 için normal `kaggle_runner.ipynb` yeterlidir; uzun analiz notebook'unu çalıştırma

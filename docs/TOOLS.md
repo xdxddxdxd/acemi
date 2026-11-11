@@ -41,5 +41,5 @@ kayıtları değiştirilmez; yeni üretim için analiz notebook'u
 
 Yerel kontroller sahte işçi, küçük geçici dosyalar, CLI/import ve serileştirme
 testleridir. Gerçek maç, arama, perft, benchmark ve tam test paketi Kaggle'da
-çalışır. 8. adım runner'ı 7b sürümüne karşı aynı motor ağacı ve aynı aramayı
-bekler; maçlar ve ek profil koşusu varsayılan kapalıdır.
+çalışır. Ana dal runner'ı doğrulanmış 8. adım sürümüne karşı aynı motor ağacı ve
+aynı aramayı bekler; maçlar ve ek profil koşusu varsayılan kapalıdır.
