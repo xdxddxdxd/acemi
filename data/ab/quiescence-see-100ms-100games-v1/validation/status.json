@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "protocol_sha256": "717e02a2c9879e5aa077a8b4c3c075140359a5505e2ba07d6ca83cf029c6013f",
+    "validator_sha256": "a35c9099cbc732ea267dd1b58717c1335ae4cc750b072e144d73686291e768ca",
+    "candidate_commit": "d0bbfe22eb01d0f8869b493182f8207a2770d3ca",
+    "reference_commit": "4068a0459f8119274014cd466270a2ffd3cd30c3"
+  },
+  "passed": true,
+  "state": "completed",
+  "see_off_matches_reference": true,
+  "artifacts": {
+    "see-on.json": "cd54b53d2b2bfc6cf6cc0abe5a93b93da304539ffa41fe26ef8abfd2c2b73199",
+    "reference.json": "debd5d10ecb79dd932fb304df10699277b3ad8671ec3dccb7b1c9dc310c09226",
+    "see-off.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests.log": "c863173967ac763a8864da3e1a61dbb353ac149764c028902d40f543da4bda4a",
+    "see-on.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "see-off.json": "9ff04f23b6c71df01fc1d0bf70fe3444ee8931502209da90d8d0cd2cd002ee27"
+  },
+  "note": "SEE-on nodes/timing may differ. Diagnostic timing is not an Elo decision."
+}
