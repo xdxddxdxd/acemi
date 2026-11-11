@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "finished_at": "2026-11-11T10:40:40.398836Z",
+  "tests": {
+    "returncode": 0,
+    "tests_run": 314,
+    "successful": true
+  },
+  "benchmark": {
+    "status": "passed",
+    "returncode": 0
+  }
+}
