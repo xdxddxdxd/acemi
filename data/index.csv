@@ -41,3 +41,4 @@ run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision
 20261111T154857Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c02,20261111T154857Z,0.8.2,Acemi 0.8.2 OwnBook=false,10,60.0,70.4,not_run
 20261111T154951Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c03,20261111T154951Z,0.8.2,Acemi 0.8.2 OwnBook=false,10,70.0,147.2,not_run
 20261111T155046Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c04,20261111T155046Z,0.8.2,Acemi 0.8.2 OwnBook=false,10,25.0,-190.8,not_run
+20261111T155144Z_0.8.2_acemi-0.8.2-ownbook-false_4068a04_eight-steps-100ms-100games_c05,20261111T155144Z,0.8.2,Acemi 0.8.2 OwnBook=false,10,40.0,-70.4,not_run
