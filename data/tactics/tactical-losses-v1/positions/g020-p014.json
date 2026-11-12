@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "f307be7620e9dcc21169d6409379711d5ed58fe38f3fd8aaaa1addf795b7c3d5",
+  "id": "g020-p014",
+  "input_sha256": "34cde5129a9963a301bcd9e51b5e6cb95373182392bfb824f6c2f3a27d4ae22d",
+  "game_no": 20,
+  "group": "win_comparison",
+  "ply": 14,
+  "fen": "rnbq1rk1/ppp1bppp/5n2/1N1p4/3P1B2/5N2/PP2PPPP/R2QKB1R b KQ - 1 7",
+  "recorded_move": "e7b4",
+  "recorded": {
+    "schema_version": 1,
+    "game_no": 20,
+    "ply": 14,
+    "side": "black",
+    "player": "engine",
+    "fen": "rnbq1rk1/ppp1bppp/5n2/1N1p4/3P1B2/5N2/PP2PPPP/R2QKB1R b KQ - 1 7",
+    "zobrist_hash": "383e96576615f05f",
+    "move": "e7b4",
+    "eval_cp": 25,
+    "eval_mate": null,
+    "depth": 2,
+    "nodes": 1556,
+    "time_ms": 102,
+    "search_time_ms": 100,
+    "attempted_depth": 3
+  },
+  "stockfish": [
+    {
+      "requested_depth": 12,
+      "best": {
+        "cp": 67,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": false,
+        "depth": 12,
+        "seldepth": 15,
+        "nodes": 33220,
+        "time_seconds": 0.101,
+        "pv": [
+          "f6e4",
+          "a2a3",
+          "c7c5",
+          "e2e3",
+          "d8a5",
+          "f3d2",
+          "c5c4",
+          "b5c7",
+          "g7g5",
+          "f4e5",
+          "f7f6"
+        ]
+      },
+      "recorded_move": {
+        "cp": 42,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": false,
+        "depth": 12,
+        "seldepth": 19,
+        "nodes": 33532,
+        "time_seconds": 0.103,
+        "pv": [
+          "e7b4",
+          "f4d2",
+          "b4d2",
+          "d1d2",
+          "f6e4",
+          "d2c1",
+          "c7c5",
+          "d4c5",
+          "c8g4",
+          "e2e3",
+          "g4f3",
+          "g2f3",
+          "d8a5",
+          "b5c3",
+          "e4c5",
+          "c1d2",
+          "b8c6",
+          "c3d5"
+        ]
+      },
+      "comparison": {
+        "cp_loss_at_probe": 25,
+        "losing_mate_only_in_forced_probe": false,
+        "both_scores_without_bound_flags": true,
+        "note": "Bounded Stockfish estimate, not a proof of the first losing move."
+      }
+    },
+    {
+      "requested_depth": 18,
+      "best": {
+        "cp": 57,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": true,
+        "depth": 14,
+        "seldepth": 16,
+        "nodes": 100059,
+        "time_seconds": 0.32,
+        "pv": [
+          "f6e4",
+          "b5c3"
+        ]
+      },
+      "recorded_move": {
+        "cp": 49,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": true,
+        "depth": 15,
+        "seldepth": 18,
+        "nodes": 100088,
+        "time_seconds": 0.302,
+        "pv": [
+          "e7b4",
+          "f4d2"
+        ]
+      },
+      "comparison": {
+        "cp_loss_at_probe": null,
+        "losing_mate_only_in_forced_probe": null,
+        "both_scores_without_bound_flags": false,
+        "note": "Bounded Stockfish estimate, not a proof of the first losing move."
+      }
+    }
+  ],
+  "deeper": {
+    "normal": {
+      "move": "e7b4",
+      "acemi": {
+        "cp": 15,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": false,
+        "depth": 4,
+        "seldepth": null,
+        "nodes": 12000,
+        "time_seconds": 0.783,
+        "pv": []
+      },
+      "stockfish_forced": {
+        "cp": 49,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": true,
+        "depth": 15,
+        "seldepth": 18,
+        "nodes": 100088,
+        "time_seconds": 0.302,
+        "pv": [
+          "e7b4",
+          "f4d2"
+        ]
+      },
+      "comparison": {
+        "cp_loss_at_probe": null,
+        "losing_mate_only_in_forced_probe": null,
+        "both_scores_without_bound_flags": false,
+        "note": "Bounded Stockfish estimate, not a proof of the first losing move."
+      }
+    },
+    "no_null_lmr": {
+      "move": "e7b4",
+      "acemi": {
+        "cp": 15,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": false,
+        "depth": 4,
+        "seldepth": null,
+        "nodes": 12000,
+        "time_seconds": 0.831,
+        "pv": []
+      },
+      "stockfish_forced": {
+        "cp": 49,
+        "mate": null,
+        "lowerbound": false,
+        "upperbound": true,
+        "depth": 15,
+        "seldepth": 18,
+        "nodes": 100088,
+        "time_seconds": 0.302,
+        "pv": [
+          "e7b4",
+          "f4d2"
+        ]
+      },
+      "comparison": {
+        "cp_loss_at_probe": null,
+        "losing_mate_only_in_forced_probe": null,
+        "both_scores_without_bound_flags": false,
+        "note": "Bounded Stockfish estimate, not a proof of the first losing move."
+      }
+    }
+  }
+}

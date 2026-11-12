@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "f307be7620e9dcc21169d6409379711d5ed58fe38f3fd8aaaa1addf795b7c3d5",
+  "status": "completed",
+  "positions": 107,
+  "requested_positions": 107,
+  "is_strength_test": false,
+  "new_matches": 0,
+  "selected_games": [
+    {
+      "game_no": 19,
+      "group": "loss"
+    },
+    {
+      "game_no": 55,
+      "group": "loss"
+    },
+    {
+      "game_no": 77,
+      "group": "loss"
+    },
+    {
+      "game_no": 76,
+      "group": "loss"
+    },
+    {
+      "game_no": 20,
+      "group": "win_comparison"
+    },
+    {
+      "game_no": 56,
+      "group": "win_comparison"
+    },
+    {
+      "game_no": 96,
+      "group": "draw_comparison"
+    },
+    {
+      "game_no": 37,
+      "group": "draw_comparison"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "f307be7620e9dcc21169d6409379711d5ed58fe38f3fd8aaaa1addf795b7c3d5",
+  "stockfish_id": {
+    "name": "Stockfish 16",
+    "author": "the Stockfish developers (see AUTHORS file)"
+  },
+  "acemi_id": {
+    "normal": {
+      "name": "Acemi 0.8.2",
+      "author": "xdxddxdxd"
+    },
+    "no_null_lmr": {
+      "name": "Acemi 0.8.2",
+      "author": "xdxddxdxd"
+    }
+  },
+  "python": "3.13.15",
+  "cpu_count": 4,
+  "stockfish_sha256": "00628bd9c9855c1b7ff93d7f8d51b413586cdc6336fe637f9a14a61531a05aca"
+}
