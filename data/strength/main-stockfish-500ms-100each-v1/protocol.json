@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "stockfish_strength",
+  "id": "main-stockfish-500ms-100each-v1",
+  "session_dir": "/kaggle/working/acemi-stockfish-strength/data/strength/main-stockfish-500ms-100each-v1",
+  "repo_root": "/kaggle/working/acemi-stockfish-strength",
+  "collector_commit": "d728e470b51e40b68ea31d03f2ee8c6775f40946",
+  "runner_sources": {
+    "ab_compare.py": "b8bef8d41f132c962a3bffa84ab770e65c8439edac92c433a00b14bc7e4ba28f",
+    "match.py": "2c516628a9bdf723701e87ec1e653f4c2368b92405d09c68b20f42c688a90779",
+    "match_game.py": "ebc5f3135e1270b3a0daea5bd5e065dab60bb29492a5118ce0b9ae69439e1600",
+    "match_config.py": "19e4e230103c386b0217a30e8c3db3b43f0d2a48a80a517f488fab4015be3d15",
+    "match_openings.py": "3e3632a37a28cec4ea34f2c2d82111563fa4b87e32f3164a687682a072500219",
+    "uci_client.py": "f708a82905247ccccd731c7aa46febe88687d2c163d35936b6c8342597cc2069",
+    "record.py": "368a8be35d2da588086b46849e9041110c488c85d08b507a4f335bcda194dfe3",
+    "pairing.py": "3105b630489a0d1d9325ffad88814877169e595af52b0edd81cb7587fb66520a",
+    "elo.py": "5095f077dc7f7b75b42e012c5202345ce4ce74f510eea879e7f69fdfb46d98e8",
+    "summarize.py": "afb19c2be48c864faee881879e53521ae1f4ce4e4001693d1e3aae49500a27ec",
+    "stockfish_strength.py": "9c55be585354089df0ed1e4d1179876cff37d25e978c92ee467d0bc1fc7055b6"
+  },
+  "source": {
+    "path": "/kaggle/working/acemi-strength-main",
+    "commit": "38b0722b084552d8e94eb62e3558d447b641969c",
+    "engine_tree": "ca50b1768bed270096cc1ebb2ad5bbe6c9fdc671"
+  },
+  "engine_name": "Acemi 0.8.2",
+  "engine_options": {
+    "OwnBook": false,
+    "TTTwoContexts": true,
+    "EvalPackedBase": true,
+    "QuiescenceSEE": false,
+    "NextIterationPct": 150,
+    "NullMove": true,
+    "LMR": true,
+    "Killers": true,
+    "PVS": false,
+    "CheckExtension": false,
+    "LateMovePruning": false,
+    "Contempt": 0,
+    "EvalPassedPawns": false,
+    "EvalPawnStructure": false,
+    "EvalBishopPair": false,
+    "EvalKingSafety": false,
+    "EvalEndgameMate": false
+  },
+  "stockfish": {
+    "path": "/usr/games/stockfish",
+    "sha256": "00628bd9c9855c1b7ff93d7f8d51b413586cdc6336fe637f9a14a61531a05aca",
+    "name": "Stockfish 16",
+    "elo_option": {
+      "name": "UCI_Elo",
+      "kind": "spin",
+      "default": "1320",
+      "minimum": 1320,
+      "maximum": 3190
+    },
+    "limit_strength": true,
+    "extra_options": {
+      "Ponder": false,
+      "MultiPV": 1
+    }
+  },
+  "groups": [
+    {
+      "number": 1,
+      "uci_elo": 1320,
+      "games": 100,
+      "seed": 1
+    },
+    {
+      "number": 2,
+      "uci_elo": 1500,
+      "games": 100,
+      "seed": 1
+    }
+  ],
+  "games_per_level": 100,
+  "total_games": 200,
+  "movetime_ms": 500,
+  "hash_mb": 16,
+  "threads_per_engine": 1,
+  "concurrency": 2,
+  "max_plies": 400,
+  "timeout_grace_ms": 1000,
+  "opening_file": "openings_50.txt",
+  "opening_sha256": "e23ccc8314eb31ef8d764f75c65279b8b082513c5e285fb33165c090d948a32f",
+  "opening_source_sha256": "d9ee9e5700382bea856867017ed5f2b880bfa81479e95f58c1aa2df81facbc66",
+  "opening_selection_seed": 1,
+  "opening_book": false,
+  "sprt_enabled": false,
+  "forfeit_policy": "loss_for_either_engine",
+  "draw_policy": "python-chess board.outcome(claim_draw=True)",
+  "python_version": "3.13.15",
+  "note": "1300-ish uses UCI_Elo=1320. Each opponent gets one bulk 100-game call, 50 colour-swapped pairs. UCI_Elo is a limiter target, not a measured human/FIDE/online rating.",
+  "protocol_sha256": "9691f1cd443e5c4cdf9e8e4cbb16bd3839282ad877be51b9906be2290332cc41"
+}
