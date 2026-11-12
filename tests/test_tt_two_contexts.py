@@ -76,10 +76,10 @@ class TwoContextTableTests(unittest.TestCase):
         s._store(board, 8, TT_EXACT, 99, None)
         self.assertEqual((s._tt, s._tt_secondary), before)
 
-    def test_feature_is_opt_in_and_toggle_and_resize_clear_both_tables(self):
+    def test_uci_default_is_enabled_and_toggle_and_resize_clear_both_tables(self):
         u = UciSession()
-        self.assertFalse(u.searcher.use_tt_two_contexts)
-        self.assertIn('option name TTTwoContexts type check default false', u.handle_line('uci'))
+        self.assertTrue(u.searcher.use_tt_two_contexts)
+        self.assertIn('option name TTTwoContexts type check default true', u.handle_line('uci'))
         self.assertEqual(u.handle_line('setoption name TTTwoContexts value true'), [])
         for clock in (0, 20):
             u.searcher._store(position(clock), 3, TT_EXACT, 7, None)

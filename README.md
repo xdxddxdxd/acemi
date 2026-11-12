@@ -20,7 +20,9 @@ oynatmaz ve TT politikasını değiştirmez; bütün aramalar Kaggle'dadır.
 Ölçüm sonrası [iki TT context adayı](docs/TT_TWO_CONTEXTS.md),
 `codex/tt-two-contexts` dalındaki `notebooks/kaggle_tt_two_contexts.ipynb`
 ile denenir. Doğruluk, kayıtlı pozisyon ve maliyet kontrolleri geçerse
-**100 ms, tek toplu 100 maç** başlar. `TTTwoContexts` varsayılan kapalıdır.
+**100 ms, tek toplu 100 maç** başlar. Kullanıcı kararıyla `TTTwoContexts`
+UCI motorunda varsayılan açıktır; `setoption name TTTwoContexts value false`
+ile kapatılabilir. Son deney 40/25/35 (%52,5); güç kazancı henüz kesinleşmemiştir.
 
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 

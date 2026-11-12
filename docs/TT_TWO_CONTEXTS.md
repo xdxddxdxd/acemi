@@ -6,7 +6,11 @@ açıp yeni oturumda Run All çalıştırın. Gerçek test, arama ve maçlar yal
 
 ## Değişiklik
 
-`TTTwoContexts` varsayılan kapalıdır. Açılınca aynı Zobrist konumu için en fazla
+12 Kasım 2026 kullanıcı kararıyla `TTTwoContexts` UCI motorunda varsayılan açıktır.
+100 maç sonucu 40/25/35 (%52,5); bu tercih kanıtlanmış Elo artışı anlamına gelmez.
+Araçların eski sabit referanslarını korumak için doğrudan `Searcher()` API'si
+tek-context varsayılanını korur; yeni deneyler iki tarafa da açık ayarı belirtir.
+UCI'de seçenek kapatılabilir. Açılınca aynı Zobrist konumu için en fazla
 iki **tam geçmiş context'i** saklanır. Yarım hamle sayacı, bütün geri alınabilir
 geçmiş, contempt ve gerektiğinde kök rengi aynen eşleşmelidir. Derinlik ve
 pencere şartları gevşetilmez. Null-move alt ağacı yine skor okuyamaz/yazamaz.
@@ -71,4 +75,4 @@ Bitmiş testler/teşhis/maçlar hash ile doğrulanıp atlanır. Kesilmiş teşhi
 eski Kaggle oturumunu durdurup RETRY_INCOMPLETE açın. Değişmiş kaynak/girdi veya
 başarısız doğruluk için yeni SESSION_ID kullanın. Son hücre yalnız yayınlamayı
 tekrarlar. Mevcut ham kayıtlar, eski notebook'lar ve main değiştirilmez.
-Varsayılan TTTwoContexts=false olarak kalır; sonuçlar sonradan analiz edilir.
+Deney protokolü açık/kapalı ayarını açıkça sabitler; UCI varsayılanından etkilenmez.

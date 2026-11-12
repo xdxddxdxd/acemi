@@ -57,7 +57,7 @@ OPTION_LINES = (
     "option name CheckExtension type check default false",
     "option name LateMovePruning type check default false",
     "option name QuiescenceSEE type check default false",
-    "option name TTTwoContexts type check default false",
+    "option name TTTwoContexts type check default true",
     "option name OwnBook type check default false",
     "option name BookFile type string default openings/book.bin",
     # Stage 7 evaluation features (off until proven by a match).
@@ -124,7 +124,7 @@ class UciSession:
         self.rng = random.Random(self.seed)  # Breaks ties between equal root moves.
         self.hash_mb = DEFAULT_HASH_MB
         self.eval_flags = EvalFlags()
-        self.searcher = Searcher(self.hash_mb, eval_flags=self.eval_flags)
+        self.searcher = Searcher(self.hash_mb, eval_flags=self.eval_flags, tt_two_contexts=True)
         self.threads = 1
         self.use_book = False
         self.book: PolyglotBook | None = None
