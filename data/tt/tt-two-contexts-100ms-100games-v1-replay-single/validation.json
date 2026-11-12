@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "42b7b120fd2cef40f1bfa5c43a0b8b10f3f002a9986b093a0d24d15f5026bbfd",
+  "passed": true,
+  "tests_sha256": "04fe13121a381e3bbcca703fea5a847ddf1731aeb0c9dadb93b1f57162b974f3",
+  "comparison_protocol_sha256": "68a42aba693ef4ed187476db44954d7db5b8c5c7d2f3778a22af2b1da2172b39"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "protocol_sha256": "68a42aba693ef4ed187476db44954d7db5b8c5c7d2f3778a22af2b1da2172b39",
+    "validator_sha256": "8f49efa5ce997226d891778801a2668fce09ca330aa4a2d6deec1359f29ea813",
+    "candidate_commit": "d693129287b8e55936a4760fe4473a3a32b8e5a0",
+    "reference_commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+    "experiment": "tt-pair"
+  },
+  "passed": true,
+  "state": "completed",
+  "control_matches_reference": true,
+  "artifacts": {
+    "control.json": "741de9d9b95008d4316bb3dff0cd05d8938bd3867a64d37a9272d7032c168440",
+    "control.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-1-pair.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-pair.json": "c27af8001a9614e9daaf1cef0ffc73d36ae13856b7da878bfaa8c1a6431d28d8",
+    "candidate.json": "af24b81681b59216153516b37d8beb0e1ad25acc01998ca698520c35a07f219a",
+    "bench-3-single.json": "e10a7f592e594a157a7128c02dd805f67eedd5190c8b228a28c8ad14d6a5045d",
+    "bench-2-pair.json": "90a2782fade657f7c65264ff6c9261a20c78be1cd268e02d61ec739b25b32494",
+    "bench-2-single.json": "519bac941647c1d390a8ea87e3b88d50f14e872493f72af141c7c82ed275511e",
+    "bench-1-pair.json": "f8b6580dbe0ac0c7c181b8b8e53b3b1c4d6da677a3ea80409b4ae8e75100f78d",
+    "reference.json": "c3e8e29da194d5e4abc3773f564e2f2b4478282710fd7af000780d5a354da56e",
+    "bench-3-pair.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-single.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-2-single.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests.log": "04fe13121a381e3bbcca703fea5a847ddf1731aeb0c9dadb93b1f57162b974f3",
+    "bench-1-single.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-1-single.json": "e4317c5ab1a97a1951a7f44105ab43a5e79576d79907be5a0de0180ef2c252cf",
+    "bench-2-pair.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "note": "Diagnostic timing is not an Elo decision.",
+  "retention_candidate_validated": true
+}

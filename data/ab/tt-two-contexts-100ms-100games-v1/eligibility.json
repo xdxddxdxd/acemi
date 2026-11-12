@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "68a42aba693ef4ed187476db44954d7db5b8c5c7d2f3778a22af2b1da2172b39",
+  "eligible_to_run_match": true,
+  "reasons": [],
+  "single_median_seconds": 4.000324696997268,
+  "pair_median_seconds": 4.0115378489999785,
+  "time_ratio": 1.0028030604643488,
+  "single_nodes": 66798,
+  "pair_nodes": 66798,
+  "second_slot_cutoffs": 661,
+  "slowdown_tolerance": 1.1,
+  "note": "Exploratory cost/retention gate only; no strength or merge decision.",
+  "artifacts": {
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-1-single.json": "e4317c5ab1a97a1951a7f44105ab43a5e79576d79907be5a0de0180ef2c252cf",
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-2-single.json": "519bac941647c1d390a8ea87e3b88d50f14e872493f72af141c7c82ed275511e",
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-3-single.json": "e10a7f592e594a157a7128c02dd805f67eedd5190c8b228a28c8ad14d6a5045d",
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-1-pair.json": "f8b6580dbe0ac0c7c181b8b8e53b3b1c4d6da677a3ea80409b4ae8e75100f78d",
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-2-pair.json": "90a2782fade657f7c65264ff6c9261a20c78be1cd268e02d61ec739b25b32494",
+    "data/ab/tt-two-contexts-100ms-100games-v1/validation/bench-3-pair.json": "c27af8001a9614e9daaf1cef0ffc73d36ae13856b7da878bfaa8c1a6431d28d8",
+    "data/tt/tt-two-contexts-100ms-100games-v1-replay-single/results.json": "3fd9a4899b63ffdb2a0f4fc6d400c5c72dea7e1954dd3f25e0003caf4e82e2da",
+    "data/tt/tt-two-contexts-100ms-100games-v1-replay-pair/results.json": "0df8db67c1e1ca4fb47b1266f163cbe61263cfcabb98bccc76f72ffae02dc3ce"
+  }
+}
