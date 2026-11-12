@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "protocol_sha256": "c8a732734799f88e49def61d30d9a36d8b9aea9a374e4301467a752cc64bae3b",
+    "experiment": "packed-eval",
+    "validator_sha256": "8eff749e367d366f291acdd99e02eb4f664c0bd41004b04b75f5053d784403af",
+    "candidate_commit": "fccb8643a8dac51213ef34deb661129483fcf0b6",
+    "reference_commit": "b22b8597dcdf40fa632d9585cd4901c87d97b306"
+  },
+  "passed": true,
+  "state": "completed",
+  "artifacts": {
+    "bench-1-packed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-packed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-2-packed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-2-plain.json": "d792a7a4e843bfd60a844169e37eecfe90cce81f48a004d2de46734aeaa26c3b",
+    "bench-3-plain.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-plain.json": "81a9bb9ba3cd273414caa37c3bab8d14f51610b9008c38487fe0b750a1cef905",
+    "bench-3-packed.json": "0b041549cb6b2f58c3e218ceee77fdea7ab78e24b8de3ba96573b64836ac93f3",
+    "reference.json": "035cc492c9408aa798b88d6594a0b5659ecc8d0853496502919be8c04554c4b6",
+    "bench-2-packed.json": "a2ec9ecbea4ebd4284c0ddeb1ec2fc7af6ba947eb083b4822f902670d637e438",
+    "bench-1-packed.json": "0816cb51e79ca0485a136472cb0fe14aaec1c25cdde5a9d726bf2db5e4f7db6f",
+    "tests.log": "bb8c6045355310fe3cf1bedd6199cc19c09dc82534b534a29c6d85399051112a",
+    "bench-1-plain.json": "0268f20f6314c844947596edd5559060f9bd81d81fe4da0883ff0b432f07280d",
+    "bench-1-plain.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-2-plain.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
