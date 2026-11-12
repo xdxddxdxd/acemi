@@ -1,0 +1,21 @@
+# 20261112T124955Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-true-nextiterationpct-150-quiescencesee-false-rootmateguard-false-tttwocontexts-true_3d09875_root-mate-guard-500ms-100games-v1_c05
+
+- Experiment: root-mate-guard-500ms-100games-v1; chunk 5
+- New commit: `3d09875ae75a56481f4bfae562e0cd3bf00353dc`; old commit: `3d09875ae75a56481f4bfae562e0cd3bf00353dc`
+- Forfeits: either engine loses on timeout/illegal move/crash.
+- Engine: Acemi 0.8.2; opponent: Acemi 0.8.2
+- Opening set: chunk_05; move time: 500 ms
+- Games: 10 (W/D/L: 6/2/2), score: 70.0%
+- Elo difference: +147.2 (95% Wilson interval -72.8 to +367.2)
+- SPRT: not run
+- Completed games: 10; aborted games: 0; average plies: 106.8
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 3.6; nodes/second: 14834
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 e7e6 e2e3 b8d7: 1/0/1
+  - e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d3 d7d6: 0/1/1
+- Losses by game phase at game end (opening 0; middlegame 0; endgame 2). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 8, threefold_repetition 2
+- Engine moves without a search score: 0 of 485 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 15042 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'OwnBook': False, 'EvalPackedBase': True, 'NextIterationPct': 150, 'QuiescenceSEE': False, 'RootMateGuard': True, 'TTTwoContexts': True}; opponent {'OwnBook': False, 'EvalPackedBase': True, 'NextIterationPct': 150, 'QuiescenceSEE': False, 'RootMateGuard': False, 'TTTwoContexts': True}
