@@ -12,6 +12,11 @@ dalındaki `notebooks/kaggle_time_policy.ipynb`, SEE kapalıyken
 `NextIterationPct=100 / 150` ayarlarını **100 ms, tek toplu 100 maç** ile
 karşılaştırır. Mevcut motor varsayılanı 150 olarak kalır.
 
+Üçüncü adım [TT kullanım teşhisi](docs/TT_DIAGNOSTICS.md): `codex/tt-diagnostics`
+dalındaki `notebooks/kaggle_tt_diagnostics.ipynb`, kayıtlı 100 oyunun kontrol
+pozisyonlarını aynı düğüm sınırında normal/sayaçlı aramayla inceler. Yeni maç
+oynatmaz ve TT politikasını değiştirmez; bütün aramalar Kaggle'dadır.
+
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
 ## English summary

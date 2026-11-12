@@ -128,6 +128,22 @@ No engine defaults or draw rules change. `validation/*.json` adds attempted_dept
 search_time_ms, mate, next_iteration_pct and movetime_ms for diagnostic rows.
 These are measurements only; the notebook makes no strength decision.
 
+### TT usage diagnostics
+
+`codex/tt-diagnostics` adds `tools/tt_stats.py`, `tools/tt_diagnostics.py`,
+`notebooks/kaggle_tt_diagnostics.ipynb` and `docs/TT_DIAGNOSTICS.md`.
+Engine files and TT policy stay unchanged. A tools-only Searcher subclass
+counts interior TT probes/context/depth/cutoff/store/clear events.
+`data/tt/<id>/` records immutable inputs, protocol, full Kaggle test log,
+per-recorded-game JSON, checkpoint hashes and aggregate factual results.
+Both ordinary and diagnostic searches replay the control positions of the
+saved 100-game time-policy experiment, with equal recorded node budgets and
+persistent per-game tables. Every search result, board and table must agree.
+This is not a new match, timed speed test or strength measurement. Root's
+direct move-hint lookup is outside the probe denominator; mismatch reasons overlap.
+Local smoke tests may use direct table/protocol fixtures only. Never run
+`test_tt_stats_search` or the replay CLI locally. Analysis goes in `analysis/`.
+
 ### `data/index.csv` fields
 
 One row per run: `run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision`.
