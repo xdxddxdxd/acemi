@@ -2,14 +2,16 @@
   "schema_version": 1,
   "id": "packed-eval-100ms-100games-v1",
   "protocol_sha256": "c8a732734799f88e49def61d30d9a36d8b9aea9a374e4301467a752cc64bae3b",
-  "status": "in_progress",
+  "status": "completed",
   "requested_games": 100,
-  "recorded_attempts": 0,
-  "completed_chunks": [],
-  "games": 0,
-  "wins": 0,
-  "draws": 0,
-  "losses": 0,
+  "recorded_attempts": 100,
+  "completed_chunks": [
+    1
+  ],
+  "games": 100,
+  "wins": 34,
+  "draws": 33,
+  "losses": 33,
   "aborted_games": 0,
   "timeouts": 0,
   "illegal_moves": 0,
@@ -18,7 +20,7 @@
   "opponent_timeouts": 0,
   "opponent_illegal_moves": 0,
   "opponent_engine_crashes": 0,
-  "score_pct": null,
+  "score_pct": 50.5,
   "score_perspective": "new side (pinned source and feature options)",
-  "updated_at": "2026-11-12T07:55:02.307359+00:00"
+  "updated_at": "2026-11-12T08:06:39.828232+00:00"
 }

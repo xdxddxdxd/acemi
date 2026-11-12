@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_name": "20261112T075821Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-false-nextiterationpct-150-quiescencesee-false-tttwocontexts-true_fccb864_packed-eval-100ms-100games-v1_c01",
+  "is_demo": false,
+  "date": "20261112T075821Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.8.2",
+  "git_commit": "fccb8643a8dac51213ef34deb661129483fcf0b6",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 100,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "EvalPackedBase": true,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "TTTwoContexts": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.8.2",
+    "uci_elo": null,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "EvalPackedBase": false,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "TTTwoContexts": true
+    }
+  },
+  "opening_set": "chunk_01",
+  "match_settings": {
+    "games_requested": 100,
+    "concurrency": 2,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 100 --movetime-ms 100 --concurrency 2 --hash-mb 16 --max-plies 400 --grace-ms 1000 --seed 1 --engine-cmd '/usr/bin/python3 -u -m engine' --engine-cwd /kaggle/working/acemi-eval-candidate --opponent-cmd '/usr/bin/python3 -u -m engine' --opponent-cwd /kaggle/working/acemi-eval-control --engine-option OwnBook=false --opponent-option OwnBook=false --openings /kaggle/working/acemi-packed-eval/data/ab/packed-eval-100ms-100games-v1/openings/chunk_01.txt --git-commit fccb8643a8dac51213ef34deb661129483fcf0b6 --root /kaggle/working/acemi-packed-eval --engine-option EvalPackedBase=true --engine-option NextIterationPct=150 --engine-option QuiescenceSEE=false --engine-option TTTwoContexts=true --opponent-option EvalPackedBase=false --opponent-option NextIterationPct=150 --opponent-option QuiescenceSEE=false --opponent-option TTTwoContexts=true",
+    "forfeit_policy": "loss_for_either_engine"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-11-12T07:58:21.919148Z",
+  "finished_at": "2026-11-12T08:06:27.083883Z",
+  "experiment": {
+    "schema_version": 1,
+    "id": "packed-eval-100ms-100games-v1",
+    "chunk": 1,
+    "protocol_sha256": "c8a732734799f88e49def61d30d9a36d8b9aea9a374e4301467a752cc64bae3b",
+    "new": {
+      "path": "/kaggle/working/acemi-eval-candidate",
+      "commit": "fccb8643a8dac51213ef34deb661129483fcf0b6",
+      "engine_tree": "64f05084fb717f14ba6c7e58a9f9100da080fbab"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-eval-control",
+      "commit": "fccb8643a8dac51213ef34deb661129483fcf0b6",
+      "engine_tree": "64f05084fb717f14ba6c7e58a9f9100da080fbab"
+    },
+    "global_game_start": 1
+  }
+}

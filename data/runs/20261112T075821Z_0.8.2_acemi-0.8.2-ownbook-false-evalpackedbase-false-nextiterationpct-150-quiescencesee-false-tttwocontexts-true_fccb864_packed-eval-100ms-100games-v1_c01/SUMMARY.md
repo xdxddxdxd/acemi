@@ -1,0 +1,29 @@
+# 20261112T075821Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-false-nextiterationpct-150-quiescencesee-false-tttwocontexts-true_fccb864_packed-eval-100ms-100games-v1_c01
+
+- Experiment: packed-eval-100ms-100games-v1; chunk 1
+- New commit: `fccb8643a8dac51213ef34deb661129483fcf0b6`; old commit: `fccb8643a8dac51213ef34deb661129483fcf0b6`
+- Forfeits: either engine loses on timeout/illegal move/crash.
+- Engine: Acemi 0.8.2; opponent: Acemi 0.8.2
+- Opening set: chunk_01; move time: 100 ms
+- Games: 100 (W/D/L: 34/33/33), score: 50.5%
+- Elo difference: +3.5 (95% Wilson interval -64.2 to +71.1)
+- SPRT: not run
+- Completed games: 100; aborted games: 0; average plies: 114.5
+- Timeouts: 0; illegal moves: 0; engine crashes: 0; board disagreements (Acemi board vs python-chess): 0
+- Average depth: 2.6; nodes/second: 14621
+- Openings with the most losses (up to 10, Acemi W/D/L):
+  - e2e4 c7c5 b1c3 b8c6 f2f4 g7g6 g1f3 f8g7 a2a4 a7a6: 0/0/2
+  - d2d4 d7d5 c2c4 c7c6 c4d5 c6d5 b1c3 g8f6 c1f4 b8c6: 1/0/1
+  - c2c4 g7g6 b1c3 f8g7 g2g3 g8f6 f1g2 e8g8 g1f3 d7d6: 1/0/1
+  - e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 d8d7 e1g1 g8f6: 1/0/1
+  - c2c4 g8f6 b1c3 e7e6 g1f3 d7d5 d2d4 f8e7 c1f4 e8g8: 1/0/1
+  - d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3 e7e6 f1c4 c7c5: 0/1/1
+  - d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 d1c2 e8g8 a2a3 b4c3: 1/0/1
+  - e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 e7e6: 0/1/1
+  - e2e4 c7c5 g1f3 b8c6 f1b5 g7g6 e1g1 f8g7 c2c3 g8f6: 0/1/1
+  - e2e4 e7e5 g1f3 b8c6 b1c3 g8f6 f1b5 c6d4 f3d4 e5d4: 1/0/1
+- Losses by game phase at game end (opening 1; middlegame 2; endgame 30). Phase: opening = game ended within 20 plies; endgame = non-pawn material of both sides totals 26 or less (N/B=3, R=5, Q=9); otherwise middlegame
+- Game endings: checkmate 67, insufficient_material 2, threefold_repetition 31
+- Engine moves without a search score: 0 of 5225 (average depth and nodes/second above include only moves that reported them)
+- Nodes/second by the engine's own search time: 15750 (the figure above divides by wall clock including pipe latency)
+- Extra UCI options: engine {'OwnBook': False, 'EvalPackedBase': True, 'NextIterationPct': 150, 'QuiescenceSEE': False, 'TTTwoContexts': True}; opponent {'OwnBook': False, 'EvalPackedBase': False, 'NextIterationPct': 150, 'QuiescenceSEE': False, 'TTTwoContexts': True}
