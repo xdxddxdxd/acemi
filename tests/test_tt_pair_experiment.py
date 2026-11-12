@@ -20,7 +20,7 @@ class TTEligibilityTests(unittest.TestCase):
     def test_replays_share_the_same_fixed_twenty_inputs_and_resume(self):
         td = exp.td
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             source = root/'data'/'tt'/'tt-usage-node-replay-v1'
             td._write(source/'inputs.json', {'schema_version':1, 'games':[
                 {'game_no':n, 'control_rows':[{'ply':1, 'nodes':10}]} for n in range(1,101)]})

@@ -15,7 +15,7 @@ from tools import qsee_validation as qv
 class ValidationGateTests(unittest.TestCase):
     def test_tt_pair_validation_isolates_feature_and_repeats_benchmarks(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             source, reference, session = root / 'new', root / 'reference', root / 'session'
             session.mkdir()
             plan = {'session_dir': str(session), 'protocol_sha256': 'pair-fixture',
@@ -41,7 +41,7 @@ class ValidationGateTests(unittest.TestCase):
 
     def test_time_policy_gate_records_alternating_timed_diagnostics(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             source, reference, session = root / 'new', root / 'reference', root / 'session'
             session.mkdir()
             plan = {'session_dir': str(session), 'protocol_sha256': 'time-fixture', 'movetime_ms': 100,
@@ -106,7 +106,7 @@ class ValidationGateTests(unittest.TestCase):
 
     def test_passed_validation_is_verified_and_not_replayed(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             source, reference = root / 'new', root / 'reference'
             session = root / 'session'
             session.mkdir()

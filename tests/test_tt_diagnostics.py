@@ -22,7 +22,7 @@ class TTProtocolTests(unittest.TestCase):
 
     def test_saved_diagnostic_is_adopted_and_tampering_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
-            out = Path(directory)
+            out = Path(directory).resolve()
             plan = {'session_dir': str(out), 'protocol_sha256': 'fixture'}
             games = [{'game_no': 1, 'control_rows': [{}]}]
             path = out / 'games' / 'game_001.json'
@@ -39,7 +39,7 @@ class TTProtocolTests(unittest.TestCase):
 
     def test_prepare_freezes_all_100_games_without_searching(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             run = root / 'data' / 'runs' / 'fixture-run'
             source = root / 'data' / 'ab' / 'fixture-source'
             run.mkdir(parents=True)

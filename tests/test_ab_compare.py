@@ -16,7 +16,7 @@ class ExperimentTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.new, self.old = self.root / "new", self.root / "old"
         self.new.mkdir()
         self.old.mkdir()
