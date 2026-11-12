@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "experiment": "root-mate-guard",
+    "protocol_sha256": "5ead230374d96b3addd1a0c45e3c73a69caea543d4fd47fb79b1c6fa00c1eda4",
+    "reference_commit": "38b0722b084552d8e94eb62e3558d447b641969c",
+    "validator_sha256": "bdc5a792ad012d67c3b46d8693fd69a27b069658cb71ce972d19c57c8445f844"
+  },
+  "passed": true,
+  "state": "completed",
+  "artifacts": {
+    "bench-2-off.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-2-off.json": "e677f7695ae612d41ea1795ca7b7d3a3bce7dfe4d0452cc5ceead08596ce1744",
+    "bench-2-on.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-1-off.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-1-on.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-on.json": "eb194c887545e16975cacfdaff083b704a7008a6624c75bdfb3f82f8a1fe45fd",
+    "bench-1-off.json": "dbeed84a6863bb10722f3c1c595892c3526d161127a6f6c60f70277e83e1d5bd",
+    "bench-3-off.json": "cdbae63626be068952d6f3ccdc418d8f8347b42d4ebd33f78ac6d0f852548867",
+    "bench-2-on.json": "dad86bded62fbb931c1bd177970a5dc99d4ce39d3b89c28e0212687273974eb7",
+    "bench-3-on.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench-3-off.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reference.json": "4e9b22f2018541400941d69bb9b21d18606300f92309b9ed2e8490f981e4ab18",
+    "bench-1-on.json": "8c0e10b1639931942096609c9951480cbc6ab0339ecaa7ebd1d2d8b1ce48289e",
+    "tests.log": "4bfc7456bf00c195a7eb69f91ccae96f000fc7921f57c9467786250c9b67f6d7"
+  }
+}

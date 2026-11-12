@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "source_commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+  "engine_tree": "31468cdc005fc673f01eb4c519ab8fbb650cc525",
+  "root_mate_guard": true,
+  "positions": [
+    {
+      "name": "start",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "best_move": "b1c3",
+      "score": 50,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 682,
+      "seconds": 0.03100576400004229,
+      "search_time_ms": 30,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 20,
+        "nodes": 21,
+        "time_ms": 0.3563450000001467
+      }
+    },
+    {
+      "name": "italian",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3",
+      "best_move": "b1c3",
+      "score": 40,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 1812,
+      "seconds": 0.10257331100001466,
+      "search_time_ms": 102,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 27,
+        "nodes": 32,
+        "time_ms": 0.45311999997466046
+      }
+    },
+    {
+      "name": "kiwipete",
+      "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      "best_move": "e2a6",
+      "score": 35,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 39091,
+      "seconds": 2.244692824000026,
+      "search_time_ms": 2244,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 48,
+        "nodes": 44,
+        "time_ms": 0.6484200000045348
+      }
+    },
+    {
+      "name": "endgame_rooks",
+      "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+      "best_move": "b4f4",
+      "score": 116,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 545,
+      "seconds": 0.02886971500004165,
+      "search_time_ms": 28,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 14,
+        "nodes": 17,
+        "time_ms": 0.30501800000592993
+      }
+    },
+    {
+      "name": "promotions",
+      "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      "best_move": "c4c5",
+      "score": -483,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 6019,
+      "seconds": 0.32288096799999266,
+      "search_time_ms": 322,
+      "root_guard": {
+        "triggered": true,
+        "complete": true,
+        "threat": null,
+        "safe_moves": 6,
+        "unsafe_moves": 0,
+        "unknown_moves": 0,
+        "nodes": 281,
+        "time_ms": 4.544427999974232
+      }
+    },
+    {
+      "name": "tactical",
+      "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+      "best_move": "d7c8q",
+      "score": 560,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 2947,
+      "seconds": 0.14526884399998607,
+      "search_time_ms": 145,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 44,
+        "nodes": 38,
+        "time_ms": 0.6433330000277238
+      }
+    },
+    {
+      "name": "open_middlegame",
+      "fen": "r2q1rk1/ppp2ppp/2np1n2/2b1p3/2B1P1b1/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 8",
+      "best_move": "h2h3",
+      "score": -5,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 12707,
+      "seconds": 0.7660787439999694,
+      "search_time_ms": 766,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 36,
+        "nodes": 43,
+        "time_ms": 0.7006879999948978
+      }
+    },
+    {
+      "name": "queen_endgame",
+      "fen": "6k1/5ppp/8/8/8/8/5PPP/3Q2K1 w - - 0 1",
+      "best_move": "d1d8",
+      "score": 99999,
+      "mate": 1,
+      "depth": 1,
+      "attempted_depth": 1,
+      "nodes": 36,
+      "seconds": 0.001225946000033673,
+      "search_time_ms": 1,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 27,
+        "nodes": 9,
+        "time_ms": 0.17345300000215502
+      }
+    },
+    {
+      "name": "closed",
+      "fen": "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 9",
+      "best_move": "d4c6",
+      "score": 62,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 3129,
+      "seconds": 0.1434067099999652,
+      "search_time_ms": 143,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 45,
+        "nodes": 37,
+        "time_ms": 0.4883600000198385
+      }
+    },
+    {
+      "name": "minor_endgame",
+      "fen": "8/5pk1/6p1/3n4/3B4/6P1/5PK1/8 w - - 0 1",
+      "best_move": "g2f3",
+      "score": 56,
+      "mate": null,
+      "depth": 3,
+      "attempted_depth": 3,
+      "nodes": 477,
+      "seconds": 0.022889005999957135,
+      "search_time_ms": 22,
+      "root_guard": {
+        "triggered": false,
+        "complete": false,
+        "threat": null,
+        "safe_moves": 0,
+        "unsafe_moves": 0,
+        "unknown_moves": 18,
+        "nodes": 7,
+        "time_ms": 0.2121250000186592
+      }
+    }
+  ],
+  "critical": [
+    {
+      "fen": "rnb2rk1/ppp2ppp/8/1N1p4/1b1PnB1q/P7/1P1NPPPP/R2QKB1R w KQ - 1 10",
+      "best_move": "g2g3",
+      "score": -17,
+      "mate": null,
+      "depth": 2,
+      "attempted_depth": 2,
+      "nodes": 1835,
+      "seconds": 0.09009070299998712,
+      "search_time_ms": 90,
+      "root_guard": {
+        "triggered": true,
+        "complete": true,
+        "threat": "h4f2",
+        "safe_moves": 8,
+        "unsafe_moves": 19,
+        "unknown_moves": 0,
+        "nodes": 595,
+        "time_ms": 14.93713799999341
+      },
+      "movetime_ms": 100,
+      "allows_mate_in_one": false
+    },
+    {
+      "fen": "rnb2rk1/ppp2ppp/8/1N1p4/1b1PnB1q/P7/1P1NPPPP/R2QKB1R w KQ - 1 10",
+      "best_move": "f4g3",
+      "score": -14,
+      "mate": null,
+      "depth": 4,
+      "attempted_depth": 4,
+      "nodes": 5714,
+      "seconds": 0.32588390299997627,
+      "search_time_ms": 325,
+      "root_guard": {
+        "triggered": true,
+        "complete": true,
+        "threat": "h4f2",
+        "safe_moves": 8,
+        "unsafe_moves": 19,
+        "unknown_moves": 0,
+        "nodes": 595,
+        "time_ms": 15.151505000005727
+      },
+      "movetime_ms": 500,
+      "allows_mate_in_one": false
+    }
+  ],
+  "total_seconds": 3.808891832000029
+}
