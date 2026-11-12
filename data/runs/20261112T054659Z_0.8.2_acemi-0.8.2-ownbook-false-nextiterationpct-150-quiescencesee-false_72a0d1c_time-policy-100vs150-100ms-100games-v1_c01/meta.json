@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_name": "20261112T054659Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false_72a0d1c_time-policy-100vs150-100ms-100games-v1_c01",
+  "is_demo": false,
+  "date": "20261112T054659Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.8.2",
+  "git_commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 100,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "NextIterationPct": 100,
+      "QuiescenceSEE": false
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.8.2",
+    "uci_elo": null,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false
+    }
+  },
+  "opening_set": "chunk_01",
+  "match_settings": {
+    "games_requested": 100,
+    "concurrency": 2,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 100 --movetime-ms 100 --concurrency 2 --hash-mb 16 --max-plies 400 --grace-ms 1000 --seed 1 --engine-cmd '/usr/bin/python3 -u -m engine' --engine-cwd /kaggle/working/acemi-time-candidate --opponent-cmd '/usr/bin/python3 -u -m engine' --opponent-cwd /kaggle/working/acemi-time-control --engine-option OwnBook=false --opponent-option OwnBook=false --openings /kaggle/working/acemi-time-policy/data/ab/time-policy-100vs150-100ms-100games-v1/openings/chunk_01.txt --git-commit 72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a --root /kaggle/working/acemi-time-policy --engine-option NextIterationPct=100 --engine-option QuiescenceSEE=false --opponent-option NextIterationPct=150 --opponent-option QuiescenceSEE=false",
+    "forfeit_policy": "loss_for_either_engine"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-11-12T05:46:59.954364Z",
+  "finished_at": "2026-11-12T05:55:11.007577Z",
+  "experiment": {
+    "schema_version": 1,
+    "id": "time-policy-100vs150-100ms-100games-v1",
+    "chunk": 1,
+    "protocol_sha256": "1ea6a5f07cbcad309895e843bad4a8213d3edaf6f7b295b537f9fb52598abad7",
+    "new": {
+      "path": "/kaggle/working/acemi-time-candidate",
+      "commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+      "engine_tree": "b4695865172cff0b4676a9c8b567cd1106d55d88"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-time-control",
+      "commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+      "engine_tree": "b4695865172cff0b4676a9c8b567cd1106d55d88"
+    },
+    "global_game_start": 1
+  }
+}

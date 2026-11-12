@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "chunk": 1,
+  "run_name": "20261112T054659Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false_72a0d1c_time-policy-100vs150-100ms-100games-v1_c01",
+  "file_sha256": {
+    "meta.json": "e96be4d36afb7f950505c53fdcdb643b8952c9084042408da5c285af55502ebc",
+    "results.json": "8ef285120f934aa5c4b1befd9b5306d71a962208761039f9325ea2e38f528455",
+    "SUMMARY.md": "4e68cff389d6fe3b5327badf257c4c722c3c4c5debb37994ee5dc6963252ee37",
+    "games.pgn.gz": "7bc7bb8bd34bea4cb9c64a4fc5524929438a5b720f00ad13683b2afb369bad59",
+    "moves.jsonl.gz": "3f3aa25195cae6194d01c4f53253b2ff9f1419e05ff17effdfff55065893150a",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "finished_at": "2026-11-12T05:55:22.304560+00:00"
+}

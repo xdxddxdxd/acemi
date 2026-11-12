@@ -3,10 +3,10 @@
 - New: `72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a`
 - Old: `72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a`
 - Feature options: {'new': {'NextIterationPct': 100, 'QuiescenceSEE': False}, 'old': {'NextIterationPct': 150, 'QuiescenceSEE': False}}
-- Status: in_progress; chunks 0/1
-- Requested games: 100; recorded attempts: 0; counted: 0
-- New W/D/L: 0/0/0
-- New score (%): None
+- Status: completed; chunks 1/1
+- Requested games: 100; recorded attempts: 100; counted: 100
+- New W/D/L: 28/37/35
+- New score (%): 46.5
 - Move time: 100 ms; Hash: 16 MB; Threads: 1; OwnBook: false; SPRT: off
 - Aborted: 0; new timeouts/illegal/crashes: 0/0/0
 - Old timeouts/illegal/crashes: 0/0/0
