@@ -4,19 +4,20 @@
   "protocol_sha256": "5ead230374d96b3addd1a0c45e3c73a69caea543d4fd47fb79b1c6fa00c1eda4",
   "status": "in_progress",
   "requested_games": 100,
-  "recorded_attempts": 60,
+  "recorded_attempts": 70,
   "completed_chunks": [
     1,
     2,
     3,
     4,
     5,
-    6
+    6,
+    7
   ],
-  "games": 60,
-  "wins": 19,
-  "draws": 27,
-  "losses": 14,
+  "games": 70,
+  "wins": 23,
+  "draws": 29,
+  "losses": 18,
   "aborted_games": 0,
   "timeouts": 0,
   "illegal_moves": 0,
@@ -25,7 +26,7 @@
   "opponent_timeouts": 0,
   "opponent_illegal_moves": 0,
   "opponent_engine_crashes": 0,
-  "score_pct": 54.166666666666664,
+  "score_pct": 53.57142857142857,
   "score_perspective": "new side (pinned source and feature options)",
-  "updated_at": "2026-11-12T12:57:27.985449+00:00"
+  "updated_at": "2026-11-12T13:01:10.191558+00:00"
 }
