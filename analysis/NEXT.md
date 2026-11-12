@@ -1,6 +1,27 @@
 # Sonraki önerilen deney
 
-## Güncel: İki TT context'i / 100 ms sonucu
+## Güncel: Paketli temel değerlendirme sonucu
+
+[Paketli değerlendirme raporu](packed-eval-100ms-100games-v1.md).
+
+466 Kaggle testi geçti. Main referansı ve açık/kapalı tüm depth-4 geçişleri
+aynı skor/hamle/derinlik/mat/düğüm sonuçlarını verdi: 173.729 düğüm.
+Üç dönüşümlü geçişte medyan süre 11,0952 → 10,4591 saniye (%5,733 kısa;
+aynı işte yaklaşık %6,082 düğüm/saniye artışı). Bu iş yükünde hız kazancı var.
+
+100 ms / tek 100 maçta 34/33/33 (%50,5), iki tarafta da teknik hata yok.
+Oyun gücü artışı gösterilmedi. Önceki TT deneyindeki %52,5 ile doğrudan
+kıyas yapılmaz; burada iki tarafın TT'si de açık. Kullanıcı kararıyla TT
+main'e alınmış ve UCI varsayılanı açılmıştır; mevcut main referansı b22b859.
+
+Öneri: EvalPackedBase'i performans iyileştirmesi olarak main'e alma adayı
+kabul et; Elo artışı iddiası ekleme. Sonraki güç deneyi için 19 (20 ply mat)
+ve 55 (42 ply mat) başta olmak üzere sabit kritik pozisyonları Kaggle'da
+Stockfish/oracle ile etiketle. İlk hata ve arama/değerlendirme ayrımı görüldükten
+sonra tek bir değişiklik seç. Bu analizde yeni test/arama/maç, motor/notebook
+değişikliği veya main merge yapılmadı.
+
+## Önceki: İki TT context'i / 100 ms sonucu
 
 [TT iki context raporu](tt-two-contexts-100ms-100games-v1.md).
 
