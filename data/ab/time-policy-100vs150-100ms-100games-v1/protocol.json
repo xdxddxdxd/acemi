@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "time-policy-100vs150-100ms-100games-v1",
+  "created_at": "2026-11-12T05:44:48.967141+00:00",
+  "session_dir": "/kaggle/working/acemi-time-policy/data/ab/time-policy-100vs150-100ms-100games-v1",
+  "repo_root": "/kaggle/working/acemi-time-policy",
+  "sources": {
+    "new": {
+      "path": "/kaggle/working/acemi-time-candidate",
+      "commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+      "engine_tree": "b4695865172cff0b4676a9c8b567cd1106d55d88"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-time-control",
+      "commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+      "engine_tree": "b4695865172cff0b4676a9c8b567cd1106d55d88"
+    }
+  },
+  "runner_sources": {
+    "ab_compare.py": "b8bef8d41f132c962a3bffa84ab770e65c8439edac92c433a00b14bc7e4ba28f",
+    "match.py": "2c516628a9bdf723701e87ec1e653f4c2368b92405d09c68b20f42c688a90779",
+    "match_game.py": "ebc5f3135e1270b3a0daea5bd5e065dab60bb29492a5118ce0b9ae69439e1600",
+    "match_config.py": "19e4e230103c386b0217a30e8c3db3b43f0d2a48a80a517f488fab4015be3d15",
+    "match_openings.py": "3e3632a37a28cec4ea34f2c2d82111563fa4b87e32f3164a687682a072500219",
+    "uci_client.py": "f708a82905247ccccd731c7aa46febe88687d2c163d35936b6c8342597cc2069",
+    "record.py": "368a8be35d2da588086b46849e9041110c488c85d08b507a4f335bcda194dfe3",
+    "pairing.py": "3105b630489a0d1d9325ffad88814877169e595af52b0edd81cb7587fb66520a",
+    "elo.py": "5095f077dc7f7b75b42e012c5202345ce4ce74f510eea879e7f69fdfb46d98e8",
+    "summarize.py": "afb19c2be48c864faee881879e53521ae1f4ce4e4001693d1e3aae49500a27ec"
+  },
+  "collector_commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+  "games": 100,
+  "chunk_games": 100,
+  "movetime_ms": 100,
+  "hash_mb": 16,
+  "max_plies": 400,
+  "concurrency": 2,
+  "threads_per_engine": 1,
+  "opening_book": false,
+  "sprt_enabled": false,
+  "timeout_grace_ms": 1000,
+  "feature_options": {
+    "new": {
+      "NextIterationPct": 100,
+      "QuiescenceSEE": false
+    },
+    "old": {
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false
+    }
+  },
+  "forfeit_policy": "loss_for_either_engine",
+  "opening_source_sha256": "d9ee9e5700382bea856867017ed5f2b880bfa81479e95f58c1aa2df81facbc66",
+  "selection_seed": 1,
+  "chunks": [
+    {
+      "number": 1,
+      "games": 100,
+      "global_game_start": 1,
+      "seed": 1,
+      "openings": "openings/chunk_01.txt",
+      "sha256": "e23ccc8314eb31ef8d764f75c65279b8b082513c5e285fb33165c090d948a32f"
+    }
+  ],
+  "runtime": "CPython",
+  "runtime_version": "3.13.15",
+  "protocol_sha256": "1ea6a5f07cbcad309895e843bad4a8213d3edaf6f7b295b537f9fb52598abad7"
+}
