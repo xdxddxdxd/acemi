@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "protocol_sha256": "1ea6a5f07cbcad309895e843bad4a8213d3edaf6f7b295b537f9fb52598abad7",
+    "validator_sha256": "41f73de056b9e86257eef174ae1d8e9a036306b8570ac3d92ff65c61693fab51",
+    "candidate_commit": "72a0d1c3c6ec4d291fd03f7edfd48b9f8252bd2a",
+    "reference_commit": "4068a0459f8119274014cd466270a2ffd3cd30c3",
+    "experiment": "time-policy"
+  },
+  "passed": true,
+  "state": "completed",
+  "control_matches_reference": true,
+  "artifacts": {
+    "control.json": "d8b7d64e6a8ab697ac3f841d813a1ae0bbfae8f7a8badfaf8d8cd5ce7d37dc56",
+    "control.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed-1-pct100.json": "4bb48477fd7b9fcc852654afd12bbad3ec43bceffb920d3e5f8a51bf374ed67f",
+    "reference.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed-1-pct150.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate.json": "fb048ab5daced7ead39560beefd2d553df5df8b2d8ff8af19a1f3e7282bb7608",
+    "timed-2-pct100.json": "1abe991c1789b152bc01bf830a2152a248d656940c974fa25fb2ebeed05ae346",
+    "timed-1-pct100.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed-2-pct150.json": "e4cb7372860073dec6b1d9232594b1bf68115fb43bbdefa46671010d0e249f58",
+    "reference.json": "e34679051a0f965fbc991cc46c5479f077dc7abe77c5439fa4232bd1ef1422bc",
+    "timed-2-pct150.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests.log": "60d38902b9c1d3c927df32dfdb5280ab1f08a17baacccae79d4c291dca609275",
+    "timed-1-pct150.json": "108500795bc6bd83e38e7a0ae768654b9b450d142906731128411b54d88bd648",
+    "timed-2-pct100.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "note": "Diagnostic timing is not an Elo decision.",
+  "fixed_depth_candidate_matches_reference": true
+}
