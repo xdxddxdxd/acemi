@@ -46,7 +46,7 @@ class UciConfigurationTests(FlagFixture):
                 self.assertEqual(session.searcher.tt_size, 0)
                 self.assertFalse(getattr(other.eval_flags, attribute))
                 self.assertIs(other.searcher._probe(other.board)[0], other_entry)
-                self.assertEqual(FLAGS.signature(), (False,) * 5)
+                self.assertEqual(FLAGS.signature(), (False,) * len(EvalFlags.__slots__))
                 seed_table(session)
                 session.handle_line(f"setoption name {option} value false")
                 self.assertEqual(session.searcher.tt_size, 0)
@@ -85,7 +85,7 @@ class UciConfigurationTests(FlagFixture):
     def test_new_session_does_not_inherit_legacy_global_flags(self):
         FLAGS.passed_pawns = True
         session = UciSession()
-        self.assertEqual(session.eval_flags.signature(), (False,) * 5)
+        self.assertEqual(session.eval_flags.signature(), (False,) * len(EvalFlags.__slots__))
         self.assertTrue(FLAGS.passed_pawns)
         self.assertEqual(evaluate(Board(PAWN), session.eval_flags), evaluate(Board(PAWN), EvalFlags()))
 
@@ -94,7 +94,7 @@ class UciConfigurationTests(FlagFixture):
         first.handle_line("setoption name EvalPassedPawns value true")
         self.assertGreater(evaluate(Board(PAWN), first.eval_flags), evaluate(Board(PAWN), second.eval_flags))
         self.assertFalse(second.eval_flags.passed_pawns)
-        self.assertEqual(FLAGS.signature(), (False,) * 5)
+        self.assertEqual(FLAGS.signature(), (False,) * len(EvalFlags.__slots__))
         self.assertEqual(evaluate(Board(PAWN)), evaluate(Board(PAWN), second.eval_flags))
 
     def test_contempt_change_invalidates_but_same_value_does_not(self):

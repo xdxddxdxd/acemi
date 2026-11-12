@@ -1,5 +1,18 @@
 # Acemi analysis agent guide
 
+## Packed base evaluation experiment
+
+`codex/packed-eval` adds an opt-in `EvalPackedBase` implementation and Kaggle
+notebook. It changes the arithmetic of the base sum only, never its score.
+TTTwoContexts is enabled on both sides, matching the promoted main UCI default.
+`data/ab/packed-eval-100ms-100games-v1/` stores full correctness logs,
+reference and alternating depth-4 benchmarks, and a hash-checked eligibility
+decision. At least 2% lower median search time and exact score/move/node
+equivalence are required before one bulk 100-game match at 100 ms. A skipped
+match is not a failed correctness test; read the recorded reason. Eligibility
+is neither proof of strength nor permission to change defaults. Historical raw
+results stay immutable. See `docs/PACKED_EVAL.md`.
+
 ## Repository map
 
 - `engine/`: chess engine. The engine core is standard-library-only; do not use `python-chess` here.

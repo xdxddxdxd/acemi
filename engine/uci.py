@@ -66,6 +66,7 @@ OPTION_LINES = (
     "option name EvalBishopPair type check default false",
     "option name EvalKingSafety type check default false",
     "option name EvalEndgameMate type check default false",
+    "option name EvalPackedBase type check default false",
     # A new iteration starts only if the time left is at least this percent of the last one.
     "option name NextIterationPct type spin default 150 min 50 max 500",
     # Penalise draws only when the root side is clearly ahead (0 = off).
@@ -87,6 +88,7 @@ EVAL_OPTIONS = {
     "evalbishoppair": "bishop_pair",
     "evalkingsafety": "king_safety",
     "evalendgamemate": "endgame_mate",
+    "evalpackedbase": "packed_base",
 }
 
 SPIN_LIMITS = {

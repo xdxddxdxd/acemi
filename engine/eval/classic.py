@@ -165,6 +165,37 @@ def _build_square_values(tables: dict[int, tuple[int, ...]]) -> dict[int, list[i
 _MG_VALUES = _build_square_values(_MG_TABLE)
 _EG_VALUES = _build_square_values(_EG_TABLE)
 
+# Balanced signed lanes: a FEN has at most 64 pieces; even 62 promoted queens
+# keep either score far inside +/- 2**19. Phase is intentionally NOT clamped
+# until after summing, so promotions retain the original tapered semantics.
+_LANE_BITS = 20
+_LANE = 1 << _LANE_BITS
+_LANE_HALF = _LANE >> 1
+_LANE_MASK = _LANE - 1
+_PACKED_BIAS = _LANE_HALF + (_LANE_HALF << _LANE_BITS)
+_PACKED_VALUES = {
+    piece: [
+        (1 if piece > 0 else -1) * (_MG_VALUES[piece][square] +
+            (_EG_VALUES[piece][square] << _LANE_BITS)) +
+        (PHASE_WEIGHT[abs(piece)] << (2 * _LANE_BITS))
+        for square in range(128)
+    ]
+    for piece in _MG_VALUES
+}
+
+
+def _packed_base(board: Board) -> tuple[int, int, int]:
+    """Exact material/PST/phase sum, with one integer addition per piece."""
+    total = 0
+    for piece, squares in board.piece_squares.items():
+        values = _PACKED_VALUES[piece]
+        for square in squares:
+            total += values[square]
+    total += _PACKED_BIAS
+    return ((total & _LANE_MASK) - _LANE_HALF,
+            ((total >> _LANE_BITS) & _LANE_MASK) - _LANE_HALF,
+            total >> (2 * _LANE_BITS))
+
 
 def pst_delta(piece: int, from_square: int, to_square: int) -> int:
     """Middlegame piece-square gain of moving ``piece`` (signed) between two squares.
@@ -182,7 +213,7 @@ class EvalFlags:
     for legacy direct evaluator/Searcher calls that do not supply a configuration.
     """
 
-    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety", "endgame_mate")
+    __slots__ = ("passed_pawns", "pawn_structure", "bishop_pair", "king_safety", "endgame_mate", "packed_base")
 
     def __init__(self) -> None:
         self.passed_pawns = False
@@ -190,6 +221,7 @@ class EvalFlags:
         self.bishop_pair = False
         self.king_safety = False
         self.endgame_mate = False
+        self.packed_base = False
 
     def signature(self) -> tuple[bool, ...]:
         """Immutable values used to invalidate cached evaluations between searches."""
@@ -424,19 +456,22 @@ def _endgame_mate_bonus(board: Board) -> tuple[int, int]:
 def evaluate_classic(board: Board, flags: EvalFlags | None = None) -> int:
     """Tapered material + piece-square score in centipawns, side-to-move positive."""
     active = FLAGS if flags is None else flags
-    mg = 0
-    eg = 0
-    phase = 0
-    for piece, squares in board.piece_squares.items():
-        if not squares:
-            continue
-        mg_values = _MG_VALUES[piece]
-        eg_values = _EG_VALUES[piece]
-        sign = 1 if piece > 0 else -1
-        for square in squares:
-            mg += sign * mg_values[square]
-            eg += sign * eg_values[square]
-        phase += PHASE_WEIGHT[abs(piece)] * len(squares)
+    if active.packed_base:
+        mg, eg, phase = _packed_base(board)
+    else:
+        mg = 0
+        eg = 0
+        phase = 0
+        for piece, squares in board.piece_squares.items():
+            if not squares:
+                continue
+            mg_values = _MG_VALUES[piece]
+            eg_values = _EG_VALUES[piece]
+            sign = 1 if piece > 0 else -1
+            for square in squares:
+                mg += sign * mg_values[square]
+                eg += sign * eg_values[square]
+            phase += PHASE_WEIGHT[abs(piece)] * len(squares)
 
     if active.passed_pawns:
         bonus_mg, bonus_eg = _passed_pawn_bonus(board)

@@ -24,6 +24,13 @@ ile denenir. Doğruluk, kayıtlı pozisyon ve maliyet kontrolleri geçerse
 UCI motorunda varsayılan açıktır; `setoption name TTTwoContexts value false`
 ile kapatılabilir. Son deney 40/25/35 (%52,5); güç kazancı henüz kesinleşmemiştir.
 
+Sıradaki temel değerlendirme deneyi `codex/packed-eval` dalında:
+[`notebooks/kaggle_packed_eval.ipynb`](notebooks/kaggle_packed_eval.ipynb).
+Puanların ve sabit işli aramanın aynı kaldığı doğrulanır; üçer hız ölçümünde
+medyan süre en az %2 kısalırsa **100 ms / tek toplu 100 maç** oynanır.
+İki tarafta da TT açıktır; yeni `EvalPackedBase` varsayılan kapalıdır.
+[Deney ayrıntıları](docs/PACKED_EVAL.md).
+
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
 ## English summary
