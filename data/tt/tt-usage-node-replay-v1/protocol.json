@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "tt_replay_diagnostics",
+  "id": "tt-usage-node-replay-v1",
+  "session_dir": "/kaggle/working/acemi-tt/data/tt/tt-usage-node-replay-v1",
+  "source_commit": "bd32d0d73268b632f64aa892ed2088fa97e6893a",
+  "engine_tree": "b4695865172cff0b4676a9c8b567cd1106d55d88",
+  "collector_sources": {
+    "tools/tt_stats.py": "2e7d0cb0e890ae0e197a029ac5f4bba3676f61d931773b7808faaafee4ed9331",
+    "tools/tt_diagnostics.py": "ec280c7eac7f62082607ff66f82b6365bfa12fead77740bb46bf18d2b59999d6"
+  },
+  "source_session": "time-policy-100vs150-100ms-100games-v1",
+  "source_run": "20261112T054659Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false_72a0d1c_time-policy-100vs150-100ms-100games-v1_c01",
+  "source_protocol_sha256": "1ea6a5f07cbcad309895e843bad4a8213d3edaf6f7b295b537f9fb52598abad7",
+  "source_artifacts": {
+    "meta.json": "e96be4d36afb7f950505c53fdcdb643b8952c9084042408da5c285af55502ebc",
+    "results.json": "8ef285120f934aa5c4b1befd9b5306d71a962208761039f9325ea2e38f528455",
+    "SUMMARY.md": "4e68cff389d6fe3b5327badf257c4c722c3c4c5debb37994ee5dc6963252ee37",
+    "games.pgn.gz": "7bc7bb8bd34bea4cb9c64a4fc5524929438a5b720f00ad13683b2afb369bad59",
+    "moves.jsonl.gz": "3f3aa25195cae6194d01c4f53253b2ff9f1419e05ff17effdfff55065893150a",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "inputs_sha256": "25aa6108f8b624f7be40bcbf7a670d0d3b9d286057c88d4e9d73121213cbbb57",
+  "games": 100,
+  "positions": 5076,
+  "hash_mb": 16,
+  "next_iteration_pct": 150,
+  "quiescence_see": false,
+  "control_seed_base": 1000004,
+  "budget": "recorded control node count; no wall-clock deadline",
+  "concurrency": 2,
+  "is_strength_test": false,
+  "protocol_sha256": "984a87b5121bdb031e7d94d239bfe4992530385d1691e42db691bac96b4d1029"
+}
