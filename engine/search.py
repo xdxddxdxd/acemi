@@ -234,9 +234,11 @@ class Searcher:
         next_iteration_factor: float = NEXT_ITERATION_FACTOR,
         eval_flags: EvalFlags | None = None,
         quiescence_see: bool = False,
+        tt_two_contexts: bool = False,
     ) -> None:
         self.eval_flags = eval_flags
         self.use_quiescence_see = quiescence_see
+        self.use_tt_two_contexts = tt_two_contexts
         self.use_pvs = pvs
         self.contempt = contempt
         self._root_color: int | None = None
@@ -254,6 +256,7 @@ class Searcher:
         self._stop_event: Event | None = None
         self._partial: tuple[Move, int] | None = None
         self._tt: dict[int, _TTEntry] = {}
+        self._tt_secondary: dict[int, _TTEntry] = {}
         self._tt_max = 0
         self.resize_tt(hash_mb)
         self._tt_configuration = self._configuration_key()
@@ -264,15 +267,17 @@ class Searcher:
         """Set the table capacity from a size in megabytes (0 disables it) and clear it."""
         self._tt_max = max(0, hash_mb) * TT_ENTRIES_PER_MB
         self._tt.clear()
+        self._tt_secondary.clear()
 
     def clear_tt(self) -> None:
         self._tt.clear()
+        self._tt_secondary.clear()
 
     def _configuration_key(self) -> tuple:
         flags = classic_eval.FLAGS if self.eval_flags is None else self.eval_flags
         return (flags.signature(), self.use_null_move, self.use_lmr, self.use_killers,
                 self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt,
-                self.use_quiescence_see)
+                self.use_quiescence_see, self.use_tt_two_contexts)
 
     def sync_configuration(self) -> None:
         """Discard old scores after an evaluator/search policy change.
@@ -288,7 +293,7 @@ class Searcher:
 
     @property
     def tt_size(self) -> int:
-        return len(self._tt)
+        return len(self._tt) + len(self._tt_secondary)
 
     @property
     def tt_capacity(self) -> int:
@@ -314,12 +319,53 @@ class Searcher:
             return None, None
         # A board-only hint is still useful, but cannot prove a score under a
         # different game history or a fictional pass in a null-move subtree.
-        if board.null_stack or entry.context != self._tt_context(board):
+        if board.null_stack:
+            return None, entry.move
+        context = self._tt_context(board)
+        if entry.context != context:
+            if self.use_tt_two_contexts:
+                other = self._tt_secondary.get(board.zobrist_hash)
+                if other is not None and other.context == context:
+                    return other, other.move
             return None, entry.move
         return entry, entry.move
 
+    def _store_context_pair(self, board: Board, depth: int, flag: int, score: int, move: Move | None) -> None:
+        """Keep at most two exact draw contexts under the same total entry cap.
+
+        Primary is the latest written context. When a third context arrives,
+        retain the deeper old entry (primary wins ties). No score is reused
+        across contexts; this changes retention only.
+        """
+        key = board.zobrist_hash
+        context = self._tt_context(board)
+        primary = self._tt.get(key)
+        secondary = self._tt_secondary.get(key)
+        match = (primary if primary is not None and primary.context == context else
+                 secondary if secondary is not None and secondary.context == context else None)
+        if match is not None and match.depth > depth:
+            return
+        needs_entry = primary is None or (match is None and secondary is None)
+        if needs_entry and self.tt_size >= self._tt_max:
+            self._tt.clear()
+            self._tt_secondary.clear()
+            primary = secondary = match = None
+        new = _TTEntry(depth, flag, score, move, context)
+        if primary is None:
+            self._tt[key] = new
+        elif match is primary:
+            self._tt[key] = new
+        elif match is secondary:
+            self._tt[key], self._tt_secondary[key] = new, primary
+        else:
+            survivor = primary if secondary is None or primary.depth >= secondary.depth else secondary
+            self._tt[key], self._tt_secondary[key] = new, survivor
+
     def _store(self, board: Board, depth: int, flag: int, score: int, move: Move | None) -> None:
         if self._tt_max <= 0 or board.null_stack:
+            return
+        if self.use_tt_two_contexts:
+            self._store_context_pair(board, depth, flag, score, move)
             return
         key = board.zobrist_hash
         context = self._tt_context(board)
@@ -372,6 +418,10 @@ class Searcher:
             return self._result(None, score, 0, started)
 
         root_entry = self._tt.get(board.zobrist_hash)
+        if self.use_tt_two_contexts and root_entry is not None:
+            other = self._tt_secondary.get(board.zobrist_hash)
+            if other is not None and other.context == self._tt_context(board):
+                root_entry = other
         order_moves(board, moves, None if root_entry is None else root_entry.move)
 
         if depth == 0:

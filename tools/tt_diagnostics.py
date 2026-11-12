@@ -144,6 +144,18 @@ def _validate(plan):
             raise ValueError('Validation failed, was interrupted or changed; inspect logs and use a new session')
         return
     _write(path, {'schema_version': 1, 'protocol_sha256': plan['protocol_sha256'], 'passed': False})
+    if plan.get('comparison_validation'):
+        source = Path(plan['comparison_validation'])
+        gate = _read(source / 'status.json')
+        if (not gate.get('passed') or gate['identity']['protocol_sha256'] != plan['comparison_protocol_sha256']
+                or gate['identity'].get('experiment') != 'tt-pair'
+                or _sha(source / 'tests.log') != gate['artifacts']['tests.log']
+                or _sha(ROOT / 'tools' / 'qsee_validation.py') != gate['identity']['validator_sha256']):
+            raise ValueError('TT comparison validation changed')
+        (out / 'tests.log').write_bytes((source / 'tests.log').read_bytes())
+        _write(path, {'schema_version': 1, 'protocol_sha256': plan['protocol_sha256'], 'passed': True,
+                      'tests_sha256': _sha(out / 'tests.log'), 'comparison_protocol_sha256': plan['comparison_protocol_sha256']})
+        return
     print('Kaggle: running full correctness suite before TT replay.', flush=True)
     with (out / 'tests.log').open('w', encoding='utf-8') as stream:
         result = subprocess.run([sys.executable, '-u', '-m', 'unittest', 'discover', '-s', 'tests', '-t', '.', '-v'],
@@ -165,8 +177,10 @@ def _replay_game(game, plan):
     from engine.search import Searcher
     from tools.tt_stats import TTDiagnosticSearcher, add_stats, empty_stats
     board = Board(game['start_fen'])
-    plain = Searcher(hash_mb=plan['hash_mb'], next_iteration_factor=1.5, quiescence_see=False)
-    measured = TTDiagnosticSearcher(hash_mb=plan['hash_mb'], next_iteration_factor=1.5, quiescence_see=False)
+    options = {'hash_mb': plan['hash_mb'], 'next_iteration_factor': 1.5, 'quiescence_see': False,
+               'tt_two_contexts': plan.get('tt_two_contexts', False)}
+    plain = Searcher(**options)
+    measured = TTDiagnosticSearcher(**options)
     seed = plan['control_seed_base'] + game['game_no'] - 1
     rngs = (random.Random(seed), random.Random(seed))
     by_ply = {r['ply']:r for r in game['control_rows']}
@@ -184,6 +198,8 @@ def _replay_game(game, plan):
                     or before != (board.to_fen(), board.zobrist_hash, tuple(board.position_hashes))
                     or plain._tt != measured._tt):
                 raise RuntimeError(f'Instrumentation changed search/table/board: game {game["game_no"]}, ply {ply}')
+            if plain._tt_secondary != measured._tt_secondary:
+                raise RuntimeError('Instrumentation changed secondary context table')
             stats = measured.snapshot_tt_stats()
             add_stats(total, stats)
             rows.append({'ply': ply, 'node_budget': source['nodes'], 'nodes': b.nodes,

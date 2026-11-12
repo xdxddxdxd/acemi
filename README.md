@@ -17,6 +17,11 @@ dalındaki `notebooks/kaggle_tt_diagnostics.ipynb`, kayıtlı 100 oyunun kontrol
 pozisyonlarını aynı düğüm sınırında normal/sayaçlı aramayla inceler. Yeni maç
 oynatmaz ve TT politikasını değiştirmez; bütün aramalar Kaggle'dadır.
 
+Ölçüm sonrası [iki TT context adayı](docs/TT_TWO_CONTEXTS.md),
+`codex/tt-two-contexts` dalındaki `notebooks/kaggle_tt_two_contexts.ipynb`
+ile denenir. Doğruluk, kayıtlı pozisyon ve maliyet kontrolleri geçerse
+**100 ms, tek toplu 100 maç** başlar. `TTTwoContexts` varsayılan kapalıdır.
+
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
 ## English summary

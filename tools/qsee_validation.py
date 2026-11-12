@@ -20,7 +20,7 @@ def _write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
 
 
-def _worker(source, out, enabled, next_iteration_pct=150, movetime_ms=None):
+def _worker(source, out, enabled, next_iteration_pct=150, movetime_ms=None, tt_two_contexts=False):
     # Fresh process: even the baseline imports its own engine and benchmark positions.
     sys.path.insert(0, str(source))
     import engine
@@ -33,7 +33,12 @@ def _worker(source, out, enabled, next_iteration_pct=150, movetime_ms=None):
     for name, fen in POSITIONS:
         board = Board(fen)
         before = board.to_fen(), board.zobrist_hash, list(board.position_hashes)
-        searcher = Searcher(quiescence_see=True) if enabled else Searcher()
+        options = {}
+        if enabled:
+            options['quiescence_see'] = True
+        if tt_two_contexts:
+            options['tt_two_contexts'] = True
+        searcher = Searcher(**options)
         searcher.next_iteration_factor = next_iteration_pct / 100.0
         started = time.perf_counter()
         result = searcher.search(board, depth=3 if movetime_ms is None else 64,
@@ -48,6 +53,7 @@ def _worker(source, out, enabled, next_iteration_pct=150, movetime_ms=None):
     _write(out, {'schema_version': 1, 'source_commit': _git(source, 'rev-parse', 'HEAD'),
                  'engine_tree': _git(source, 'rev-parse', 'HEAD:engine'),
                  'quiescence_see': enabled, 'next_iteration_pct': next_iteration_pct,
+                 'tt_two_contexts': tt_two_contexts,
                  'movetime_ms': movetime_ms, 'depth': 3 if movetime_ms is None else 64, 'positions': rows,
                  'total_nodes': sum(r['nodes'] for r in rows),
                  'total_seconds': sum(r['seconds'] for r in rows)})
@@ -61,7 +67,7 @@ def _command(args, cwd, log):
 
 
 def validate(plan, reference, experiment='see'):
-    if experiment not in ('see', 'time-policy'):
+    if experiment not in ('see', 'time-policy', 'tt-pair'):
         raise ValueError('Unknown validation experiment')
     if experiment == 'time-policy':
         expected = {'new': {'NextIterationPct': 100, 'QuiescenceSEE': False},
@@ -69,6 +75,12 @@ def validate(plan, reference, experiment='see'):
         if (plan.get('feature_options') != expected
                 or plan['sources']['new']['commit'] != plan['sources']['old']['commit']):
             raise ValueError('Time-policy experiment must isolate 100 vs 150 with SEE disabled')
+    if experiment == 'tt-pair':
+        expected = {'new': {'TTTwoContexts': True, 'QuiescenceSEE': False, 'NextIterationPct': 150},
+                    'old': {'TTTwoContexts': False, 'QuiescenceSEE': False, 'NextIterationPct': 150}}
+        if (plan.get('feature_options') != expected
+                or plan['sources']['new']['commit'] != plan['sources']['old']['commit']):
+            raise ValueError('TT experiment must isolate the second context with SEE disabled and policy 150')
     source = Path(plan['sources']['new']['path']).resolve()
     reference = reference.resolve()
     for label, checkout, expected in (('candidate', source, plan['sources']['new']['commit']),
@@ -82,7 +94,7 @@ def validate(plan, reference, experiment='see'):
     identity = {'protocol_sha256': plan['protocol_sha256'],
                 'validator_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 'candidate_commit': plan['sources']['new']['commit'], 'reference_commit': REFERENCE_COMMIT}
-    if experiment == 'time-policy':
+    if experiment in ('time-policy', 'tt-pair'):
         identity['experiment'] = experiment
     status = out / 'status.json'
     if status.exists():
@@ -104,14 +116,17 @@ def validate(plan, reference, experiment='see'):
         diagnostics = (('reference', reference, False, 150), ('see-off', source, False, 150), ('see-on', source, True, 150))
         if experiment == 'time-policy':
             diagnostics = (('reference', reference, False, 150), ('control', source, False, 150), ('candidate', source, False, 100))
+        elif experiment == 'tt-pair':
+            diagnostics = (('reference', reference, False, 150), ('control', source, False, 150), ('candidate', source, False, 150))
         for label, checkout, enabled, pct in diagnostics:
             print('Kaggle fixed-depth diagnostic:', label, flush=True)
             _command([sys.executable, str(Path(__file__).resolve()), '--worker', '--source', str(checkout),
                       '--out', str(out / (label + '.json')), '--next-iteration-pct', str(pct),
-                      *(['--see'] if enabled else [])],
+                      *(['--see'] if enabled else []),
+                      *(['--tt-two-contexts'] if experiment == 'tt-pair' and label == 'candidate' else [])],
                      checkout, out / (label + '.log'))
         base = json.loads((out / 'reference.json').read_text())
-        off = json.loads((out / ('control.json' if experiment == 'time-policy' else 'see-off.json')).read_text())
+        off = json.loads((out / ('control.json' if experiment in ('time-policy', 'tt-pair') else 'see-off.json')).read_text())
         keys = ('name', 'fen', 'score', 'depth', 'nodes', 'best_move')
         if ([tuple(r[k] for k in keys) for r in base['positions']]
                 != [tuple(r[k] for k in keys) for r in off['positions']]):
@@ -128,12 +143,21 @@ def validate(plan, reference, experiment='see'):
                     _command([sys.executable, str(Path(__file__).resolve()), '--worker', '--source', str(source),
                               '--out', str(out / (label + '.json')), '--next-iteration-pct', str(pct),
                               '--movetime-ms', str(plan['movetime_ms'])], source, out / (label + '.log'))
+        if experiment == 'tt-pair':
+            for round_no, policies in ((1, (False, True)), (2, (True, False)), (3, (False, True))):
+                for pair in policies:
+                    label = f'bench-{round_no}-' + ('pair' if pair else 'single')
+                    print('Kaggle untimed cost check:', label, flush=True)
+                    _command([sys.executable, str(Path(__file__).resolve()), '--worker', '--source', str(source),
+                              '--out', str(out / (label + '.json')), *(['--tt-two-contexts'] if pair else [])],
+                             source, out / (label + '.log'))
         artifacts = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                      for p in out.iterdir() if p.name != 'status.json'}
         _write(status, {'schema_version': 1, 'identity': identity, 'passed': True,
                         'state': 'completed', 'control_matches_reference': True, 'artifacts': artifacts,
                         'note': 'Diagnostic timing is not an Elo decision.',
                         **({'fixed_depth_candidate_matches_reference': True} if experiment == 'time-policy'
+                           else {'retention_candidate_validated': True} if experiment == 'tt-pair'
                            else {'see_off_matches_reference': True})})
     except Exception as error:
         _write(status, {'schema_version': 1, 'identity': identity, 'passed': False,
@@ -147,9 +171,10 @@ def main(argv=None):
     parser.add_argument('--source', type=Path)
     parser.add_argument('--out', type=Path)
     parser.add_argument('--see', action='store_true')
+    parser.add_argument('--tt-two-contexts', action='store_true')
     parser.add_argument('--next-iteration-pct', type=int, default=150, choices=range(50, 501))
     parser.add_argument('--movetime-ms', type=int)
-    parser.add_argument('--experiment', choices=('see', 'time-policy'), default='see')
+    parser.add_argument('--experiment', choices=('see', 'time-policy', 'tt-pair'), default='see')
     parser.add_argument('--session', type=Path)
     parser.add_argument('--reference', type=Path)
     args = parser.parse_args(argv)
@@ -159,7 +184,7 @@ def main(argv=None):
     if args.worker:
         if args.source is None or args.out is None:
             parser.error('Worker requires --source and --out')
-        _worker(args.source.resolve(), args.out, args.see, args.next_iteration_pct, args.movetime_ms)
+        _worker(args.source.resolve(), args.out, args.see, args.next_iteration_pct, args.movetime_ms, args.tt_two_contexts)
     else:
         if args.session is None or args.reference is None:
             parser.error('Use --session and --reference')

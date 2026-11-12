@@ -144,6 +144,20 @@ direct move-hint lookup is outside the probe denominator; mismatch reasons overl
 Local smoke tests may use direct table/protocol fixtures only. Never run
 `test_tt_stats_search` or the replay CLI locally. Analysis goes in `analysis/`.
 
+### TT context-pair experiment
+
+`codex/tt-two-contexts` adds opt-in TTTwoContexts (default false), preserving
+exact draw context/depth/bound checks and the same total entry capacity.
+`notebooks/kaggle_tt_two_contexts.ipynb` runs full Kaggle correctness tests,
+repeated uninstrumented benchmarks and two deterministic 20-game frozen
+replays before conditionally running one 100-game match at 100 ms.
+SEE stays off and NextIterationPct=150. `tools/tt_pair_experiment.py` records
+cost/retention eligibility only, never a strength/merge decision. No second-slot
+cutoffs, increased fixed-depth nodes or >10% median slowdown skips new matches.
+TT diagnostics gain optional second_slot_* / context_evictions counters;
+historical diagnostic summaries remain readable with absent fields as zero.
+Root direct hints remain outside the probe denominator. See docs/TT_TWO_CONTEXTS.md.
+
 ### `data/index.csv` fields
 
 One row per run: `run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision`.

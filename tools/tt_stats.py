@@ -7,6 +7,8 @@ Only interior _probe calls are counted; root's direct move-hint lookup is exclud
 from engine.search import Searcher, TT_EXACT, TT_LOWER, TT_UPPER, from_tt_score
 
 MAX_FIELDS = ('max_occupancy', 'max_stored_history')
+PAIR_FIELDS = ('second_slot_accepts', 'second_slot_depth_sufficient', 'second_slot_cutoffs',
+               'second_slot_additions', 'context_evictions')
 FIELDS = (
     'probes', 'misses', 'hits', 'hints_available', 'null_rejected',
     'context_rejected', 'clock_mismatch', 'history_mismatch', 'same_clock_history_mismatch',
@@ -16,6 +18,7 @@ FIELDS = (
     'replacements_same_context', 'replacements_new_context', 'deeper_preserved',
     'capacity_clears', 'capacity_entries_discarded', 'explicit_clears',
     'explicit_entries_discarded', *MAX_FIELDS,
+    *PAIR_FIELDS,
 )
 
 
@@ -25,10 +28,11 @@ def empty_stats():
 
 def add_stats(total, part):
     for key in FIELDS:
-        total[key] = max(total[key], part[key]) if key in MAX_FIELDS else total[key] + part[key]
+        total[key] = max(total[key], part.get(key, 0)) if key in MAX_FIELDS else total[key] + part.get(key, 0)
 
 
 def validate_stats(s):
+    s = {**dict.fromkeys(PAIR_FIELDS, 0), **s}  # Historical v1 diagnostics remain readable.
     checks = (
         s['probes'] == s['misses'] + s['hits'],
         s['hits'] == s['null_rejected'] + s['context_rejected'] + s['accepted'],
@@ -97,6 +101,9 @@ class TTDiagnosticSearcher(Searcher):
                 s['other_context_mismatch'] += int(raw.context[2:] != context[2:])
             return entry, hint
         s['accepted'] += 1
+        secondary_hit = (self.use_tt_two_contexts and
+                         entry is self._tt_secondary.get(board.zobrist_hash))
+        s['second_slot_accepts'] += int(secondary_hit)
         if self._tt_window is None:
             s['no_window'] += 1
             return entry, hint
@@ -105,14 +112,18 @@ class TTDiagnosticSearcher(Searcher):
             s['too_shallow'] += 1
         else:
             s['sufficient_depth'] += 1
+            s['second_slot_depth_sufficient'] += int(secondary_hit)
             # Mirrors the immediate return in Searcher._negamax, without changing it.
             score = from_tt_score(entry.score, ply)
             if entry.flag == TT_EXACT:
                 s['cutoff_exact'] += 1
+                s['second_slot_cutoffs'] += int(secondary_hit)
             elif entry.flag == TT_LOWER and score >= beta:
                 s['cutoff_lower'] += 1
+                s['second_slot_cutoffs'] += int(secondary_hit)
             elif entry.flag == TT_UPPER and score <= alpha:
                 s['cutoff_upper'] += 1
+                s['second_slot_cutoffs'] += int(secondary_hit)
             else:
                 s['bound_no_cutoff'] += 1
         return entry, hint
@@ -126,19 +137,24 @@ class TTDiagnosticSearcher(Searcher):
             s['store_null'] += 1
         else:
             old = self._tt.get(board.zobrist_hash)
+            secondary = self._tt_secondary.get(board.zobrist_hash) if self.use_tt_two_contexts else None
             context = self._tt_context(board)
             same = old is not None and old.context == context
-            if same and old.depth > depth:
+            match = old if same else secondary if secondary is not None and secondary.context == context else None
+            if match is not None and match.depth > depth:
                 s['deeper_preserved'] += 1
             else:
                 s['stores'] += 1
                 if old is None:
                     s['insertions'] += 1
-                    if len(self._tt) >= self._tt_max:
-                        s['capacity_clears'] += 1
-                        s['capacity_entries_discarded'] += len(self._tt)
                 else:
-                    s['replacements_same_context' if same else 'replacements_new_context'] += 1
+                    s['replacements_same_context' if match is not None else 'replacements_new_context'] += 1
+                adding = old is None or (self.use_tt_two_contexts and match is None and secondary is None)
+                if adding and self.tt_size >= self._tt_max:
+                    s['capacity_clears'] += 1
+                    s['capacity_entries_discarded'] += self.tt_size
+                elif self.use_tt_two_contexts and old is not None and match is None:
+                    s['second_slot_additions' if secondary is None else 'context_evictions'] += 1
                 s['max_stored_history'] = max(s['max_stored_history'], len(context[1]))
         super()._store(board, depth, flag, score, move)
         s['max_occupancy'] = max(s['max_occupancy'], self.tt_size)

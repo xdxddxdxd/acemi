@@ -13,6 +13,32 @@ from tools import qsee_validation as qv
 
 
 class ValidationGateTests(unittest.TestCase):
+    def test_tt_pair_validation_isolates_feature_and_repeats_benchmarks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, reference, session = root / 'new', root / 'reference', root / 'session'
+            session.mkdir()
+            plan = {'session_dir': str(session), 'protocol_sha256': 'pair-fixture',
+                    'sources': {side: {'path': str(source), 'commit': 'a' * 40} for side in ('new', 'old')},
+                    'feature_options': {'new': {'TTTwoContexts': True, 'QuiescenceSEE': False, 'NextIterationPct': 150},
+                                        'old': {'TTTwoContexts': False, 'QuiescenceSEE': False, 'NextIterationPct': 150}}}
+            def git(path, *args):
+                return '' if args[0] == 'status' else 'a'*40 if path == source else qv.REFERENCE_COMMIT
+            def command(args, cwd, log):
+                log.write_text('fixture; no search')
+                if '--out' in args:
+                    qv._write(Path(args[args.index('--out')+1]), {'positions': [
+                        {'name':'fixture', 'fen':'fixture', 'score':7, 'depth':3, 'nodes':10, 'best_move':'fixture'}]})
+            with patch.object(qv, '_git', side_effect=git), patch.object(qv, '_command', side_effect=command) as run, \
+                 contextlib.redirect_stdout(io.StringIO()):
+                qv.validate(plan, reference, 'tt-pair')
+                self.assertEqual(run.call_count, 10)
+                self.assertEqual(sum('--tt-two-contexts' in call.args[0] for call in run.call_args_list), 4)
+                self.assertFalse(any('--see' in call.args[0] for call in run.call_args_list))
+                status = json.loads((session/'validation'/'status.json').read_text())
+                self.assertEqual(status['identity']['experiment'], 'tt-pair')
+                self.assertTrue(status['passed'])
+
     def test_time_policy_gate_records_alternating_timed_diagnostics(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
