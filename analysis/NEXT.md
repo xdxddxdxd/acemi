@@ -1,6 +1,23 @@
 # Sonraki önerilen deney
 
-## Güncel: Süre politikası v1 sonucu
+## Güncel: TT kullanım teşhisi v1
+
+[TT raporu](tt-usage-node-replay-v1.md).
+
+437 test geçti; 100 kayıtlı oyun / 5.076 pozisyonda normal ve sayaçlı arama
+eşdeğer. TT 635.667 sorguda 211.732 hit ve 45.575 gerçek kesme sağlamış.
+Tablo hiç dolmamış; en yüksek giriş sayısı 13.550 / 80.000 (%16,94).
+Hash büyütme veya full-clear değiştirme bu iş yükünde öncelik değil.
+
+64.583 context reddinin 36.800'ünde saat aynı, geçmiş farklı.
+64.317 kez farklı context kaydı eskisinin üstüne yazılmış. Sonraki küçük aday:
+aynı konum için en fazla iki context kaydını koruyup kaç kurtarılabilir sorgu
+olduğunu ve ek maliyeti ölçmek. Tam context/derinlik/pencere güvenliğini koru;
+tekrar ve elli hamle koşullarını gevşetme. Güç kazancı henüz gösterilmiş değil.
+Sonra uygun doğruluk kontrolleri, sabit iş yükü ve ayrı 100 ms / tek 100 maç A/B.
+Bu incelemede kod/politika/main değişikliği veya yeni arama/maç yapılmadı.
+
+## Önceki: Süre politikası v1 sonucu
 
 [100 / 150 raporu](20261112T054659Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false_72a0d1c_time-policy-100vs150-100ms-100games-v1_c01.md).
 
