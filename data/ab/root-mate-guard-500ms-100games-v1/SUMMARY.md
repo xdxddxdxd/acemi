@@ -3,10 +3,10 @@
 - New: `3d09875ae75a56481f4bfae562e0cd3bf00353dc`
 - Old: `3d09875ae75a56481f4bfae562e0cd3bf00353dc`
 - Feature options: {'new': {'TTTwoContexts': True, 'EvalPackedBase': True, 'QuiescenceSEE': False, 'NextIterationPct': 150, 'RootMateGuard': True}, 'old': {'TTTwoContexts': True, 'EvalPackedBase': True, 'QuiescenceSEE': False, 'NextIterationPct': 150, 'RootMateGuard': False}}
-- Status: in_progress; chunks 9/10
-- Requested games: 100; recorded attempts: 90; counted: 90
-- New W/D/L: 29/37/24
-- New score (%): 52.77777777777778
+- Status: completed; chunks 10/10
+- Requested games: 100; recorded attempts: 100; counted: 100
+- New W/D/L: 32/41/27
+- New score (%): 52.5
 - Move time: 500 ms; Hash: 16 MB; Threads: 1; OwnBook: false; SPRT: off
 - Aborted: 0; new timeouts/illegal/crashes: 0/0/0
 - Old timeouts/illegal/crashes: 0/0/0

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "chunk": 10,
+  "run_name": "20261112T131115Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-true-nextiterationpct-150-quiescencesee-false-rootmateguard-false-tttwocontexts-true_3d09875_root-mate-guard-500ms-100games-v1_c10",
+  "file_sha256": {
+    "meta.json": "729847fb7f1347b131c789df8cbf92c86bb5c2ea8b27cba000813663bc19d128",
+    "results.json": "31c0f8c09922edf73a518b51be4842af02b8712128a222b38a93e06374291bbf",
+    "SUMMARY.md": "efca88427c4a0a3be099c4cfa6d36a5500aad63f61299cb5f0827b6b15628af8",
+    "games.pgn.gz": "bd45a3b0c0cd0fb175e269788f504b7118709515b13adfd52154fa5a7029cefc",
+    "moves.jsonl.gz": "6b1afa2b099b203cd5bf12df2bc4867ff773218b63013ad7d0d92fde2ab6cedc",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "finished_at": "2026-11-12T13:15:01.408020+00:00"
+}

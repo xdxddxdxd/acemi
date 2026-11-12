@@ -2,9 +2,9 @@
   "schema_version": 1,
   "id": "root-mate-guard-500ms-100games-v1",
   "protocol_sha256": "5ead230374d96b3addd1a0c45e3c73a69caea543d4fd47fb79b1c6fa00c1eda4",
-  "status": "in_progress",
+  "status": "completed",
   "requested_games": 100,
-  "recorded_attempts": 90,
+  "recorded_attempts": 100,
   "completed_chunks": [
     1,
     2,
@@ -14,12 +14,13 @@
     6,
     7,
     8,
-    9
+    9,
+    10
   ],
-  "games": 90,
-  "wins": 29,
-  "draws": 37,
-  "losses": 24,
+  "games": 100,
+  "wins": 32,
+  "draws": 41,
+  "losses": 27,
   "aborted_games": 0,
   "timeouts": 0,
   "illegal_moves": 0,
@@ -28,7 +29,7 @@
   "opponent_timeouts": 0,
   "opponent_illegal_moves": 0,
   "opponent_engine_crashes": 0,
-  "score_pct": 52.77777777777778,
+  "score_pct": 52.5,
   "score_perspective": "new side (pinned source and feature options)",
-  "updated_at": "2026-11-12T13:11:03.767467+00:00"
+  "updated_at": "2026-11-12T13:15:01.434411+00:00"
 }
