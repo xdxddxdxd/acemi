@@ -1,6 +1,22 @@
 # Sonraki önerilen deney
 
-## Güncel: Quiescence SEE v1 sonucu
+## Güncel: Süre politikası v1 sonucu
+
+[100 / 150 raporu](20261112T054659Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false_72a0d1c_time-policy-100vs150-100ms-100games-v1_c01.md).
+
+427 Kaggle testi geçti. NextIterationPct=100, 100 ms / tek 100 maçta
+28/37/35 (%46,5) aldı. Güç artışı gösterilmedi; mevcut **150 korunmalı**.
+Arama ortalaması 88,9 / 82,7 ms; son iterasyon kesilme oranı %58,43 / %46,45.
+Daha fazla süre ve daha çok başlatılan derinlik maç puanını iyileştirmedi.
+100 oyunla kesin gerileme ilan edilmedi; varsayılanı değiştirmek için kanıt yok.
+
+Sonraki öneri: yeni eşikleri körlemesine deneme. Önce somut kayıp pozisyonları
+veya üçüncü adım için TT probe/context/cutoff/full-clear sayaçlarıyla ölçüm.
+Ölçülen soruna göre tek değişkenli aday çıkar; tekrar/elli hamle güvenliğini koru.
+Beraberlik politikası ve oyun sonu eğitimi ayrı deneyler olarak kalmalı.
+Bu incelemede yeni arama/maç, motor/notebook değişikliği veya main merge yapılmadı.
+
+## Önceki: Quiescence SEE v1 sonucu
 
 [SEE v1 raporu](20261111T172641Z_0.8.2_acemi-0.8.2-ownbook-false-quiescencesee-false_d0bbfe2_quiescence-see-100ms-100games-v1_c01.md).
 
