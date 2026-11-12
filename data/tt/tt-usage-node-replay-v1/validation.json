@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "984a87b5121bdb031e7d94d239bfe4992530385d1691e42db691bac96b4d1029",
+  "passed": true,
+  "returncode": 0,
+  "tests_sha256": "0da4b99953e8d63007173e22eaa503546820e9560d4b080f87bb492871cbbe7d"
+}
