@@ -1,6 +1,32 @@
 # Sonraki önerilen deney
 
-## Güncel: Paketli temel değerlendirme sonucu
+## Güncel: Erken kayıp teşhisi / 107 pozisyon
+
+[Taktik teşhis raporu](tactical-losses-v1.md).
+
+107/107 pozisyon tamamlandı; yeni maç yok. Main referansı artık 38b0722:
+kullanıcı kararıyla TT ve paketli değerlendirme UCI'de varsayılan açık.
+115 Git blob hash'i, tam hamle geçmişleri ve 642 kayıtlı Stockfish PV'si
+doğrulandı. Stockfish depth-12 probu tam; depth-18 isteğine köklerin yalnız
+20/107'sinde ulaşıldı. Sınır işaretli sonuçlardan kesin cp kaybı hesaplanmadı.
+
+Öncelikli somut hata: oyun 19, 10.axb4 Qxf2#. Kayıtta depth=0,
+attempted=1, 1.366 düğüm/100 ms ve motorun kendi skoru mate−1.
+Stockfish depth-12 g3 savunmasını buluyor; 12.000 düğümlük iki Acemi modu
+Bg3 seçiyor. `_partial` ile ilk kök turunun kesilmesi somut geliştirme hedefi.
+Kök çocuklarına harcanan düğüm/süre kaydı olmadığı için pahalı dal henüz bilinmiyor.
+
+Normal ve NullMove+LMR kapalı arama 97/107 konumda aynı hamleyi seçmiş;
+ortalama derinlik 3,617 / 3,346. Bu elemeleri varsayılan kapatmak için kanıt yok.
+55. oyunda bazı yanlış tercihler geniş aramada da sürüyor; genel çözüm kanıtlanmadı.
+
+Sonraki aday: süreye sayılan, sınırlı kök güvenliği ve ilk-tur ilerleme ölçümü.
+Önce mat/kaçış doğruluğu ve maliyet; uygunsa 100 ms / tek 100 maç ayrı A/B.
+Bilinen mat hamlesini başka hamleyle değiştirirken skorun eski hamleden
+taşınmaması şart. Şah güvenliği/oyun sonu/beraberlik ayarlarını topluca açma.
+Bu incelemede motor/notebook/main değişikliği veya yeni motor araması/maç yok.
+
+## Önceki: Paketli temel değerlendirme sonucu
 
 [Paketli değerlendirme raporu](packed-eval-100ms-100games-v1.md).
 
