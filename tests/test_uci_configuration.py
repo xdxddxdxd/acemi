@@ -39,16 +39,18 @@ class UciConfigurationTests(FlagFixture):
         for option, attribute in EVAL_OPTIONS.items():
             with self.subTest(option=option):
                 session, other = UciSession(), UciSession()
+                previous = getattr(session.eval_flags, attribute)
                 seed_table(session)
                 other_entry = seed_table(other)
-                self.assertEqual(session.handle_line(f"setoption name {option} value true"), [])
-                self.assertTrue(getattr(session.eval_flags, attribute))
+                value = str(not previous).lower()
+                self.assertEqual(session.handle_line(f"setoption name {option} value {value}"), [])
+                self.assertEqual(getattr(session.eval_flags, attribute), not previous)
                 self.assertEqual(session.searcher.tt_size, 0)
-                self.assertFalse(getattr(other.eval_flags, attribute))
+                self.assertEqual(getattr(other.eval_flags, attribute), previous)
                 self.assertIs(other.searcher._probe(other.board)[0], other_entry)
                 self.assertEqual(FLAGS.signature(), (False,) * len(EvalFlags.__slots__))
                 seed_table(session)
-                session.handle_line(f"setoption name {option} value false")
+                session.handle_line(f"setoption name {option} value {str(previous).lower()}")
                 self.assertEqual(session.searcher.tt_size, 0)
 
     def test_each_search_policy_change_invalidates_the_table(self):
@@ -85,7 +87,7 @@ class UciConfigurationTests(FlagFixture):
     def test_new_session_does_not_inherit_legacy_global_flags(self):
         FLAGS.passed_pawns = True
         session = UciSession()
-        self.assertEqual(session.eval_flags.signature(), (False,) * len(EvalFlags.__slots__))
+        self.assertEqual(session.eval_flags.signature(), tuple(name == 'packed_base' for name in EvalFlags.__slots__))
         self.assertTrue(FLAGS.passed_pawns)
         self.assertEqual(evaluate(Board(PAWN), session.eval_flags), evaluate(Board(PAWN), EvalFlags()))
 

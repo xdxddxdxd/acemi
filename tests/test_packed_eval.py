@@ -52,12 +52,12 @@ class PackedEvalTests(unittest.TestCase):
     def test_uci_default_and_configuration_invalidation(self):
         u = UciSession()
         self.assertTrue(u.searcher.use_tt_two_contexts)
-        self.assertFalse(u.eval_flags.packed_base)
-        self.assertIn('option name EvalPackedBase type check default false', u.handle_line('uci'))
+        self.assertTrue(u.eval_flags.packed_base)
+        self.assertIn('option name EvalPackedBase type check default true', u.handle_line('uci'))
         from engine.search import TT_EXACT
         u.searcher._store(u.board, 3, TT_EXACT, 7, None)
-        self.assertEqual(u.handle_line('setoption name EvalPackedBase value true'), [])
-        self.assertTrue(u.eval_flags.packed_base)
-        self.assertEqual(u.searcher.tt_size, 0)
-        u.handle_line('setoption name EvalPackedBase value false')
+        self.assertEqual(u.handle_line('setoption name EvalPackedBase value false'), [])
         self.assertFalse(u.eval_flags.packed_base)
+        self.assertEqual(u.searcher.tt_size, 0)
+        u.handle_line('setoption name EvalPackedBase value true')
+        self.assertTrue(u.eval_flags.packed_base)

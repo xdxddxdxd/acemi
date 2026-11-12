@@ -28,7 +28,9 @@ Sıradaki temel değerlendirme deneyi `codex/packed-eval` dalında:
 [`notebooks/kaggle_packed_eval.ipynb`](notebooks/kaggle_packed_eval.ipynb).
 Puanların ve sabit işli aramanın aynı kaldığı doğrulanır; üçer hız ölçümünde
 medyan süre en az %2 kısalırsa **100 ms / tek toplu 100 maç** oynanır.
-İki tarafta da TT açıktır; yeni `EvalPackedBase` varsayılan kapalıdır.
+İki tarafta da TT açıktır. Bu deneyde aynı arama %5,73 daha kısa sürede
+tamamlandı; 466 test geçti, maç puanı %50,5 oldu. Kullanıcı kararıyla
+`EvalPackedBase` UCI motorunda varsayılan açıktır; seçenek kapatılabilir.
 [Deney ayrıntıları](docs/PACKED_EVAL.md).
 
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)

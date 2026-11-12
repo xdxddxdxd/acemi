@@ -6,7 +6,11 @@ secret'ını açın; Run All çalıştırın. Bilgisayarda gerçek arama/maç ba
 
 ## Aday
 
-`EvalPackedBase` varsayılan kapalıdır. Malzeme, kare puanı ve ham oyun evresi
+12 Kasım 2026 kullanıcı kararıyla `EvalPackedBase` UCI motorunda varsayılan açıktır.
+466 Kaggle testi geçti; aynı depth-4 aramada medyan süre %5,73 azaldı.
+100 maçta %50,5 puan alındı; Elo artışı iddiası yoktur. Doğrudan EvalFlags()
+API'si araçların eski açık/kapalı referanslarını korur; UCI ayarı kapatılabilir.
+Malzeme, kare puanı ve ham oyun evresi
 önceden hesaplanmış tek tamsayıda ayrı alanlarda tutulur. Her taş için bir
 tamsayı toplaması yapılır; sonunda üç alan tam olarak ayrılır. Pozisyonun
 puanı ve değerlendirme terimleri değişmez. Terfilerde evre toplamı sonradan
@@ -52,4 +56,5 @@ eski tools/engine importları kullanılmaz.
 Başarısız/yarım ön kontrolde logları inceleyip yeni SESSION_ID kullanın.
 Kesilmiş maçta önce eski oturumu durdurup RETRY_INCOMPLETE=True ile devam edin.
 Tamamlanmış 100 maç yeniden oynanmaz. Son hücre yalnız yayınlamayı tekrarlar.
-Yeni aday main'e alınmamıştır; sonuçlar sonradan değerlendirilir.
+Bu tarihsel deneyin seçenekleri açıkça sabitlenmiştir; yeni UCI varsayılanı
+eski kayıtları veya tamamlanmış protokolü değiştirmez.
