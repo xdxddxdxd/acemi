@@ -1,5 +1,19 @@
 # Acemi analysis agent guide
 
+## Root mate-threat strength candidate
+
+`codex/root-mate-guard` adds opt-in RootMateGuard (default false) and
+`notebooks/kaggle_root_mate_guard.ipynb`. It screens an existing mate-in-one
+threat under a 20% share of the original search budget; only proved mating
+losses are rejected when a proved alternative exists. Unknown moves survive.
+Short bounded position checks may run on the PC at the user's request; full
+tests, repeated diagnostics and matches run in Kaggle. The full notebook
+checks guard-off equivalence to main 38b0722, three alternating cost samples
+and critical 100/500ms safety before a 500ms, 100-game paired A/B in ten-game
+checkpoints. TTTwoContexts and packed eval are on for both sides. Completed
+records are immutable; no default or strength decision is made by the runner.
+See `docs/ROOT_MATE_GUARD.md`.
+
 ## Current-main Stockfish strength test
 
 `codex/stockfish-500ms` adds `notebooks/kaggle_stockfish_strength.ipynb` and

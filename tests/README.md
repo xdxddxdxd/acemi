@@ -1,5 +1,15 @@
 # Tests
 
+For the RootMateGuard candidate, short local checks are permitted by the user:
+
+```powershell
+python -m unittest tests.test_root_mate_guard tests.test_root_mate_guard_experiment tests.test_uci_configuration.UciConfigurationTests -q
+```
+
+The bounded legal regressions include only two timed searches (100/500 ms).
+Keep the complete suite, repeated profiling/benchmarks and all matches in Kaggle
+with `notebooks/kaggle_root_mate_guard.ipynb`.
+
 Install the tools dependencies, then run the complete correctness suite from the repository root:
 
 ```powershell

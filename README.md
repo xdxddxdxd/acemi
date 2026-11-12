@@ -1,5 +1,11 @@
 # Acemi
 
+Yeni oyun gücü adayı: **RootMateGuard**. Kritik 100 ms konumunda bir hamlede
+matı önleyen kısa PC kontrolü geçti; genel güç artışı henüz ölçülmedi.
+`notebooks/kaggle_root_mate_guard.ipynb` tam testleri, maliyet kontrolünü ve
+500 ms/hamle renk değişimli 100 maç A/B'yi Kaggle'da çalıştırır.
+Seçenek varsayılan kapalıdır. [Aday ve deney ayrıntıları](docs/ROOT_MATE_GUARD.md).
+
 Güncel main güç testi: `codex/stockfish-500ms` dalındaki
 [`notebooks/kaggle_stockfish_strength.ipynb`](notebooks/kaggle_stockfish_strength.ipynb)
 Kaggle'da Stockfish 1320 ve 1500 seviyelerine karşı **500 ms/hamle, 100'er maç**

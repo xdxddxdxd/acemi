@@ -58,6 +58,7 @@ OPTION_LINES = (
     "option name LateMovePruning type check default false",
     "option name QuiescenceSEE type check default false",
     "option name TTTwoContexts type check default true",
+    "option name RootMateGuard type check default false",
     "option name OwnBook type check default false",
     "option name BookFile type string default openings/book.bin",
     # Stage 7 evaluation features (off until proven by a match).
@@ -81,6 +82,7 @@ CHECK_OPTIONS = {
     "latemovepruning": "use_lmp",
     "quiescencesee": "use_quiescence_see",
     "tttwocontexts": "use_tt_two_contexts",
+    "rootmateguard": "use_root_mate_guard",
 }
 EVAL_OPTIONS = {
     "evalpassedpawns": "passed_pawns",

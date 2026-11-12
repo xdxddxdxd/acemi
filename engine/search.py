@@ -34,6 +34,9 @@ Features:
 - Late move reductions: late quiet moves are searched one ply shallower in a
   zero window first and re-searched at full depth only if they beat alpha.
 - Each heuristic can be switched off on the ``Searcher`` for tests and debugging.
+- Opt-in RootMateGuard spends up to a fifth of the original budget screening
+  existing mate-in-one threats. It prefers proved alternatives before the first
+  expensive root branch; unclassified moves are never rejected.
 
 ``SearchResult.depth`` is the depth of the last completed iteration, so it is an
 honest measurement: 0 means not even depth 1 finished (a legal move is still
@@ -47,7 +50,7 @@ import time
 from dataclasses import dataclass
 from threading import Event
 
-from engine.board import BISHOP, DATACLASS_SLOTS, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
+from engine.board import BISHOP, DATACLASS_SLOTS, KING, KNIGHT, PAWN, QUEEN, ROOK, Board, Move
 from engine.eval import classic as classic_eval
 from engine.eval.base import evaluate
 from engine.eval.classic import EvalFlags, pst_delta
@@ -119,6 +122,10 @@ class _TTEntry:
 
 class _SearchStopped(Exception):
     """Raised internally when a soft time limit is hit."""
+
+
+class _RootGuardStopped(Exception):
+    """The preliminary mate-threat screen used its share of the search budget."""
 
 
 # -- move ordering ----------------------------------------------------------
@@ -235,10 +242,13 @@ class Searcher:
         eval_flags: EvalFlags | None = None,
         quiescence_see: bool = False,
         tt_two_contexts: bool = False,
+        root_mate_guard: bool = False,
     ) -> None:
         self.eval_flags = eval_flags
         self.use_quiescence_see = quiescence_see
         self.use_tt_two_contexts = tt_two_contexts
+        self.use_root_mate_guard = root_mate_guard
+        self.root_guard_stats: dict = {}
         self.use_pvs = pvs
         self.contempt = contempt
         self._root_color: int | None = None
@@ -277,7 +287,7 @@ class Searcher:
         flags = classic_eval.FLAGS if self.eval_flags is None else self.eval_flags
         return (flags.signature(), self.use_null_move, self.use_lmr, self.use_killers,
                 self.use_pvs, self.use_check_extension, self.use_lmp, self.contempt,
-                self.use_quiescence_see, self.use_tt_two_contexts)
+                self.use_quiescence_see, self.use_tt_two_contexts, self.use_root_mate_guard)
 
     def sync_configuration(self) -> None:
         """Discard old scores after an evaluator/search policy change.
@@ -409,6 +419,7 @@ class Searcher:
         self._nodes_limit = nodes_limit
         self._stop_event = stop_event
         self._partial = None
+        self.root_guard_stats = {}
         self._killers = [()] * (MAX_PLY + 2)
         self._history = {}
 
@@ -427,6 +438,9 @@ class Searcher:
         if depth == 0:
             self.nodes = 1
             return self._result(moves[0], evaluate(board, self.eval_flags), 0, started)
+
+        if self.use_root_mate_guard and len(moves) > 1:
+            moves = self._guard_root_moves(board, moves, started)
 
         # Fallback if not even depth 1 completes: the best-ordered legal move,
         # no score claim.
@@ -461,6 +475,119 @@ class Searcher:
                     break
 
         return self._result(best_move, best_score, completed_depth, started, attempted_depth)
+
+    def _guard_root_moves(self, board: Board, moves: list[Move], started: float) -> list[Move]:
+        """Screen existing mate-in-one threats before an expensive first root branch.
+
+        First probe a hypothetical pass (or screen directly when in check).
+        Only an actual mating reply triggers the full screen. A root move is
+        rejected only after proving it allows mate and proving an alternative
+        does not. Unclassified moves survive; a partial screen is not a proof.
+        The soft screen limit is 20% of the original time/node budget. This
+        time is included in the ordinary search limit, never added on top.
+        """
+        screen_started = time.monotonic()
+        # The match referee also permits a draw claim about the *next* move.
+        # Do not prune in draw-sensitive histories: a mating reply alone would
+        # not prove that the referee will let the game continue to that reply.
+        earliest = max(0, len(board.position_hashes) - 1 - board.halfmove_clock)
+        history = board.position_hashes[earliest:]
+        if board.halfmove_clock >= 98 or len(set(history)) != len(history):
+            self.root_guard_stats = {
+                "triggered": False, "complete": False, "threat": None,
+                "safe_moves": 0, "unsafe_moves": 0, "unknown_moves": len(moves),
+                "nodes": 0, "time_ms": (time.monotonic() - screen_started) * 1000,
+                "skipped_draw_context": True,
+            }
+            return moves
+        screen_deadline = (started + (self._deadline - started) * 0.2
+                           if self._deadline is not None else None)
+        screen_node_limit = (max(1, self._nodes_limit // 5)
+                             if self._nodes_limit is not None else None)
+        safe: list[Move] = []
+        unsafe: list[Move] = []
+        triggered = False
+        complete = False
+        threat: Move | None = None
+
+        def checkpoint() -> None:
+            self._check_stopped()
+            if ((screen_deadline is not None and time.monotonic() >= screen_deadline)
+                    or (screen_node_limit is not None and self.nodes >= screen_node_limit)):
+                raise _RootGuardStopped
+            self._count_node()
+
+        try:
+            checkpoint()
+            if board.in_check():
+                triggered = True
+            else:
+                board.make_null_move()
+                try:
+                    threat = self._find_mating_reply(board, checkpoint)
+                    triggered = threat is not None
+                finally:
+                    board.unmake_null_move()
+            if triggered:
+                # Try cheap geometric defences first, before capture ordering
+                # consumes the small screen budget. They are only priorities;
+                # every retained proof still uses legal moves and actual mate.
+                defence_squares = set()
+                if threat is not None:
+                    defence_squares.add(threat.from_square)
+                    if abs(board.squares[threat.from_square]) in (BISHOP, ROOK, QUEEN):
+                        fr, ff = divmod(threat.from_square, 16)
+                        tr, tf = divmod(threat.to_square, 16)
+                        step = 16 * ((tr > fr) - (tr < fr)) + ((tf > ff) - (tf < ff))
+                        defence_squares.update(range(threat.from_square + step, threat.to_square, step))
+                def priority(move: Move) -> tuple[bool, bool]:
+                    blocks = move.to_square in defence_squares
+                    king = abs(board.squares[move.from_square]) == KING
+                    return not (blocks or king), not blocks
+                for move in sorted(moves, key=priority):
+                    checkpoint()
+                    board.make_move(move)
+                    try:
+                        # A claimable draw ends the game under the match policy;
+                        # a hypothetical later mating reply cannot overturn it.
+                        draw = (board.is_fifty_move_draw() or board.is_threefold_repetition()
+                                or board.is_insufficient_material())
+                        loses = not draw and self._find_mating_reply(board, checkpoint) is not None
+                    finally:
+                        board.unmake_move()
+                    (unsafe if loses else safe).append(move)
+                complete = True
+        except (_RootGuardStopped, _SearchStopped):
+            # Every board mutation above unwinds before a partial result is used.
+            pass
+        self.root_guard_stats = {
+            "triggered": triggered, "complete": complete,
+            "threat": None if threat is None else threat.uci(),
+            "safe_moves": len(safe), "unsafe_moves": len(unsafe),
+            "unknown_moves": len(moves) - len(safe) - len(unsafe) if triggered else len(moves),
+            "nodes": self.nodes, "time_ms": (time.monotonic() - screen_started) * 1000,
+        }
+        if not safe:
+            return moves  # No proved alternative: never remove every legal move.
+        classified = set(safe) | set(unsafe)
+        return safe + [move for move in moves if move not in classified]
+
+    @staticmethod
+    def _find_mating_reply(board: Board, checkpoint) -> Move | None:
+        """Exact, nonrecursive legal mate-in-one probe for the side to move."""
+        replies = list(generate_legal_moves(board))
+        order_moves(board, replies)
+        for reply in replies:
+            checkpoint()
+            board.make_move(reply)
+            try:
+                if board.in_check():
+                    checkpoint()
+                    if next(generate_legal_moves(board, known_in_check=True), None) is None:
+                        return reply
+            finally:
+                board.unmake_move()
+        return None
 
     def _search_root(
         self, board: Board, moves: list[Move], depth: int, rng: random.Random | None
