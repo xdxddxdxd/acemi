@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_name": "20261112T123612Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-true-nextiterationpct-150-quiescencesee-false-rootmateguard-false-tttwocontexts-true_3d09875_root-mate-guard-500ms-100games-v1_c02",
+  "is_demo": false,
+  "date": "20261112T123612Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.8.2",
+  "git_commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 500,
+    "hash_mb": 16,
+    "random_seed": 21,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "EvalPackedBase": true,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "RootMateGuard": true,
+      "TTTwoContexts": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.8.2",
+    "uci_elo": null,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "EvalPackedBase": true,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "RootMateGuard": false,
+      "TTTwoContexts": true
+    }
+  },
+  "opening_set": "chunk_02",
+  "match_settings": {
+    "games_requested": 10,
+    "concurrency": 2,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 10 --movetime-ms 500 --concurrency 2 --hash-mb 16 --max-plies 400 --grace-ms 1000 --seed 21 --engine-cmd '/usr/bin/python3 -u -m engine' --engine-cwd /kaggle/working/acemi-root-guard-candidate --opponent-cmd '/usr/bin/python3 -u -m engine' --opponent-cwd /kaggle/working/acemi-root-guard-control --engine-option OwnBook=false --opponent-option OwnBook=false --openings /kaggle/working/acemi-root-mate-guard/data/ab/root-mate-guard-500ms-100games-v1/openings/chunk_02.txt --git-commit 3d09875ae75a56481f4bfae562e0cd3bf00353dc --root /kaggle/working/acemi-root-mate-guard --engine-option EvalPackedBase=true --engine-option NextIterationPct=150 --engine-option QuiescenceSEE=false --engine-option RootMateGuard=true --engine-option TTTwoContexts=true --opponent-option EvalPackedBase=true --opponent-option NextIterationPct=150 --opponent-option QuiescenceSEE=false --opponent-option RootMateGuard=false --opponent-option TTTwoContexts=true",
+    "forfeit_policy": "loss_for_either_engine"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-11-12T12:36:12.662996Z",
+  "finished_at": "2026-11-12T12:40:13.616900Z",
+  "experiment": {
+    "schema_version": 1,
+    "id": "root-mate-guard-500ms-100games-v1",
+    "chunk": 2,
+    "protocol_sha256": "5ead230374d96b3addd1a0c45e3c73a69caea543d4fd47fb79b1c6fa00c1eda4",
+    "new": {
+      "path": "/kaggle/working/acemi-root-guard-candidate",
+      "commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+      "engine_tree": "31468cdc005fc673f01eb4c519ab8fbb650cc525"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-root-guard-control",
+      "commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+      "engine_tree": "31468cdc005fc673f01eb4c519ab8fbb650cc525"
+    },
+    "global_game_start": 11
+  }
+}
