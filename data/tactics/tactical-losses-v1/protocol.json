@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "kind": "tactical_position_diagnostics",
+  "id": "tactical-losses-v1",
+  "session_dir": "/kaggle/working/acemi-tactical-diagnostics/data/tactics/tactical-losses-v1",
+  "collector_commit": "01dca2e86416a953dc489e1ef3efeab1a507f9fa",
+  "collector_sha256": "7b6816d4008c80800e98f9974908d33b8b6594b3d626519a27128a21ada951eb",
+  "engine_source": "/kaggle/working/acemi-tactical-engine",
+  "engine_commit": "38b0722b084552d8e94eb62e3558d447b641969c",
+  "engine_tree": "ca50b1768bed270096cc1ebb2ad5bbe6c9fdc671",
+  "stockfish": "/usr/games/stockfish",
+  "stockfish_sha256": "00628bd9c9855c1b7ff93d7f8d51b413586cdc6336fe637f9a14a61531a05aca",
+  "python_chess_version": "1.11.2",
+  "inputs_sha256": "1c9835dddb7e1b7f01829c053f6d7042abd8977be8477b81a528bf5cd11acbeb",
+  "source_session": "packed-eval-100ms-100games-v1",
+  "source_protocol_sha256": "c8a732734799f88e49def61d30d9a36d8b9aea9a374e4301467a752cc64bae3b",
+  "source_run": "20261112T075821Z_0.8.2_acemi-0.8.2-ownbook-false-evalpackedbase-false-nextiterationpct-150-quiescencesee-false-tttwocontexts-true_fccb864_packed-eval-100ms-100games-v1_c01",
+  "source_artifacts": {
+    "meta.json": "fab3e89d07ab026a6fdc05b7bea5990aff347d65704316d647737d9169b8b55e",
+    "results.json": "c3daa63e14c8f542f36d8776ae7baba71f5adaddc66bc97aabd1292a97cf83d7",
+    "SUMMARY.md": "d828dde9cd11be9607a883cd40f17f5827a4072493262716f8b51ca1ea444d3b",
+    "games.pgn.gz": "1dfae860d50e362d1c3ecfc7f0afc1c847e6165f582d25a43223049d2b03953c",
+    "moves.jsonl.gz": "b986a450fd1df039b9ee26891a7ba15a4748850e8c82f82c825d2a98c7b5630d",
+    "engine.log.gz": "e4014663c783ac73700cef6e5fe72d4431f051a3caa225642753254fecc0a2ad"
+  },
+  "positions": 107,
+  "selected_games": [
+    {
+      "game_no": 19,
+      "group": "loss"
+    },
+    {
+      "game_no": 55,
+      "group": "loss"
+    },
+    {
+      "game_no": 77,
+      "group": "loss"
+    },
+    {
+      "game_no": 76,
+      "group": "loss"
+    },
+    {
+      "game_no": 20,
+      "group": "win_comparison"
+    },
+    {
+      "game_no": 56,
+      "group": "win_comparison"
+    },
+    {
+      "game_no": 96,
+      "group": "draw_comparison"
+    },
+    {
+      "game_no": 37,
+      "group": "draw_comparison"
+    }
+  ],
+  "sf_depths": [
+    12,
+    18
+  ],
+  "sf_nodes": 100000,
+  "acemi_nodes": 12000,
+  "acemi_depth": 8,
+  "acemi_options": {
+    "OwnBook": false,
+    "TTTwoContexts": true,
+    "EvalPackedBase": true,
+    "QuiescenceSEE": false,
+    "NextIterationPct": 150,
+    "Hash": 16,
+    "Threads": 1,
+    "Seed": 1,
+    "Contempt": 0,
+    "PVS": false,
+    "CheckExtension": false,
+    "LateMovePruning": false
+  },
+  "sf_options": {
+    "Hash": 64,
+    "Threads": 1,
+    "UCI_LimitStrength": false
+  },
+  "is_strength_test": false,
+  "new_matches": 0,
+  "note": "Cold TT at every probe; full played history retained. SF node caps may stop before requested depth.",
+  "protocol_sha256": "f307be7620e9dcc21169d6409379711d5ed58fe38f3fd8aaaa1addf795b7c3d5"
+}
