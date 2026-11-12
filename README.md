@@ -33,6 +33,12 @@ tamamlandı; 466 test geçti, maç puanı %50,5 oldu. Kullanıcı kararıyla
 `EvalPackedBase` UCI motorunda varsayılan açıktır; seçenek kapatılabilir.
 [Deney ayrıntıları](docs/PACKED_EVAL.md).
 
+Sıradaki [erken mat teşhisi](docs/TACTICAL_DIAGNOSTICS.md),
+`codex/tactical-diagnostics` dalındaki
+[`notebooks/kaggle_tactical_diagnostics.ipynb`](notebooks/kaggle_tactical_diagnostics.ipynb)
+ile Kaggle'da çalışır. Kaydedilmiş hamleleri Stockfish ve daha geniş Acemi
+düğüm bütçesiyle inceler; **yeni maç oynatmaz**.
+
 [![CI](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/xdxddxdxd/acemi/actions/workflows/ci.yml)
 
 ## English summary

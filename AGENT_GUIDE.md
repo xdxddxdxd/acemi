@@ -1,5 +1,18 @@
 # Acemi analysis agent guide
 
+## Tactical position diagnostics
+
+`codex/tactical-diagnostics` and `notebooks/kaggle_tactical_diagnostics.ipynb`
+freeze positions from four earliest recorded losses and two wins/draws each.
+`data/tactics/tactical-losses-v1/` stores full histories, bounded Stockfish
+root/forced-move labels at two budgets, and node-limited Acemi normal versus
+NullMove+LMR-disabled probes. TT and packed evaluation are enabled on both.
+There are no new matches and no automatic first-error or causal decision.
+Inspect actual reached depths, score perspectives and bound flags. Each probe
+starts cold; it does not recreate the game's warm TT or advanced RNG state.
+Mate scores are never treated as centipawn loss. Raw per-position JSONs and
+hash checkpoints are immutable. See `docs/TACTICAL_DIAGNOSTICS.md`.
+
 ## Packed base evaluation experiment
 
 `codex/packed-eval` adds an opt-in `EvalPackedBase` implementation and Kaggle
