@@ -1,5 +1,11 @@
 # Acemi
 
+Güncel main güç testi: `codex/stockfish-500ms` dalındaki
+[`notebooks/kaggle_stockfish_strength.ipynb`](notebooks/kaggle_stockfish_strength.ipynb)
+Kaggle'da Stockfish 1320 ve 1500 seviyelerine karşı **500 ms/hamle, 100'er maç**
+oynatır. Aynı sabit main, TT ve paketli değerlendirme açık; her rakibe tek
+toplu 100 maç. [Ayarlar ve devam](docs/STOCKFISH_STRENGTH.md).
+
 Acemi, Python ile sıfırdan geliştirilen bir satranç motorudur. Öncelik sırası doğruluk, güç ve hızdır. Motor çekirdeği `engine/` altında yalnızca standart kütüphaneyle çalışır; `python-chess` yalnızca `tools/` ve testlerde kullanılır.
 
 Quiescence için deneysel SEE sıralaması: [deney açıklaması](docs/QUIESCENCE_SEE.md).

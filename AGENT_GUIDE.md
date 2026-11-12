@@ -1,5 +1,19 @@
 # Acemi analysis agent guide
 
+## Current-main Stockfish strength test
+
+`codex/stockfish-500ms` adds `notebooks/kaggle_stockfish_strength.ipynb` and
+`tools.stockfish_strength`. Engine commit 38b0722 is pinned separately from
+the collector. Stockfish UCI_LimitStrength=true at 1320 and 1500; one bulk
+100-game run per level, 500 ms per move for both engines. TT and packed eval
+are enabled; book/SPRT off. Both levels use the same 50 colour-swapped openings.
+`data/strength/main-stockfish-500ms-100each-v1/` contains the fixed protocol,
+binary identity, per-level checkpoints/logs and separate result summaries.
+Raw artifacts remain under data/runs. Completed levels must not be replayed.
+Interrupted, unfinalized groups restart as a whole only on explicit retry.
+Analyse each limiter level separately; do not interpret UCI_Elo as a measured
+FIDE/online rating. See `docs/STOCKFISH_STRENGTH.md`.
+
 ## Packed base evaluation experiment
 
 `codex/packed-eval` adds an opt-in `EvalPackedBase` implementation and Kaggle
