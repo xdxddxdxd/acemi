@@ -115,6 +115,19 @@ SEE-off must match validated `4068a04` scores/moves/depths/nodes before matches.
 Local checks must not invoke `test_quiescence_see_search` or the real validation
 worker; all real searches and the single 100-game match run only in Kaggle.
 
-### `data/index.csv` columns
+### Time-policy experiment
+
+`codex/time-policy` adds `notebooks/kaggle_time_policy.ipynb` and
+`docs/TIME_POLICY.md`. Both sides use one pinned engine commit, SEE disabled;
+only NextIterationPct differs (new=100, old=150). Integer overrides are limited
+to the advertised 50..500 range; all other fixed protocol settings stay protected.
+The existing validator supports `--experiment time-policy`: full Kaggle tests,
+untimed reference/control/candidate equivalence, then alternating timed diagnostics
+(100/150, 150/100), before the single 100-game match at 100 ms.
+No engine defaults or draw rules change. `validation/*.json` adds attempted_depth,
+search_time_ms, mate, next_iteration_pct and movetime_ms for diagnostic rows.
+These are measurements only; the notebook makes no strength decision.
+
+### `data/index.csv` fields
 
 One row per run: `run_name,date,engine_version,opponent,games,score_pct,elo_diff,sprt_decision`.

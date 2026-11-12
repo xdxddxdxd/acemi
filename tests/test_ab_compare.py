@@ -116,6 +116,40 @@ class ExperimentTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.plan(new_options=overrides)
 
+    def test_time_policy_options_are_pinned_and_serialized_as_integers(self):
+        plan = self.plan(name="time-policy", games=100, chunk_games=100, movetime_ms=100,
+                         new_options={"NextIterationPct": 100, "QuiescenceSEE": False},
+                         old_options={"NextIterationPct": 150, "QuiescenceSEE": False})
+        args = match._parse_args(ab.match_arguments(plan, plan["chunks"][0]))
+        self.assertEqual((args.games, args.movetime_ms), (100, 100))
+        self.assertEqual(args.engine_option, ["OwnBook=false", "NextIterationPct=100", "QuiescenceSEE=false"])
+        self.assertEqual(args.opponent_option, ["OwnBook=false", "NextIterationPct=150", "QuiescenceSEE=false"])
+        self.assertEqual(plan["feature_options"]["new"]["NextIterationPct"], 100)
+        typed = {name: value for name, value, _ in match.parse_option_assignments(args.engine_option)}
+        self.assertIs(type(typed["NextIterationPct"]), int)
+        self.assertIs(typed["QuiescenceSEE"], False)
+
+    def test_time_policy_metadata_cannot_silently_use_the_other_policy(self):
+        options = {"new": {"NextIterationPct": 100, "QuiescenceSEE": False},
+                   "old": {"NextIterationPct": 150, "QuiescenceSEE": False}}
+        plan = self.plan(new_options=options["new"], old_options=options["old"])
+        chunk = plan["chunks"][0]
+        run = self.fake_run(plan, chunk)
+        meta = ab._read(run / "meta.json")
+        meta["engine_settings"]["extra_options"] = {"OwnBook": False, **options["new"]}
+        meta["opponent"]["extra_options"] = {"OwnBook": False, **options["old"]}
+        ab._write(run / "meta.json", meta)
+        ab._validate_run(plan, chunk, run)
+        meta["opponent"]["extra_options"]["NextIterationPct"] = 100
+        ab._write(run / "meta.json", meta)
+        with self.assertRaisesRegex(ValueError, "feature options"):
+            ab._validate_run(plan, chunk, run)
+
+    def test_time_policy_values_obey_uci_range_and_type(self):
+        for value in (True, False, 49, 501, "100", 100.0):
+            with self.assertRaises(ValueError):
+                self.plan(new_options={"NextIterationPct": value})
+
     def test_feature_metadata_is_checked_before_checkpointing(self):
         plan = self.plan(new_options={"QuiescenceSEE": True}, old_options={"QuiescenceSEE": False})
         chunk = plan["chunks"][0]

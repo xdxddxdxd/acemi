@@ -1,4 +1,4 @@
-"""Kaggle-only gates for the SEE ordering experiment; no implicit local searches."""
+"""Kaggle-only correctness gates for SEE and time-policy experiments."""
 
 import argparse
 import hashlib
@@ -20,7 +20,7 @@ def _write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
 
 
-def _worker(source, out, enabled):
+def _worker(source, out, enabled, next_iteration_pct=150, movetime_ms=None):
     # Fresh process: even the baseline imports its own engine and benchmark positions.
     sys.path.insert(0, str(source))
     import engine
@@ -34,17 +34,21 @@ def _worker(source, out, enabled):
         board = Board(fen)
         before = board.to_fen(), board.zobrist_hash, list(board.position_hashes)
         searcher = Searcher(quiescence_see=True) if enabled else Searcher()
+        searcher.next_iteration_factor = next_iteration_pct / 100.0
         started = time.perf_counter()
-        result = searcher.search(board, depth=3)
+        result = searcher.search(board, depth=3 if movetime_ms is None else 64,
+                                 movetime_ms=movetime_ms)
         elapsed = time.perf_counter() - started
         if before != (board.to_fen(), board.zobrist_hash, board.position_hashes):
             raise RuntimeError(f'Board was not restored: {name}')
         rows.append({'name': name, 'fen': fen, 'score': result.score, 'depth': result.depth,
                      'nodes': result.nodes, 'best_move': result.best_move.uci() if result.best_move else None,
-                     'seconds': elapsed})
+                     'seconds': elapsed, 'search_time_ms': result.time_ms,
+                     'attempted_depth': result.attempted_depth, 'mate': result.mate})
     _write(out, {'schema_version': 1, 'source_commit': _git(source, 'rev-parse', 'HEAD'),
                  'engine_tree': _git(source, 'rev-parse', 'HEAD:engine'),
-                 'quiescence_see': enabled, 'depth': 3, 'positions': rows,
+                 'quiescence_see': enabled, 'next_iteration_pct': next_iteration_pct,
+                 'movetime_ms': movetime_ms, 'depth': 3 if movetime_ms is None else 64, 'positions': rows,
                  'total_nodes': sum(r['nodes'] for r in rows),
                  'total_seconds': sum(r['seconds'] for r in rows)})
 
@@ -56,7 +60,15 @@ def _command(args, cwd, log):
         raise RuntimeError(f'Validation failed (exit {result.returncode}); inspect {log}')
 
 
-def validate(plan, reference):
+def validate(plan, reference, experiment='see'):
+    if experiment not in ('see', 'time-policy'):
+        raise ValueError('Unknown validation experiment')
+    if experiment == 'time-policy':
+        expected = {'new': {'NextIterationPct': 100, 'QuiescenceSEE': False},
+                    'old': {'NextIterationPct': 150, 'QuiescenceSEE': False}}
+        if (plan.get('feature_options') != expected
+                or plan['sources']['new']['commit'] != plan['sources']['old']['commit']):
+            raise ValueError('Time-policy experiment must isolate 100 vs 150 with SEE disabled')
     source = Path(plan['sources']['new']['path']).resolve()
     reference = reference.resolve()
     for label, checkout, expected in (('candidate', source, plan['sources']['new']['commit']),
@@ -70,6 +82,8 @@ def validate(plan, reference):
     identity = {'protocol_sha256': plan['protocol_sha256'],
                 'validator_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 'candidate_commit': plan['sources']['new']['commit'], 'reference_commit': REFERENCE_COMMIT}
+    if experiment == 'time-policy':
+        identity['experiment'] = experiment
     status = out / 'status.json'
     if status.exists():
         saved = json.loads(status.read_text())
@@ -87,22 +101,40 @@ def validate(plan, reference):
         print('Kaggle: running full correctness suite before any match.', flush=True)
         _command([sys.executable, '-u', '-m', 'unittest', 'discover', '-s', 'tests', '-t', '.', '-v'],
                  source, out / 'tests.log')
-        for label, checkout, enabled in (('reference', reference, False), ('see-off', source, False), ('see-on', source, True)):
+        diagnostics = (('reference', reference, False, 150), ('see-off', source, False, 150), ('see-on', source, True, 150))
+        if experiment == 'time-policy':
+            diagnostics = (('reference', reference, False, 150), ('control', source, False, 150), ('candidate', source, False, 100))
+        for label, checkout, enabled, pct in diagnostics:
             print('Kaggle fixed-depth diagnostic:', label, flush=True)
             _command([sys.executable, str(Path(__file__).resolve()), '--worker', '--source', str(checkout),
-                      '--out', str(out / (label + '.json')), *(['--see'] if enabled else [])],
+                      '--out', str(out / (label + '.json')), '--next-iteration-pct', str(pct),
+                      *(['--see'] if enabled else [])],
                      checkout, out / (label + '.log'))
         base = json.loads((out / 'reference.json').read_text())
-        off = json.loads((out / 'see-off.json').read_text())
+        off = json.loads((out / ('control.json' if experiment == 'time-policy' else 'see-off.json')).read_text())
         keys = ('name', 'fen', 'score', 'depth', 'nodes', 'best_move')
         if ([tuple(r[k] for k in keys) for r in base['positions']]
                 != [tuple(r[k] for k in keys) for r in off['positions']]):
-            raise RuntimeError('SEE-off no longer matches the validated reference search')
+            raise RuntimeError('Control no longer matches the validated reference search')
+        if experiment == 'time-policy':
+            candidate = json.loads((out / 'candidate.json').read_text())
+            if ([tuple(r[k] for k in keys) for r in base['positions']]
+                    != [tuple(r[k] for k in keys) for r in candidate['positions']]):
+                raise RuntimeError('Time policy unexpectedly changed a search without a time limit')
+            for round_no, policies in ((1, (100, 150)), (2, (150, 100))):
+                for pct in policies:
+                    label = f'timed-{round_no}-pct{pct}'
+                    print('Kaggle 100 ms diagnostic:', label, flush=True)
+                    _command([sys.executable, str(Path(__file__).resolve()), '--worker', '--source', str(source),
+                              '--out', str(out / (label + '.json')), '--next-iteration-pct', str(pct),
+                              '--movetime-ms', str(plan['movetime_ms'])], source, out / (label + '.log'))
         artifacts = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                      for p in out.iterdir() if p.name != 'status.json'}
         _write(status, {'schema_version': 1, 'identity': identity, 'passed': True,
-                        'state': 'completed', 'see_off_matches_reference': True, 'artifacts': artifacts,
-                        'note': 'SEE-on nodes/timing may differ. Diagnostic timing is not an Elo decision.'})
+                        'state': 'completed', 'control_matches_reference': True, 'artifacts': artifacts,
+                        'note': 'Diagnostic timing is not an Elo decision.',
+                        **({'fixed_depth_candidate_matches_reference': True} if experiment == 'time-policy'
+                           else {'see_off_matches_reference': True})})
     except Exception as error:
         _write(status, {'schema_version': 1, 'identity': identity, 'passed': False,
                         'state': 'failed', 'error': str(error)})
@@ -115,6 +147,9 @@ def main(argv=None):
     parser.add_argument('--source', type=Path)
     parser.add_argument('--out', type=Path)
     parser.add_argument('--see', action='store_true')
+    parser.add_argument('--next-iteration-pct', type=int, default=150, choices=range(50, 501))
+    parser.add_argument('--movetime-ms', type=int)
+    parser.add_argument('--experiment', choices=('see', 'time-policy'), default='see')
     parser.add_argument('--session', type=Path)
     parser.add_argument('--reference', type=Path)
     args = parser.parse_args(argv)
@@ -124,12 +159,12 @@ def main(argv=None):
     if args.worker:
         if args.source is None or args.out is None:
             parser.error('Worker requires --source and --out')
-        _worker(args.source.resolve(), args.out, args.see)
+        _worker(args.source.resolve(), args.out, args.see, args.next_iteration_pct, args.movetime_ms)
     else:
         if args.session is None or args.reference is None:
             parser.error('Use --session and --reference')
         from tools.ab_compare import load_plan
-        validate(load_plan(args.session), args.reference)
+        validate(load_plan(args.session), args.reference, args.experiment)
     return 0
 
 

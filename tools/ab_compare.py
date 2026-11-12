@@ -70,6 +70,15 @@ def _runner_hashes():
     return {name: _sha(ROOT / "tools" / name) for name in RUNNER_SOURCES}
 
 
+def _valid_feature_option(name, value):
+    if (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", name)
+            or name.lower() in ("ownbook", "hash", "threads", "seed")):
+        return False
+    if name.lower() == "nextiterationpct":
+        return type(value) is int and 50 <= value <= 500
+    return type(value) is bool
+
+
 def prepare(out, new_source, old_source, *, games=100, chunk_games=10, movetime_ms=100,
             concurrency=2, hash_mb=16, max_plies=400, seed=1,
             new_commit=NEW_COMMIT, old_commit=OLD_COMMIT,
@@ -88,10 +97,8 @@ def prepare(out, new_source, old_source, *, games=100, chunk_games=10, movetime_
     options = {}
     for label, overrides in (("new", new_options), ("old", old_options)):
         options[label] = dict(overrides or {})
-        if any(not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", name)
-               or name.lower() in ("ownbook", "hash", "threads", "seed")
-               or type(value) is not bool for name, value in options[label].items()):
-            raise ValueError("Only boolean feature options may override the fixed protocol")
+        if any(not _valid_feature_option(name, value) for name, value in options[label].items()):
+            raise ValueError("Use boolean feature options or NextIterationPct integer in 50..500")
     sources = {"new": source_info(new_source, new_commit), "old": source_info(old_source, old_commit)}
     if _git(ROOT, "rev-parse", "HEAD:engine") != sources["new"]["engine_tree"]:
         raise ValueError("Collector board implementation differs from the pinned new engine")
