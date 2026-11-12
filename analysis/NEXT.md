@@ -1,6 +1,30 @@
 # Sonraki önerilen deney
 
-## Güncel: TT kullanım teşhisi v1
+## Güncel: İki TT context'i / 100 ms sonucu
+
+[TT iki context raporu](tt-two-contexts-100ms-100games-v1.md).
+
+458 Kaggle testi geçti. Tek toplu 100 maçta aday 40/25/35 (%52,5);
+iki tarafta da teknik hata yok. 50 açılış çiftinin 16'sı kazanıldı,
+24'ü eşit, 10'u kaybedildi. Güç artışı henüz kanıtlanmadı.
+
+20 kayıtlı oyun / 1.057 konumda ikinci kayıt 661 kesme sağlamış;
+toplam TT kesmesi 10.645 → 11.430 (+%7,37), context reddi −%8,09.
+Aynı düğüm bütçesinde 37 konumda daha fazla derinlik, hiçbirinde daha azı yok.
+Bu sayılar gerçek maç sayaçları veya hız yüzdesi değildir.
+Normal depth-3 medyan süre farkı +%0,28; düğüm ve sonuçlar aynı.
+Ölçülmüş hız artışı yok. Her iki tablo da kapasitenin çok altında kalmış.
+
+Öneri: adayı koru; TTTwoContexts varsayılan kapalı ve main değişmeden kalsın.
+Sonraki küçük teyit Kaggle'da yeni kimlik ve farklı açılış seçimi/seed ile
+yine 100 ms / tek toplu 100 maç. 64 açılıştan 50 seçildiğinden kümelerin
+örtüşmesi kaçınılmaz; daha geniş açılış doğrulaması daha sonra gerekir.
+Aynı deneyde süre/beraberlik/eval politikasını değiştirme.
+Teyit belirsiz kalırsa erken matları (özellikle oyun 19) teşhis et ve
+temel değerlendirme maliyetini ayrı aday olarak incele.
+Bu incelemede yeni arama/maç/test, motor/notebook değişikliği veya main merge yok.
+
+## Önceki: TT kullanım teşhisi v1
 
 [TT raporu](tt-usage-node-replay-v1.md).
 
