@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_name": "20261112T072339Z_0.8.2_acemi-0.8.2-ownbook-false-nextiterationpct-150-quiescencesee-false-tttwocontexts-false_d693129_tt-two-contexts-100ms-100games-v1_c01",
+  "is_demo": false,
+  "date": "20261112T072339Z",
+  "engine_name": "Acemi",
+  "engine_version": "0.8.2",
+  "git_commit": "d693129287b8e55936a4760fe4473a3a32b8e5a0",
+  "git_dirty": false,
+  "engine_settings": {
+    "move_time_ms": 100,
+    "hash_mb": 16,
+    "random_seed": 1,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "TTTwoContexts": true
+    }
+  },
+  "opponent": {
+    "name": "Acemi",
+    "version": "0.8.2",
+    "uci_elo": null,
+    "opening_book": false,
+    "book_file": "openings/book.bin",
+    "extra_options": {
+      "OwnBook": false,
+      "NextIterationPct": 150,
+      "QuiescenceSEE": false,
+      "TTTwoContexts": false
+    }
+  },
+  "opening_set": "chunk_01",
+  "match_settings": {
+    "games_requested": 100,
+    "concurrency": 2,
+    "max_plies": 400,
+    "timeout_grace_ms": 1000,
+    "pairing": "colour_swapped_pairs",
+    "command": "python -m tools.match --games 100 --movetime-ms 100 --concurrency 2 --hash-mb 16 --max-plies 400 --grace-ms 1000 --seed 1 --engine-cmd '/usr/bin/python3 -u -m engine' --engine-cwd /kaggle/working/acemi-pair-candidate --opponent-cmd '/usr/bin/python3 -u -m engine' --opponent-cwd /kaggle/working/acemi-pair-control --engine-option OwnBook=false --opponent-option OwnBook=false --openings /kaggle/working/acemi-tt-pair/data/ab/tt-two-contexts-100ms-100games-v1/openings/chunk_01.txt --git-commit d693129287b8e55936a4760fe4473a3a32b8e5a0 --root /kaggle/working/acemi-tt-pair --engine-option NextIterationPct=150 --engine-option QuiescenceSEE=false --engine-option TTTwoContexts=true --opponent-option NextIterationPct=150 --opponent-option QuiescenceSEE=false --opponent-option TTTwoContexts=false",
+    "forfeit_policy": "loss_for_either_engine"
+  },
+  "hardware": {
+    "cpu_count": 4,
+    "ram_mb": 32098,
+    "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "runtime": "CPython",
+    "runtime_version": "3.13.15"
+  },
+  "started_at": "2026-11-12T07:23:39.277686Z",
+  "finished_at": "2026-11-12T07:31:40.749241Z",
+  "experiment": {
+    "schema_version": 1,
+    "id": "tt-two-contexts-100ms-100games-v1",
+    "chunk": 1,
+    "protocol_sha256": "68a42aba693ef4ed187476db44954d7db5b8c5c7d2f3778a22af2b1da2172b39",
+    "new": {
+      "path": "/kaggle/working/acemi-pair-candidate",
+      "commit": "d693129287b8e55936a4760fe4473a3a32b8e5a0",
+      "engine_tree": "1007701fafd83aec3282be64c7cd95b4678305b3"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-pair-control",
+      "commit": "d693129287b8e55936a4760fe4473a3a32b8e5a0",
+      "engine_tree": "1007701fafd83aec3282be64c7cd95b4678305b3"
+    },
+    "global_game_start": 1
+  }
+}

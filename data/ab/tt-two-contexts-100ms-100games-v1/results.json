@@ -2,14 +2,16 @@
   "schema_version": 1,
   "id": "tt-two-contexts-100ms-100games-v1",
   "protocol_sha256": "68a42aba693ef4ed187476db44954d7db5b8c5c7d2f3778a22af2b1da2172b39",
-  "status": "in_progress",
+  "status": "completed",
   "requested_games": 100,
-  "recorded_attempts": 0,
-  "completed_chunks": [],
-  "games": 0,
-  "wins": 0,
-  "draws": 0,
-  "losses": 0,
+  "recorded_attempts": 100,
+  "completed_chunks": [
+    1
+  ],
+  "games": 100,
+  "wins": 40,
+  "draws": 25,
+  "losses": 35,
   "aborted_games": 0,
   "timeouts": 0,
   "illegal_moves": 0,
@@ -18,7 +20,7 @@
   "opponent_timeouts": 0,
   "opponent_illegal_moves": 0,
   "opponent_engine_crashes": 0,
-  "score_pct": null,
+  "score_pct": 52.5,
   "score_perspective": "new side (pinned source and feature options)",
-  "updated_at": "2026-11-12T07:18:10.929479+00:00"
+  "updated_at": "2026-11-12T07:31:52.381276+00:00"
 }
