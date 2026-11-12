@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "id": "root-mate-guard-500ms-100games-v1",
+  "created_at": "2026-11-12T12:28:45.652015+00:00",
+  "session_dir": "/kaggle/working/acemi-root-mate-guard/data/ab/root-mate-guard-500ms-100games-v1",
+  "repo_root": "/kaggle/working/acemi-root-mate-guard",
+  "sources": {
+    "new": {
+      "path": "/kaggle/working/acemi-root-guard-candidate",
+      "commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+      "engine_tree": "31468cdc005fc673f01eb4c519ab8fbb650cc525"
+    },
+    "old": {
+      "path": "/kaggle/working/acemi-root-guard-control",
+      "commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+      "engine_tree": "31468cdc005fc673f01eb4c519ab8fbb650cc525"
+    }
+  },
+  "runner_sources": {
+    "ab_compare.py": "b8bef8d41f132c962a3bffa84ab770e65c8439edac92c433a00b14bc7e4ba28f",
+    "match.py": "2c516628a9bdf723701e87ec1e653f4c2368b92405d09c68b20f42c688a90779",
+    "match_game.py": "ebc5f3135e1270b3a0daea5bd5e065dab60bb29492a5118ce0b9ae69439e1600",
+    "match_config.py": "19e4e230103c386b0217a30e8c3db3b43f0d2a48a80a517f488fab4015be3d15",
+    "match_openings.py": "3e3632a37a28cec4ea34f2c2d82111563fa4b87e32f3164a687682a072500219",
+    "uci_client.py": "f708a82905247ccccd731c7aa46febe88687d2c163d35936b6c8342597cc2069",
+    "record.py": "368a8be35d2da588086b46849e9041110c488c85d08b507a4f335bcda194dfe3",
+    "pairing.py": "3105b630489a0d1d9325ffad88814877169e595af52b0edd81cb7587fb66520a",
+    "elo.py": "5095f077dc7f7b75b42e012c5202345ce4ce74f510eea879e7f69fdfb46d98e8",
+    "summarize.py": "afb19c2be48c864faee881879e53521ae1f4ce4e4001693d1e3aae49500a27ec"
+  },
+  "collector_commit": "3d09875ae75a56481f4bfae562e0cd3bf00353dc",
+  "games": 100,
+  "chunk_games": 10,
+  "movetime_ms": 500,
+  "hash_mb": 16,
+  "max_plies": 400,
+  "concurrency": 2,
+  "threads_per_engine": 1,
+  "opening_book": false,
+  "sprt_enabled": false,
+  "timeout_grace_ms": 1000,
+  "feature_options": {
+    "new": {
+      "TTTwoContexts": true,
+      "EvalPackedBase": true,
+      "QuiescenceSEE": false,
+      "NextIterationPct": 150,
+      "RootMateGuard": true
+    },
+    "old": {
+      "TTTwoContexts": true,
+      "EvalPackedBase": true,
+      "QuiescenceSEE": false,
+      "NextIterationPct": 150,
+      "RootMateGuard": false
+    }
+  },
+  "forfeit_policy": "loss_for_either_engine",
+  "opening_source_sha256": "d9ee9e5700382bea856867017ed5f2b880bfa81479e95f58c1aa2df81facbc66",
+  "selection_seed": 11,
+  "chunks": [
+    {
+      "number": 1,
+      "games": 10,
+      "global_game_start": 1,
+      "seed": 11,
+      "openings": "openings/chunk_01.txt",
+      "sha256": "211d8ff919deffa30088ce76ad64d1f66261f3a8befa721f32f6b3c1b938e54f"
+    },
+    {
+      "number": 2,
+      "games": 10,
+      "global_game_start": 11,
+      "seed": 21,
+      "openings": "openings/chunk_02.txt",
+      "sha256": "ddaf17326cbab38d0afb8ec6b526abd7840febd945dc3cfbc476a5d9daac76ba"
+    },
+    {
+      "number": 3,
+      "games": 10,
+      "global_game_start": 21,
+      "seed": 31,
+      "openings": "openings/chunk_03.txt",
+      "sha256": "ff17a74469f8f4ea4d3649a1603ea3837c37e8d0cf30b3a89aae703607632ecd"
+    },
+    {
+      "number": 4,
+      "games": 10,
+      "global_game_start": 31,
+      "seed": 41,
+      "openings": "openings/chunk_04.txt",
+      "sha256": "c0428b020b557bbb6b559d226a2d08a2e41269ce4aa64aefca5271d95490da27"
+    },
+    {
+      "number": 5,
+      "games": 10,
+      "global_game_start": 41,
+      "seed": 51,
+      "openings": "openings/chunk_05.txt",
+      "sha256": "462ff7120abe947ebae3cd3e527d90289e88c01d022c006501df73adc60b9b21"
+    },
+    {
+      "number": 6,
+      "games": 10,
+      "global_game_start": 51,
+      "seed": 61,
+      "openings": "openings/chunk_06.txt",
+      "sha256": "6985aa134364556ffc735a2b41b50b29268a57a84decd5a28576eadbd80d6d2e"
+    },
+    {
+      "number": 7,
+      "games": 10,
+      "global_game_start": 61,
+      "seed": 71,
+      "openings": "openings/chunk_07.txt",
+      "sha256": "579ef5de5a99efec53a7903eb2762abf1aa89841467f015960b0e07b861c52a3"
+    },
+    {
+      "number": 8,
+      "games": 10,
+      "global_game_start": 71,
+      "seed": 81,
+      "openings": "openings/chunk_08.txt",
+      "sha256": "e9894242bd1b705b20b3e1d9efc87f52b59e11ad357d08fb1f90ea6b23b142ec"
+    },
+    {
+      "number": 9,
+      "games": 10,
+      "global_game_start": 81,
+      "seed": 91,
+      "openings": "openings/chunk_09.txt",
+      "sha256": "fa044b6bcd39d855d936fa5a5dd96cb75a06b060b018308e4d78244150c82195"
+    },
+    {
+      "number": 10,
+      "games": 10,
+      "global_game_start": 91,
+      "seed": 101,
+      "openings": "openings/chunk_10.txt",
+      "sha256": "5118cef8eef0f6b872a91ae97b94cafa4adc90f010e5fbe6fed8386a8824f6b5"
+    }
+  ],
+  "runtime": "CPython",
+  "runtime_version": "3.13.15",
+  "protocol_sha256": "5ead230374d96b3addd1a0c45e3c73a69caea543d4fd47fb79b1c6fa00c1eda4"
+}
